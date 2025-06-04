@@ -28,7 +28,7 @@ const MainHeader: React.FC = () => {
               Tsinjool
             </h1>
             <p className="text-sm text-gray-500 dark:text-gray-400 transition-colors duration-300">
-              Votre coach personnel intelligent
+              Votre coach personnel intelligenteee
             </p>
           </div>
         </div>
