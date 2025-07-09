@@ -13,7 +13,9 @@ import {
   Sparkles,
   Search,
   Filter,
-  Gauge ,
+  Gauge, 
+  CircleHelpIcon,
+  CircleIcon,
 } from "lucide-react";
 import {
   NavigationMenu,
@@ -259,6 +261,33 @@ const Navigation = () => {
                 </Link>
               </NavigationMenuLink>
             </NavigationMenuItem>
+              <NavigationMenuItem>
+          <NavigationMenuTrigger>With Icon</NavigationMenuTrigger>
+          <NavigationMenuContent>
+            <ul className="grid w-[200px] gap-4">
+              <li>
+                <NavigationMenuLink asChild>
+                  <div className="flex-row items-center gap-2">
+                    <CircleHelpIcon />
+                    Backlog
+                  </div>
+                </NavigationMenuLink>
+                <NavigationMenuLink asChild>
+                  <div className="flex-row items-center gap-2">
+                    <CircleIcon />
+                    To Do
+                  </div>
+                </NavigationMenuLink>
+                <NavigationMenuLink asChild>
+                  <div className="flex-row items-center gap-2">
+                    <CircleIcon />
+                    Done
+                  </div>
+                </NavigationMenuLink>
+              </li>
+            </ul>
+          </NavigationMenuContent>
+        </NavigationMenuItem>
           </NavigationMenuList>
         </NavigationMenu>
       </div>
