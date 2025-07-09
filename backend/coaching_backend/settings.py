@@ -6,10 +6,9 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-SECRET_KEY = 'django-insecure-r+f@cd-9g1!akiw#xrnxme&5ga&hql+i!2k(1-p@uzt08co55t'
-DEBUG = True
-ALLOWED_HOSTS = []
+load_dotenv(BASE_DIR / '.env')  # charge les variables .env
+DEBUG = os.getenv("DEBUG", "False") == "True"
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "*").split(",")
 
 # Application definition
 INSTALLED_APPS = [
@@ -69,8 +68,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'coaching_backend.wsgi.application'
-BASE_DIR = Path(__file__).resolve().parent.parent
-load_dotenv(BASE_DIR / '.env')  # charge les variables .env
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -81,6 +79,8 @@ DATABASES = {
         'PASSWORD': os.getenv('DB_PASSWORD'),
     }
 }
+SECRET_KEY = os.getenv("SECRET_KEY", "insecure-default-secret-key")
+
 # Base de données PostgreSQL (Neon)
 # DATABASES = {
 #     'default': {
@@ -166,3 +166,4 @@ CORS_ALLOWED_ORIGINS = [
 ]
 # ou :
 # CORS_ALLOWED_ORIGINS = ["http://localhost:3000", "https://ton-domaine.vercel.app"]
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
