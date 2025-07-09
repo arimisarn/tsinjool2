@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 export default function LoginPage() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    email: "",
+    nom_utilisateur: "",
     password: "",
   });
   const [loading, setLoading] = useState(false);
@@ -36,7 +36,7 @@ export default function LoginPage() {
       const msg =
         error?.response?.data?.non_field_errors?.[0] ||
         error?.response?.data?.detail ||
-        "Email ou mot de passe incorrect.";
+        "Nom d'utilisateur ou mot de passe incorrect.";
       toast.error(msg);
     } finally {
       setLoading(false);
@@ -54,10 +54,10 @@ export default function LoginPage() {
         </h2>
 
         <Input
-          type="email"
-          name="email"
-          placeholder="Email"
-          value={formData.email}
+          type="text"
+          name="nom_utilisateur"
+          placeholder="Nom d'utilisateur"
+          value={formData.nom_utilisateur}
           onChange={handleChange}
           required
         />
