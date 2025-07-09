@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { Upload, User } from "lucide-react";
+import { Upload } from "lucide-react";
 
 const coachingOptions = [
   { value: "life", label: "Coaching de vie" },
