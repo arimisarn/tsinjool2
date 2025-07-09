@@ -73,6 +73,11 @@ TEMPLATES = [
     },
 ]
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+}
 WSGI_APPLICATION = 'coaching_backend.wsgi.application'
 
 

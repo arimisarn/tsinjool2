@@ -11,6 +11,7 @@ import ProfileSetup from "./pages/clients/ProfileSetup";
 
 import "./index.css";
 import Dashboard from "./pages/clients/Dashboard";
+import ProfilePage from "./pages/clients/ProfilePage";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
@@ -23,6 +24,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/profile-setup" element={<ProfileSetup />} />
+          <Route path="/profile" element={<ProfilePage />} />
           <Route path="/dashboard" element={<Dashboard />} />
         </Routes>
       </HeroUIProvider>

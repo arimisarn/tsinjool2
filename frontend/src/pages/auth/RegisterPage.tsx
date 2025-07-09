@@ -30,9 +30,17 @@ export default function RegisterPage() {
 
     setLoading(true);
     try {
-      await axios.post("https://tsinjool-backend.onrender.com/api/register/", formData);
+      // Envoi des données au backend
+      const response = await axios.post("https://tsinjool-backend.onrender.com/api/register/", formData);
+
+      // ✅ Récupère le token
+      const token = response.data.token;
+      localStorage.setItem("token", token); // ✅ Stockage
+
       toast.success("Inscription réussie !");
-      navigate("/profile-setup"); // redirige vers ta page configuration profil
+      navigate("/profile-setup"); // ✅ Redirection directe
+
+      // Reset du formulaire
       setFormData({
         email: "",
         nom_utilisateur: "",
@@ -57,7 +65,9 @@ export default function RegisterPage() {
         onSubmit={handleSubmit}
         className="w-full max-w-md bg-white p-8 rounded-2xl shadow-2xl space-y-5"
       >
-        <h2 className="text-3xl font-bold text-center text-indigo-600 mb-4">Créer un compte</h2>
+        <h2 className="text-3xl font-bold text-center text-indigo-600 mb-4">
+          Créer un compte
+        </h2>
 
         <Input
           type="email"
