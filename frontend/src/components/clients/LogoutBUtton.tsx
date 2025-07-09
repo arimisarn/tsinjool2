@@ -8,7 +8,7 @@ export default function LogoutButton() {
   const handleLogout = () => {
     localStorage.removeItem("token"); // ⛔ Supprimer le token
     toast.success("Déconnexion réussie");
-    navigate("/"); // 🔁 Redirection (ex: accueil ou login)
+    navigate("/login"); // 🔁 Redirection (ex: accueil ou login)
   };
 
   return (
