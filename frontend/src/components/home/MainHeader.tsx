@@ -1,6 +1,5 @@
 import { Brain, LogIn, UserPlus } from "lucide-react";
 import { DarkModeToggle } from "../uiperso/DarkModeToggle";
-import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 const MainHeader = () => {
   return (
