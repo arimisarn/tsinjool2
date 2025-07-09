@@ -1,10 +1,11 @@
+from http.client import HTTPResponse
 from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 
 def home(request):
-    return HttpResponse("Backend Django est bien en ligne !")
+    return HTTPResponse("Backend Django est bien en ligne !")
 
 urlpatterns = [
         path('', home),
