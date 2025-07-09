@@ -4,22 +4,23 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 
 const slides = [
   {
     image: "/carousel1.jpg",
     title: "Coaching personnalisé",
-    subtitle: "Adaptez votre parcours selon vos objectifs personnels.",
+    subtitle: "Un accompagnement adapté à vos besoins et objectifs.",
   },
   {
     image: "/carousel2.jpg",
     title: "Suivi intelligent",
-    subtitle: "Notre IA suit vos progrès et vous guide au quotidien.",
+    subtitle: "L'IA suit vos progrès et vous motive chaque jour.",
   },
   {
     image: "/carousel3.jpg",
-    title: "Gagnez en motivation",
-    subtitle: "Fixez des objectifs et atteignez-les avec un coach virtuel.",
+    title: "Atteignez vos objectifs",
+    subtitle: "Avec un coach digital qui ne vous laisse jamais tomber.",
   },
 ];
 
@@ -31,8 +32,8 @@ export default function RegisterPage() {
     password: "",
     password2: "",
   });
-  const [currentSlide, setCurrentSlide] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [current, setCurrent] = useState(0);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -43,13 +44,11 @@ export default function RegisterPage() {
       toast.error("Les mots de passe ne correspondent pas.");
       return;
     }
+
     setLoading(true);
     try {
-      const response = await axios.post(
-        "https://tsinjool-backend.onrender.com/api/register/",
-        formData
-      );
-      localStorage.setItem("token", response.data.token);
+      const res = await axios.post("https://tsinjool-backend.onrender.com/api/register/", formData);
+      localStorage.setItem("token", res.data.token);
       toast.success("Inscription réussie !");
       navigate("/profile-setup");
     } catch (error: any) {
@@ -64,53 +63,54 @@ export default function RegisterPage() {
     }
   };
 
+  // Carrousel auto slide
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 3000);
+      setCurrent((prev) => (prev + 1) % slides.length);
+    }, 4000);
     return () => clearInterval(interval);
   }, []);
 
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-white">
-      {/* Form Section */}
+      {/* Formulaire */}
       <div className="w-full md:w-1/2 flex items-center justify-center p-8">
         <form
           onSubmit={handleSubmit}
-          className="w-full max-w-md bg-white p-8 rounded-xl shadow-xl space-y-5"
+          className="w-full max-w-md bg-white p-8 rounded-2xl shadow-2xl space-y-5"
         >
-          <h2 className="text-3xl font-bold text-center text-indigo-700">
+          <h2 className="text-3xl font-extrabold text-center text-indigo-700">
             Créer un compte
           </h2>
 
           <Input
             type="email"
-            placeholder="Adresse email"
             name="email"
+            placeholder="Email"
             value={formData.email}
             onChange={handleChange}
             required
           />
           <Input
             type="text"
-            placeholder="Nom d'utilisateur"
             name="nom_utilisateur"
+            placeholder="Nom d'utilisateur"
             value={formData.nom_utilisateur}
             onChange={handleChange}
             required
           />
           <Input
             type="password"
-            placeholder="Mot de passe"
             name="password"
+            placeholder="Mot de passe"
             value={formData.password}
             onChange={handleChange}
             required
           />
           <Input
             type="password"
-            placeholder="Confirmer le mot de passe"
             name="password2"
+            placeholder="Confirmer mot de passe"
             value={formData.password2}
             onChange={handleChange}
             required
@@ -126,31 +126,37 @@ export default function RegisterPage() {
 
           <p className="text-center text-sm text-gray-600">
             Vous avez déjà un compte ?{" "}
-            <Link
-              to="/login"
-              className="text-indigo-600 hover:underline font-medium"
-            >
+            <Link to="/login" className="text-indigo-600 hover:underline font-medium">
               Se connecter
             </Link>
           </p>
         </form>
       </div>
 
-      {/* Carousel Section - visible uniquement sur desktop */}
-      <div className="hidden md:flex w-1/2 bg-gray-100 items-center justify-center overflow-hidden relative">
-        <div className="absolute inset-0 transition-all duration-700 ease-in-out">
-          <img
-            src={slides[currentSlide].image}
-            alt={slides[currentSlide].title}
-            className="w-full h-full object-cover opacity-80"
-          />
-          <div className="absolute inset-0 bg-black bg-opacity-40 flex flex-col items-center justify-center text-white p-10 text-center">
-            <h3 className="text-3xl font-bold mb-2">
-              {slides[currentSlide].title}
-            </h3>
-            <p className="text-lg">{slides[currentSlide].subtitle}</p>
-          </div>
-        </div>
+      {/* Carrousel animé (desktop only) */}
+      <div className="hidden md:flex w-1/2 relative overflow-hidden">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={current}
+            className="absolute inset-0 w-full h-full"
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 1.02 }}
+            transition={{ duration: 0.8 }}
+          >
+            <img
+              src={slides[current].image}
+              alt={slides[current].title}
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-black bg-opacity-50 flex flex-col items-center justify-center text-center px-10 text-white">
+              <h3 className="text-4xl font-bold drop-shadow mb-2">
+                {slides[current].title}
+              </h3>
+              <p className="text-lg font-light">{slides[current].subtitle}</p>
+            </div>
+          </motion.div>
+        </AnimatePresence>
       </div>
     </div>
   );
