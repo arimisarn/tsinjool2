@@ -25,6 +25,7 @@ import {
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
 
+import { Link } from "react-router-dom";
 const Navigation = () => {
   return (
       <div className="border-b transition-colors duration-500 px-6 py-3 bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
@@ -251,7 +252,11 @@ const Navigation = () => {
                 className={`${navigationMenuTriggerStyle()} text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800`}
               >
                 <MessageCircle className="w-5 h-5 mr-2" />
+                <Link
+                to="/profile"
+                >
                 Support
+                </Link>
               </NavigationMenuLink>
             </NavigationMenuItem>
           </NavigationMenuList>
