@@ -4,8 +4,7 @@ import Navigation from "@/components/clients/Navigation"
 const Dashboard = () => {
   return (
     <div>
-      <MainHeader/>
-      <Navigation/>
+      dashboard
     </div>
   )
 }
