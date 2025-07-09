@@ -1,17 +1,8 @@
 from django.contrib import admin
 from django.urls import path, include
-from django.conf import settings
-from django.conf.urls.static import static
-from django.http import HttpResponse  # <== ici la bonne importation
-
-def home(request):
-    return HttpResponse("Backend Django est bien en ligne !")  # <== utilise HttpResponse de Django
 
 urlpatterns = [
-    path('', home),
     path('admin/', admin.site.urls),
     path('api/accounts/', include('accounts.urls')),
+    path('accounts/', include('allauth.urls')),  # Allauth URLs
 ]
-
-if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
