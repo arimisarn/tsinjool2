@@ -1,13 +1,14 @@
-from rest_framework import generics
+from rest_framework import generics; permissions
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from .serializers import RegisterSerializer
 from .models import CustomUser
 from rest_framework import generics, permissions
-from .serializers import ProfileSerializer
-from .models import Profile
 from django.contrib.auth import get_user_model
 from rest_framework.permissions import AllowAny
+from .serializers import ProfileSerializer  # import local correctfrom .models import Profile
+from .models import Profile
+from .models import Profile          # import local correct
 
 
 User = get_user_model()
