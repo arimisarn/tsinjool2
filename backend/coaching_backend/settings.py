@@ -4,7 +4,7 @@ Django settings for coaching_backend project.
 
 import os
 from pathlib import Path
-
+from dotenv import load_dotenv
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-r+f@cd-9g1!akiw#xrnxme&5ga&hql+i!2k(1-p@uzt08co55t'
@@ -69,21 +69,32 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'coaching_backend.wsgi.application'
-
-# Base de données PostgreSQL (Neon)
+BASE_DIR = Path(__file__).resolve().parent.parent
+load_dotenv(BASE_DIR / '.env')  # charge les variables .env
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'neondb',
-        'USER': 'neondb_owner',
-        'PASSWORD': 'npg_NZ3mE0IbnOVX',  # Remplace par ton vrai mot de passe
-        'HOST': 'ep-noisy-smoke-a8ribfxa-pooler.eastus2.azure.neon.tech',
-        'PORT': '5432',
-        'OPTIONS': {
-            'sslmode': 'require',
-        },
+        'HOST': os.getenv('DB_HOST'),
+        'PORT': os.getenv('DB_PORT'),
+        'NAME': os.getenv('DB_NAME'),
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
     }
 }
+# Base de données PostgreSQL (Neon)
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': '',
+#         'USER': '',
+#         'PASSWORD': '',  # Remplace par ton vrai mot de passe
+#         'HOST': '',
+#         'PORT': '5432',
+#         'OPTIONS': {
+#             'sslmode': 'require',
+#         },
+#     }
+# }
 
 # Utilisateur personnalisé
 AUTH_USER_MODEL = 'accounts.CustomUser'
@@ -150,6 +161,8 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # CORS autorisé pour développement
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWED_ORIGINS = [
+    "https://tsinjool.vercel.app",
+]
 # ou :
 # CORS_ALLOWED_ORIGINS = ["http://localhost:3000", "https://ton-domaine.vercel.app"]
