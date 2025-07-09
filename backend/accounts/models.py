@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
 
+from django.conf import settings
+
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, nom_utilisateur, password=None):
         if not email:
@@ -34,3 +36,19 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+
+
+class Profile(models.Model):
+    COACHING_TYPES = [
+        ('life', 'Coaching de vie'),
+        ('career', 'Coaching de carrière'),
+        ('health', 'Coaching santé'),
+    ]
+
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='profile')
+    bio = models.TextField(blank=True)
+    coaching_type = models.CharField(max_length=20, choices=COACHING_TYPES)
+    photo = models.ImageField(upload_to='profile_photos/', blank=True, null=True)
+
+    def __str__(self):
+        return f"Profil de {self.user.nom_utilisateur}"

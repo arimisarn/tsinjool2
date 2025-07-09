@@ -3,8 +3,10 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner"; // HeroUI utilise Sonner pour les toasts
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 export default function RegisterPage() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
     nom_utilisateur: "",
@@ -30,6 +32,7 @@ export default function RegisterPage() {
     try {
       await axios.post("https://tsinjool-backend.onrender.com/api/register/", formData);
       toast.success("Inscription réussie !");
+      navigate("/profile-setup"); // redirige vers ta page configuration profil
       setFormData({
         email: "",
         nom_utilisateur: "",
