@@ -59,11 +59,13 @@ export default function ProfileSetup() {
 
       navigate("/dashboard");
     } catch (error: any) {
-      console.error(
-        "❌ Erreur backend :",
-        error.response?.data || error.message
+      console.error("Erreur backend :", error?.response?.data);
+      toast.error(
+        error?.response?.data?.detail ||
+          error?.response?.data?.coaching_type?.[0] ||
+          error?.response?.data?.photo?.[0] ||
+          "Erreur lors de l’enregistrement du profil."
       );
-      toast.error("Erreur lors de l’enregistrement du profil.");
     } finally {
       setLoading(false);
     }
@@ -98,9 +100,9 @@ export default function ProfileSetup() {
             required
           >
             <option value="">-- Sélectionnez --</option>
-            <option value="fitness">Fitness</option>
-            <option value="nutrition">Nutrition</option>
-            <option value="mindset">Développement personnel</option>
+            <option value="life">Coaching de vie</option>
+            <option value="career">Coaching de carrière</option>
+            <option value="health">Coaching santé</option>
           </select>
         </div>
 
