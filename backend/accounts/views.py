@@ -9,6 +9,7 @@ from .models import Profile
 from django.contrib.auth import get_user_model
 from rest_framework.permissions import AllowAny
 
+
 User = get_user_model()
 
 class RegisterView(generics.CreateAPIView):
@@ -18,15 +19,19 @@ class RegisterView(generics.CreateAPIView):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+
+        # Crée l'utilisateur
         user = serializer.save()
 
-        # ✅ Créer un token pour le nouvel utilisateur
-        token, created = Token.objects.get_or_create(user=user)
+        # Génère le token d'authentification
+        token, _ = Token.objects.get_or_create(user=user)
 
         return Response({
             "message": "Inscription réussie",
             "token": token.key
-        })
+        }, status=201)
+        
+        
 class ProfileUpdateView(generics.RetrieveUpdateAPIView):
     serializer_class = ProfileSerializer
     permission_classes = [permissions.IsAuthenticated]
