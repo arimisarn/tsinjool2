@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 export default function LoginPage() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    nom_utilisateur: "",
+    username: "",
     password: "",
   });
   const [loading, setLoading] = useState(false);
@@ -55,9 +55,9 @@ export default function LoginPage() {
 
         <Input
           type="text"
-          name="nom_utilisateur"
+          name="username" // <- IMPORTANT
           placeholder="Nom d'utilisateur"
-          value={formData.nom_utilisateur}
+          value={formData.username}
           onChange={handleChange}
           required
         />
