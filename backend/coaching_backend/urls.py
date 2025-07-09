@@ -1,14 +1,14 @@
-from http.client import HTTPResponse
 from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.http import HttpResponse  # <== ici la bonne importation
 
 def home(request):
-    return HTTPResponse("Backend Django est bien en ligne !")
+    return HttpResponse("Backend Django est bien en ligne !")  # <== utilise HttpResponse de Django
 
 urlpatterns = [
-        path('', home),
+    path('', home),
     path('admin/', admin.site.urls),
     path('api/accounts/', include('accounts.urls')),
 ]
