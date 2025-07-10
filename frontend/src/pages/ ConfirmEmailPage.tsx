@@ -7,7 +7,8 @@ import { toast } from "sonner";
 export default function ConfirmEmailPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const initialEmail = location.state?.email || sessionStorage.getItem("pendingEmail") || "";
+  const initialEmail =
+    location.state?.email || sessionStorage.getItem("pendingEmail") || "";
   const [email, setEmail] = useState(initialEmail);
 
   const [code, setCode] = useState("");
@@ -114,7 +115,7 @@ export default function ConfirmEmailPage() {
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="votre.email@example.com"
                     required
-                    disabled={!!emailFromState}
+                    disabled={!!initialEmail}
                     className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-gray-900"
                   />
                 </div>
