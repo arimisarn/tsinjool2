@@ -1,6 +1,6 @@
 import { Calendar, Bell, Brain } from "lucide-react";
 import pic from "../../assets/avatar.jpg";
-import { DarkModeToggle } from "../uiperso/DarkModeToggle";
+import DarkMode from "../theme/DarkMode";
 const MainHeader: React.FC = () => {
   const daty: Date = new Date();
   const options: Intl.DateTimeFormatOptions = {
@@ -38,7 +38,7 @@ const MainHeader: React.FC = () => {
             Démo 0/7 jours
           </div>
           <div className="flex items-center gap-2">
-            <DarkModeToggle />
+            <DarkMode />
             <div className="flex items-center gap-1 text-gray-600">
               <Calendar className="w-4 h-4" />
               <span className="text-sm">{ordreDate}</span>
