@@ -63,10 +63,11 @@ ROOT_URLCONF = 'coaching_backend.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],  # ou le chemin vers ton dossier templates
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
+                'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
@@ -74,6 +75,7 @@ TEMPLATES = [
         },
     },
 ]
+
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -152,10 +154,3 @@ EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = "Tsinjool <noreply@tsinjool.com>"  # Nom d’expéditeur visible
 EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
-
-
-TEMPLATES = [
-    {
-        'DIRS': [BASE_DIR / 'templates'],  # important pour que Django trouve le HTML
-    },
-]
