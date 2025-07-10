@@ -172,10 +172,11 @@ export default function ChatBot() {
                     ? "bg-indigo-600 text-white"
                     : "bg-gray-200 text-gray-900"
                 }`}
+                style={{ paddingBottom: "1.5rem", paddingRight: "3rem" }} // espace pour l'heure
               >
                 <p className="whitespace-pre-wrap">{msg.content}</p>
 
-                {/* ⏰ Horodatage en bas à droite */}
+                {/* ⏰ Heure en bas à droite */}
                 {msg.timestamp && (
                   <span className="text-xs text-gray-400 absolute bottom-1 right-2">
                     {new Date(msg.timestamp).toLocaleTimeString([], {
