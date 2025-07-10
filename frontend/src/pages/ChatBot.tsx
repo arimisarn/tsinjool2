@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 type Message = {
   sender: "user" | "ai";
   content: string;
+  timestamp?: string; // facultatif car parfois, on crée le message localement
 };
 
 type Conversation = {
