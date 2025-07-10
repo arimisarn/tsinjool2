@@ -44,7 +44,12 @@ def chat_with_ai(request):
     }
     payload = {
         "model": "mistralai/Mixtral-8x7B-Instruct-v0.1",
-        "prompt": f"[INST] {prompt} [/INST]",
+        # "prompt": f"[INST] {prompt} [/INST]",
+        "prompt": (
+            "[INST] Tu es Tsinjo, une IA amicale et bienveillante qui aide l'utilisateur. Et tu parles français.\n\n"
+            f"Utilisateur: {prompt}\n\nTsinjo:"
+            " [/INST]"
+        ),
         "max_tokens": 200,
         "temperature": 0.7,
     }
