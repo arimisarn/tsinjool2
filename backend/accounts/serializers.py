@@ -8,15 +8,27 @@ from .utils import generate_confirmation_code, send_confirmation_email
 from rest_framework.validators import UniqueValidator
 
 
+User = get_user_model()
+
 class RegisterSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(write_only=True)
     email = serializers.EmailField(
         required=True,
-        validators=[UniqueValidator(queryset=User.objects.all(), message="Un utilisateur avec cet email existe déjà.")]
+        validators=[
+            UniqueValidator(
+                queryset=User.objects.all(),
+                message="Cet email est déjà utilisé."
+            )
+        ]
     )
     nom_utilisateur = serializers.CharField(
         required=True,
-        validators=[UniqueValidator(queryset=User.objects.all(), message="Ce nom d'utilisateur est déjà pris.")]
+        validators=[
+            UniqueValidator(
+                queryset=User.objects.all(),
+                message="Ce nom d'utilisateur est déjà pris."
+            )
+        ]
     )
 
     class Meta:
@@ -34,7 +46,7 @@ class RegisterSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data.pop('password2')
 
-        # Générer code de confirmation
+        # Générer un code de confirmation
         code = generate_confirmation_code()
 
         user = User.objects.create_user(
@@ -43,16 +55,14 @@ class RegisterSerializer(serializers.ModelSerializer):
             password=validated_data['password'],
         )
 
-        # Désactiver le compte jusqu'à confirmation
         user.is_active = False
         user.confirmation_code = code
         user.save()
 
-        # Envoyer email de confirmation
+        # Envoyer email
         send_confirmation_email(user.email, code)
 
         return user
-    
 
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
