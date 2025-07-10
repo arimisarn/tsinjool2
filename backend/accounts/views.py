@@ -30,7 +30,8 @@ class RegisterView(generics.CreateAPIView):
         return Response({
             "message": "Inscription réussie. Un code de confirmation a été envoyé à votre email.",
             "email": user.email,
-        }, status=201)  
+            "nom_utilisateur": user.nom_utilisateur  # ← très important
+        }, status=201)
         
 class ProfileUpdateView(generics.RetrieveUpdateAPIView):
     serializer_class = ProfileSerializer

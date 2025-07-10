@@ -30,26 +30,29 @@ export default function ConfirmEmailPage() {
       );
       toast.success("Email confirmé avec succès !");
 
-      // 2. Login automatique après confirmation
-      // ATTENTION : il faut stocker le mot de passe dans un state/sessionStorage ou récupérer autrement
-      // Ici, supposons que tu as stocké temporairement le mdp dans sessionStorage sous "pendingPassword"
+      // 2. Récupérer nom_utilisateur + password depuis sessionStorage
       const password = sessionStorage.getItem("pendingPassword");
-      if (!password) {
+      const username = sessionStorage.getItem("pendingUsername");
+
+      if (!username || !password) {
         toast.error(
-          "Mot de passe manquant. Veuillez vous connecter manuellement."
+          "Identifiants manquants. Veuillez vous connecter manuellement."
         );
         navigate("/login");
         return;
       }
 
+      // 3. Connexion automatique
       const loginRes = await axios.post(
         "https://tsinjool-backend.onrender.com/api/login/",
-        { email, password }
+        { nom_utilisateur: username, password }
       );
 
       const token = loginRes.data.token;
       localStorage.setItem("token", token);
       sessionStorage.removeItem("pendingPassword");
+      sessionStorage.removeItem("pendingUsername");
+      sessionStorage.removeItem("pendingEmail");
 
       toast.success("Connecté automatiquement !");
       navigate("/profile-setup");

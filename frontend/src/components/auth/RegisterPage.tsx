@@ -70,11 +70,17 @@ export default function RegisterPage() {
     setLoading(true);
     try {
       // Appel inscription
-      await axios.post(
+      const res = await axios.post(
         "https://tsinjool-backend.onrender.com/api/register/",
         formData
       );
+      console.log(res)
+      sessionStorage.setItem("pendingUsername", formData.nom_utilisateur);
+      sessionStorage.setItem("pendingEmail", formData.email);
+      sessionStorage.setItem("pendingPassword", formData.password);
 
+      toast.success("Inscription réussie ! Veuillez confirmer votre email.");
+      navigate("/confirm-email", { state: { email: formData.email } });
       // NE PAS stocker le token ici car l'utilisateur n'est pas encore confirmé
       // Stocker email et mot de passe temporairement pour login automatique après confirmation
       sessionStorage.setItem("pendingEmail", formData.email);
