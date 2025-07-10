@@ -78,7 +78,7 @@ export default function RegisterPage() {
       localStorage.setItem("token", res.data.token);
 
       toast.success("Inscription réussie !");
-      navigate("/profile-setup");
+      navigate("/confirm-email", { state: { email: formData.email } });
     } catch (error: any) {
       const msg =
         error?.response?.data?.email?.[0] ||
