@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Eye, EyeOff, Brain } from "lucide-react";
+import { Eye, EyeOff, Brain, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
 import axios from "axios";
 
 interface Slide {
@@ -60,8 +59,9 @@ export default function RegisterPage() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
 
-  const handleSubmit = async (e: React.FormEvent<HTMLButtonElement>) => {
+  const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
+
     if (formData.password !== formData.password2) {
       toast.error("Les mots de passe ne correspondent pas.");
       return;
@@ -69,26 +69,18 @@ export default function RegisterPage() {
 
     setLoading(true);
     try {
-      // Appel inscription
       const res = await axios.post(
         "https://tsinjool-backend.onrender.com/api/register/",
         formData
       );
-      console.log(res)
+      console.log(res);
+
       sessionStorage.setItem("pendingUsername", formData.nom_utilisateur);
       sessionStorage.setItem("pendingEmail", formData.email);
       sessionStorage.setItem("pendingPassword", formData.password);
 
       toast.success("Inscription réussie ! Veuillez confirmer votre email.");
-      navigate("/confirm-email", { state: { email: formData.email } });
-      // NE PAS stocker le token ici car l'utilisateur n'est pas encore confirmé
-      // Stocker email et mot de passe temporairement pour login automatique après confirmation
-      sessionStorage.setItem("pendingEmail", formData.email);
-      sessionStorage.setItem("pendingPassword", formData.password);
 
-      toast.success("Inscription réussie ! Veuillez confirmer votre email.");
-
-      // Naviguer vers la page de confirmation avec email en state
       navigate("/confirm-email", { state: { email: formData.email } });
     } catch (error: any) {
       const msg =
@@ -130,10 +122,21 @@ export default function RegisterPage() {
                 </p>
               </div>
             </div>
+
+            <button
+              type="button"
+              onClick={() => navigate("/login")}
+              className="text-purple-500 hover:underline font-medium"
+            >
+              Déjà un compte ? Se connecter
+            </button>
           </div>
 
           {/* Formulaire */}
-          <div className="flex-1 flex items-center justify-center p-6 lg:p-8">
+          <form
+            onSubmit={(e) => e.preventDefault()}
+            className="flex-1 flex items-center justify-center p-6 lg:p-8"
+          >
             <div className="w-full max-w-md">
               <div className="mb-8">
                 <p className="text-xs uppercase tracking-wide text-gray-400 mb-2">
@@ -143,61 +146,60 @@ export default function RegisterPage() {
                   Créer un nouveau compte
                   <span className="text-blue-500">.</span>
                 </h1>
-                <p className="text-gray-400">
-                  Vous avez déjà un compte?{" "}
-                  <a
-                    href="#"
-                    className="text-purple-500 hover:underline font-medium"
-                  >
-                    Se connecter
-                  </a>
-                </p>
               </div>
 
               <div className="space-y-4">
                 {/* Nom et email sur la même ligne */}
                 <div className="flex gap-3">
                   <div className="flex-1">
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                    <label
+                      htmlFor="nom_utilisateur"
+                      className="block text-sm font-medium text-gray-300 mb-2"
+                    >
                       Nom d'utilisateur
                     </label>
-                    <div className="relative">
-                      <input
-                        type="text"
-                        name="nom_utilisateur"
-                        value={formData.nom_utilisateur}
-                        onChange={handleChange}
-                        className="w-full px-4 py-3 border border-gray-700 rounded-xl bg-gray-800 focus:bg-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-600 transition-all duration-200 outline-none text-white placeholder-gray-400"
-                        placeholder="Michel"
-                        required
-                      />
-                    </div>
+                    <input
+                      id="nom_utilisateur"
+                      type="text"
+                      name="nom_utilisateur"
+                      value={formData.nom_utilisateur}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 border border-gray-700 rounded-xl bg-gray-800 focus:bg-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-600 transition-all duration-200 outline-none text-white placeholder-gray-400"
+                      placeholder="Michel"
+                      required
+                    />
                   </div>
                   <div className="flex-1">
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                    <label
+                      htmlFor="email"
+                      className="block text-sm font-medium text-gray-300 mb-2"
+                    >
                       Email
                     </label>
-                    <div className="relative">
-                      <input
-                        type="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        className="w-full px-4 py-3 border border-gray-700 rounded-xl bg-gray-800 focus:bg-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-600 transition-all duration-200 outline-none text-white placeholder-gray-400"
-                        placeholder="michel.masiak@anywhere.co"
-                        required
-                      />
-                    </div>
+                    <input
+                      id="email"
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 border border-gray-700 rounded-xl bg-gray-800 focus:bg-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-600 transition-all duration-200 outline-none text-white placeholder-gray-400"
+                      placeholder="michel.masiak@anywhere.co"
+                      required
+                    />
                   </div>
                 </div>
 
                 {/* Mot de passe */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label
+                    htmlFor="password"
+                    className="block text-sm font-medium text-gray-300 mb-2"
+                  >
                     Mot de passe
                   </label>
                   <div className="relative">
                     <input
+                      id="password"
                       type={showPassword ? "text" : "password"}
                       name="password"
                       value={formData.password}
@@ -210,6 +212,11 @@ export default function RegisterPage() {
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
                       className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-200 transition-colors duration-200"
+                      aria-label={
+                        showPassword
+                          ? "Masquer le mot de passe"
+                          : "Afficher le mot de passe"
+                      }
                     >
                       {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                     </button>
@@ -218,11 +225,15 @@ export default function RegisterPage() {
 
                 {/* Confirmer mot de passe */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label
+                    htmlFor="password2"
+                    className="block text-sm font-medium text-gray-300 mb-2"
+                  >
                     Confirmer le mot de passe
                   </label>
                   <div className="relative">
                     <input
+                      id="password2"
                       type={showConfirmPassword ? "text" : "password"}
                       name="password2"
                       value={formData.password2}
@@ -237,6 +248,11 @@ export default function RegisterPage() {
                         setShowConfirmPassword(!showConfirmPassword)
                       }
                       className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-200 transition-colors duration-200"
+                      aria-label={
+                        showConfirmPassword
+                          ? "Masquer le mot de passe"
+                          : "Afficher le mot de passe"
+                      }
                     >
                       {showConfirmPassword ? (
                         <EyeOff size={20} />
@@ -268,7 +284,7 @@ export default function RegisterPage() {
                 </div>
               </div>
             </div>
-          </div>
+          </form>
         </div>
 
         {/* Section carrousel animé */}
@@ -359,6 +375,7 @@ export default function RegisterPage() {
               <button
                 key={index}
                 onClick={() => setCurrent(index)}
+                aria-label={`Slide ${index + 1}`}
                 className={`w-3 h-3 rounded-full transition-all duration-300 ${
                   index === current
                     ? "bg-white scale-125"

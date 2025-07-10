@@ -7,10 +7,13 @@ import { toast } from "sonner";
 export default function ConfirmEmailPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const initialEmail =
-    location.state?.email || sessionStorage.getItem("pendingEmail") || "";
-  const [email, setEmail] = useState(initialEmail);
 
+  const initialEmail =
+    (location.state as { email?: string })?.email ||
+    sessionStorage.getItem("pendingEmail") ||
+    "";
+
+  const [email, setEmail] = useState(initialEmail);
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -23,14 +26,12 @@ export default function ConfirmEmailPage() {
     }
     setLoading(true);
     try {
-      // 1. Valider le code
       await axios.post(
         "https://tsinjool-backend.onrender.com/api/confirm-email/",
         { email, code }
       );
       toast.success("Email confirmé avec succès !");
 
-      // 2. Récupérer nom_utilisateur + password depuis sessionStorage
       const password = sessionStorage.getItem("pendingPassword");
       const username = sessionStorage.getItem("pendingUsername");
 
@@ -42,7 +43,6 @@ export default function ConfirmEmailPage() {
         return;
       }
 
-      // 3. Connexion automatique
       const loginRes = await axios.post(
         "https://tsinjool-backend.onrender.com/api/login/",
         { nom_utilisateur: username, password }
@@ -56,9 +56,18 @@ export default function ConfirmEmailPage() {
 
       toast.success("Connecté automatiquement !");
       navigate("/profile-setup");
-    } catch (error: any) {
-      const msg =
-        error?.response?.data?.error || "Erreur lors de la confirmation.";
+    } catch (error: unknown) {
+      // Typage safe pour axios error
+      let msg = "Erreur lors de la confirmation.";
+      if (axios.isAxiosError(error)) {
+        if (error.response?.data) {
+          const data = error.response.data as Record<string, any>;
+          if (data.error) msg = data.error;
+          else if (typeof data === "string") msg = data;
+          else if (Array.isArray(data)) msg = data.join(", ");
+          else msg = JSON.stringify(data);
+        }
+      }
       toast.error(msg);
     } finally {
       setLoading(false);
@@ -91,6 +100,7 @@ export default function ConfirmEmailPage() {
           <form
             onSubmit={handleConfirm}
             className="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-8"
+            noValidate
           >
             <div className="w-full max-w-md">
               <div className="mb-6 sm:mb-8">
@@ -109,34 +119,44 @@ export default function ConfirmEmailPage() {
               <div className="space-y-6">
                 {/* Email */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label
+                    htmlFor="email"
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                  >
                     Email
                   </label>
                   <input
+                    id="email"
+                    name="email"
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="votre.email@example.com"
                     required
                     disabled={!!initialEmail}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-gray-900"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-gray-50 placeholder-gray-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:border-blue-600 text-gray-900"
                   />
                 </div>
 
                 {/* Code */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label
+                    htmlFor="code"
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                  >
                     Code de confirmation
                   </label>
                   <input
+                    id="code"
+                    name="code"
                     type="text"
                     value={code}
                     onChange={(e) => setCode(e.target.value)}
                     placeholder="Entrez le code"
                     required
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 text-gray-900 font-mono text-center tracking-widest text-xl"
                     maxLength={6}
                     style={{ letterSpacing: "0.3em" }}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-gray-50 placeholder-gray-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:border-blue-600 text-gray-900 font-mono text-center tracking-widest text-xl"
                   />
                 </div>
 
