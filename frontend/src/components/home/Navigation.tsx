@@ -1,4 +1,3 @@
-import { useState } from "react";
 import {
   Brain,
   Target,
@@ -15,9 +14,6 @@ import {
   Search,
   Filter,
   Home,
-  // Import Menu and X icons for the mobile toggle
-  Menu,
-  X,
 } from "lucide-react";
 import {
   NavigationMenu,
@@ -30,44 +26,19 @@ import {
 } from "@/components/ui/navigation-menu";
 
 const Navigation = () => {
-  // State to manage the mobile menu's open/close status
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  // Function to close the mobile menu when a link is clicked
-  const closeMobileMenu = () => {
-    setMobileMenuOpen(false);
-  };
-
   return (
-    <nav className="border-b transition-colors duration-500 px-4 py-3 bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
-      <div className="max-w-7xl mx-auto flex items-center justify-between">
-        {/* Logo/Home Link - Always visible, but only NavigationMenu for desktop */}
-        {/* On mobile, we'll just have the "Accueil" link as part of the list */}
-        <div className="flex items-center">
-          <NavigationMenu className="dark:text-white hidden md:block">
-            <NavigationMenuList>
-              <NavigationMenuItem>
-                <NavigationMenuLink
-                  className={`${navigationMenuTriggerStyle()} text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center`}
-                  href="/"
-                >
-                  <Home className="w-5 h-5 mr-2" />
-                  Accueil
-                </NavigationMenuLink>
-              </NavigationMenuItem>
-            </NavigationMenuList>
-          </NavigationMenu>
-          {/* A simple brand/home link for mobile when NavigationMenu is hidden */}
-          <a href="/" className="md:hidden text-lg font-bold text-gray-900 dark:text-white flex items-center">
-            <Home className="w-6 h-6 mr-2 text-purple-500" />
-            Coaching AI
-          </a>
-        </div>
+      <div className="border-b transition-colors duration-500 px-6 py-3 bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
+        <NavigationMenu className="dark:text-white">
+          <NavigationMenuList>
+            <NavigationMenuItem>
+              <NavigationMenuLink
+                className={`${navigationMenuTriggerStyle()} text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800`}
+              >
+                <Home className="w-5 h-5 mr-2" />
+                Accueil
+              </NavigationMenuLink>
+            </NavigationMenuItem>
 
-        {/* Desktop Navigation Menu (hidden on small screens) */}
-        <NavigationMenu className="dark:text-white hidden md:block">
-          <NavigationMenuList className="flex space-x-4">
-            {/* Programmes de Coaching */}
             <NavigationMenuItem>
               <NavigationMenuTrigger className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800">
                 <Target className="w-5 h-5 mr-2" />
@@ -145,7 +116,6 @@ const Navigation = () => {
               </NavigationMenuContent>
             </NavigationMenuItem>
 
-            {/* IA & Méthodes */}
             <NavigationMenuItem>
               <NavigationMenuTrigger className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800">
                 <Brain className="w-5 h-5 mr-2" />
@@ -208,7 +178,6 @@ const Navigation = () => {
               </NavigationMenuContent>
             </NavigationMenuItem>
 
-            {/* Ressources */}
             <NavigationMenuItem>
               <NavigationMenuTrigger className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800">
                 <BookOpen className="w-5 h-5 mr-2" />
@@ -269,22 +238,18 @@ const Navigation = () => {
               </NavigationMenuContent>
             </NavigationMenuItem>
 
-            {/* Succès & Résultats */}
             <NavigationMenuItem>
               <NavigationMenuLink
                 className={`${navigationMenuTriggerStyle()} text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800`}
-                href="#"
               >
                 <Trophy className="w-5 h-5 mr-2" />
                 Succès & Résultats
               </NavigationMenuLink>
             </NavigationMenuItem>
 
-            {/* Support */}
             <NavigationMenuItem>
               <NavigationMenuLink
                 className={`${navigationMenuTriggerStyle()} text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800`}
-                href="#"
               >
                 <MessageCircle className="w-5 h-5 mr-2" />
                 Support
@@ -292,190 +257,8 @@ const Navigation = () => {
             </NavigationMenuItem>
           </NavigationMenuList>
         </NavigationMenu>
-
-        {/* Hamburger Button (visible on small screens only) */}
-        <button
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="md:hidden p-2 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-purple-500"
-          aria-label="Toggle menu"
-        >
-          {mobileMenuOpen ? (
-            <X className="w-6 h-6" /> // 'X' icon when menu is open
-          ) : (
-            <Menu className="w-6 h-6" /> // 'Menu' icon when menu is closed
-          )}
-        </button>
       </div>
+  )
+}
 
-      {/* Mobile Menu (conditionally rendered) */}
-      {mobileMenuOpen && (
-        <div className="md:hidden mt-2 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
-          <ul className="flex flex-col space-y-1 px-4 py-3">
-            <li>
-              <a
-                href="/"
-                className="flex items-center text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md px-3 py-2"
-                onClick={closeMobileMenu} // Close menu on click
-              >
-                <Home className="w-5 h-5 mr-2" />
-                Accueil
-              </a>
-            </li>
-
-            {/* Mobile: Programmes de Coaching with <details> for expand/collapse */}
-            <li>
-              <details className="group">
-                <summary className="flex items-center justify-between cursor-pointer text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md px-3 py-2 list-none">
-                  <div className="flex items-center">
-                    <Target className="w-5 h-5 mr-2" />
-                    Programmes de Coaching
-                  </div>
-                  <span className="transition-transform duration-200 group-open:rotate-180">
-                    ▼
-                  </span>
-                </summary>
-                <ul className="pl-8 mt-2 flex flex-col space-y-1">
-                  <li>
-                    <a
-                      href="/"
-                      className="block px-3 py-1 rounded-md text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
-                      onClick={closeMobileMenu}
-                    >
-                      Programmes Personnalisés
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      className="block px-3 py-1 rounded-md text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
-                      onClick={closeMobileMenu}
-                    >
-                      Développement Personnel
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      className="block px-3 py-1 rounded-md text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
-                      onClick={closeMobileMenu}
-                    >
-                      Coaching Professionnel
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      href="#"
-                      className="block px-3 py-1 rounded-md text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800"
-                      onClick={closeMobileMenu}
-                    >
-                      Bien-être & Santé
-                    </a>
-                  </li>
-                </ul>
-              </details>
-            </li>
-
-            {/* Mobile: IA & Méthodes */}
-            <li>
-              <details className="group">
-                <summary className="flex items-center justify-between cursor-pointer text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md px-3 py-2 list-none">
-                  <div className="flex items-center">
-                    <Brain className="w-5 h-5 mr-2" />
-                    IA & Méthodes
-                  </div>
-                  <span className="transition-transform duration-200 group-open:rotate-180">
-                    ▼
-                  </span>
-                </summary>
-                <ul className="pl-8 mt-2 flex flex-col space-y-1">
-                  {/* Reuse the data from the desktop menu */}
-                  {[
-                    { title: "Coach IA Personnel", icon: <Sparkles className="w-4 h-4 mr-2 text-purple-500" /> },
-                    { title: "Analyse Comportementale", icon: <Search className="w-4 h-4 mr-2 text-blue-500" /> },
-                    { title: "Suivi Personnalisé", icon: <TrendingUp className="w-4 h-4 mr-2 text-green-500" /> },
-                    { title: "Méthodes Validées", icon: <CheckCircle className="w-4 h-4 mr-2 text-emerald-500" /> },
-                    { title: "Sessions Interactives", icon: <MessageCircle className="w-4 h-4 mr-2 text-cyan-500" /> },
-                    { title: "Recommandations", icon: <Filter className="w-4 h-4 mr-2 text-orange-500" /> },
-                  ].map((item, index) => (
-                    <li key={index}>
-                      <a
-                        href="#"
-                        className="px-3 py-1 rounded-md text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center"
-                        onClick={closeMobileMenu}
-                      >
-                        {item.icon}
-                        {item.title}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </details>
-            </li>
-
-            {/* Mobile: Ressources */}
-            <li>
-              <details className="group">
-                <summary className="flex items-center justify-between cursor-pointer text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md px-3 py-2 list-none">
-                  <div className="flex items-center">
-                    <BookOpen className="w-5 h-5 mr-2" />
-                    Ressources
-                  </div>
-                  <span className="transition-transform duration-200 group-open:rotate-180">
-                    ▼
-                  </span>
-                </summary>
-                <ul className="pl-8 mt-2 flex flex-col space-y-1">
-                  {/* Reuse the data from the desktop menu */}
-                  {[
-                    { title: "Guides Pratiques", icon: <BookOpen className="w-4 h-4 mr-2 text-blue-500" /> },
-                    { title: "Exercices Interactifs", icon: <Play className="w-4 h-4 mr-2 text-green-500" /> },
-                    { title: "Témoignages", icon: <Users className="w-4 h-4 mr-2 text-purple-500" /> },
-                    { title: "Blog & Articles", icon: <BookOpen className="w-4 h-4 mr-2 text-orange-500" /> },
-                    { title: "Webinaires", icon: <Play className="w-4 h-4 mr-2 text-red-500" /> },
-                    { title: "FAQ", icon: <MessageCircle className="w-4 h-4 mr-2 text-cyan-500" /> },
-                  ].map((item, index) => (
-                    <li key={index}>
-                      <a
-                        href="#"
-                        className="px-3 py-1 rounded-md text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center"
-                        onClick={closeMobileMenu}
-                      >
-                        {item.icon}
-                        {item.title}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </details>
-            </li>
-
-            {/* Succès & Résultats (Mobile) */}
-            <li>
-              <a
-                href="#"
-                className="flex items-center text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md px-3 py-2"
-                onClick={closeMobileMenu}
-              >
-                <Trophy className="w-5 h-5 mr-2" />
-                Succès & Résultats
-              </a>
-            </li>
-            {/* Support (Mobile) */}
-            <li>
-              <a
-                href="#"
-                className="flex items-center text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md px-3 py-2"
-                onClick={closeMobileMenu}
-              >
-                <MessageCircle className="w-5 h-5 mr-2" />
-                Support
-              </a>
-            </li>
-          </ul>
-        </div>
-      )}
-    </nav>
-  );
-};
-
-export default Navigation;
+export default Navigation
