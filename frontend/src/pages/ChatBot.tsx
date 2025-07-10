@@ -227,12 +227,12 @@
 
 "use client";
 
-"use client";
-
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Search, Send, Plus, Menu, X } from "lucide-react";
+import chatbotGif from "@/public/images/chatbot.gif"; // Si vous utilisez un alias @
 
 type Message = {
   sender: "user" | "ai";
@@ -252,9 +252,14 @@ export default function ChatBot() {
   const [conversationId, setConversationId] = useState<number | null>(null);
   const [isTyping, setIsTyping] = useState(false);
   const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [messageCache, setMessageCache] = useState<{ [key: number]: Message[] }>({});
+  const [messageCache, setMessageCache] = useState<{
+    [key: number]: Message[];
+  }>({});
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -263,6 +268,12 @@ export default function ChatBot() {
   useEffect(() => {
     fetchConversations();
   }, []);
+
+  useEffect(() => {
+    if (!sidebarOpen && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [sidebarOpen]);
 
   const fetchConversations = async () => {
     try {
@@ -311,6 +322,7 @@ export default function ChatBot() {
     setConversationId(null);
     setMessages([]);
     setInput("");
+    if (inputRef.current) inputRef.current.focus();
   };
 
   const sendMessage = async () => {
@@ -338,27 +350,27 @@ export default function ChatBot() {
         }
       );
 
-      // Si c'est une nouvelle conversation, mettre à jour l'ID
-      if (!conversationId && res.data.conversation_id) {
-        setConversationId(res.data.conversation_id);
-        fetchConversations(); // pour mettre à jour la liste
-      }
-
       const aiMessage = {
         sender: "ai" as const,
         content: res.data.response,
       };
 
       const newConvId = res.data.conversation_id || conversationId!;
-      const updatedMessages = [...(messageCache[newConvId] || []), userMessage, aiMessage];
+      const updatedMessages = [
+        ...(messageCache[newConvId] || []),
+        userMessage,
+        aiMessage,
+      ];
 
+      setConversationId(newConvId);
       setMessages(updatedMessages);
       setMessageCache((prev) => ({
         ...prev,
         [newConvId]: updatedMessages,
       }));
+
+      fetchConversations();
     } catch (err) {
-      console.error("Erreur d'envoi du message", err);
       setMessages((prev) => [
         ...prev,
         { sender: "ai", content: "Erreur avec l'IA." },
@@ -375,122 +387,211 @@ export default function ChatBot() {
     }
   };
 
+  const filteredConversations = conversations.filter(
+    (conv) =>
+      conv.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (messageCache[conv.id]?.[0]?.content
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase()) ??
+        false)
+  );
+
   return (
-    <div className="flex h-screen overflow-hidden bg-white">
-      {/* 📁 Sidebar gauche */}
-      <div className="w-72 border-r bg-slate-50 p-4 flex flex-col">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold text-gray-800">Tickets</h2>
-          <Button variant="outline" size="sm" onClick={handleNewChat}>
-            + New
-          </Button>
-        </div>
-        <div className="space-y-2 overflow-y-auto">
-          {conversations.map((conv) => (
-            <button
-              key={conv.id}
-              onClick={() => loadConversation(conv)}
-              className={`w-full text-left px-4 py-3 rounded-xl transition-all ${
-                conv.id === conversationId
-                  ? "bg-indigo-600 text-white"
-                  : "hover:bg-gray-100 text-gray-800"
-              }`}
+    <div className="flex h-screen bg-gray-900 text-white overflow-hidden">
+      {/* Sidebar ChatGPT style */}
+      {sidebarOpen && (
+        <aside className="w-64 bg-gray-900 text-gray-100 flex flex-col p-2 border-r border-gray-700">
+          <div className="p-2">
+            <Button
+              onClick={handleNewChat}
+              className="w-full justify-start gap-2 border border-gray-600 hover:bg-gray-700"
             >
-              <div className="flex justify-between items-center">
-                <div className="font-medium truncate">
-                  {conv.title || `Conversation #${conv.id}`}
-                </div>
-                <div className="text-xs text-gray-400">
-                  {new Date(conv.created_at).toLocaleTimeString([], {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  })}
-                </div>
-              </div>
-              <div className="text-sm truncate text-gray-300">
-                {messageCache[conv.id]?.slice(-1)[0]?.content || "No messages yet"}
-              </div>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* 💬 Zone de chat */}
-      <div className="flex-1 flex flex-col">
-        {/* 🔘 Header avec actions */}
-        <div className="flex justify-between items-center border-b px-6 py-4 bg-gray-50">
-          <div className="text-lg font-medium text-gray-800">
-            {
-              conversations.find((c) => c.id === conversationId)?.title ||
-              "Nouvelle conversation"
-            }
+              <Plus size={16} />
+              Nouveau chat
+            </Button>
           </div>
-          <div className="space-x-2">
-            <Button variant="outline">Edit</Button>
-            <Button variant="destructive">Close Ticket</Button>
-          </div>
-        </div>
 
-        {/* 📥 Messages */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-blue-50">
-          {messages.map((msg, i) => (
-            <div
-              key={i}
-              className={`flex ${
-                msg.sender === "user" ? "justify-end" : "justify-start"
-              }`}
-            >
-              <div
-                className={`max-w-xs md:max-w-sm px-4 py-2 rounded-xl shadow ${
-                  msg.sender === "user"
-                    ? "bg-indigo-600 text-white"
-                    : "bg-white text-gray-800"
-                } relative`}
-              >
-                <p className="whitespace-pre-wrap">{msg.content}</p>
-                {msg.timestamp && (
-                  <span className="text-xs text-gray-300 absolute bottom-1 right-2">
-                    {new Date(msg.timestamp).toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </span>
-                )}
-              </div>
+          <div className="px-2 pb-2">
+            <div className="relative">
+              <Search
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                size={16}
+              />
+              <Input
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Rechercher un chat..."
+                className="w-full pl-9 bg-gray-800 border-gray-700 text-white placeholder-gray-400 focus:ring-0 focus:outline-none"
+              />
             </div>
-          ))}
+          </div>
 
-          {isTyping && (
-            <div className="flex justify-start">
-              <div className="max-w-sm px-4 py-2 rounded-xl bg-white text-gray-800 italic">
-                L’IA réfléchit... <span className="animate-pulse">•••</span>
+          <div className="flex-1 overflow-y-auto space-y-1 px-2">
+            {filteredConversations.map((conv) => (
+              <button
+                key={conv.id}
+                onClick={() => loadConversation(conv)}
+                className={`w-full text-left px-3 py-3 rounded-md transition-all text-sm ${
+                  conv.id === conversationId
+                    ? "bg-gray-800 text-white"
+                    : "hover:bg-gray-800/50 text-gray-300"
+                }`}
+              >
+                <div className="font-medium truncate flex items-center gap-2">
+                  <span className="flex-1 truncate">
+                    {conv.title || `Conversation #${conv.id}`}
+                  </span>
+                </div>
+                <div className="text-xs truncate text-gray-400 mt-1">
+                  {messageCache[conv.id]?.slice(-1)[0]?.content ||
+                    "Aucun message"}
+                </div>
+              </button>
+            ))}
+          </div>
+        </aside>
+      )}
+
+      {/* Main chat area */}
+      <main className="flex-1 flex flex-col bg-gray-800 relative">
+        {/* Header with menu button */}
+        <header className="h-14 flex items-center px-4 border-b border-gray-700">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="text-gray-400 hover:text-white"
+          >
+            {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
+          </Button>
+          <h1 className="ml-2 font-semibold">
+            {conversationId
+              ? conversations.find((c) => c.id === conversationId)?.title ||
+                "Chat"
+              : "Nouveau chat"}
+          </h1>
+        </header>
+
+        {/* Messages area */}
+        <div className="flex-1 overflow-y-auto">
+          {messages.length === 0 && !isTyping ? (
+            <div className="flex flex-col items-center justify-center h-full text-center px-4">
+              <div className="mb-6">
+                {/* Replace with your actual GIF - this is a placeholder */}
+                <div className="w-32 h-32 bg-gray-700 rounded-full flex items-center justify-center mb-4 mx-auto">
+                  {/* <svg
+                    className="w-16 h-16 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1}
+                      d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
+                    />
+                  </svg> */}
+                  <div className="mb-6 w-40 h-40">
+                    <img
+                      src={chatbotGif}
+                      alt="Assistant IA"
+                      className="w-full h-full object-contain rounded-lg"
+                    />
+                  </div>
+                </div>
               </div>
+              <h2 className="text-2xl font-semibold text-gray-200 mb-2">
+                Comment puis-je vous aider aujourd'hui ?
+              </h2>
+              <p className="text-gray-400 max-w-md">
+                Posez-moi n'importe quelle question ou discutez avec moi sur
+                n'importe quel sujet.
+              </p>
+            </div>
+          ) : (
+            <div className="p-4 space-y-6">
+              {messages.map((msg, i) => (
+                <div key={i} className="flex">
+                  <div className="w-full max-w-3xl mx-auto">
+                    <div
+                      className={`px-4 py-3 rounded-lg whitespace-pre-wrap ${
+                        msg.sender === "user"
+                          ? "bg-blue-600 text-white"
+                          : "bg-gray-700 text-white"
+                      }`}
+                    >
+                      {msg.content}
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              {isTyping && (
+                <div className="flex">
+                  <div className="w-full max-w-3xl mx-auto">
+                    <div className="px-4 py-3 rounded-lg bg-gray-700 text-white">
+                      <div className="flex items-center">
+                        <span className="mr-2">L'IA écrit...</span>
+                        <div className="flex space-x-1">
+                          <div
+                            className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                            style={{ animationDelay: "0ms" }}
+                          />
+                          <div
+                            className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                            style={{ animationDelay: "150ms" }}
+                          />
+                          <div
+                            className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                            style={{ animationDelay: "300ms" }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              <div ref={messagesEndRef} />
             </div>
           )}
-
-          <div ref={messagesEndRef} />
         </div>
 
-        {/* 📨 Input */}
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            sendMessage();
-          }}
-          className="p-4 border-t bg-white flex gap-2"
-        >
-          <Input
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Type your message here..."
-            className="flex-1"
-          />
-          <Button type="submit" disabled={!input.trim()}>
-            Send
-          </Button>
-        </form>
-      </div>
+        {/* Input area */}
+        <div className="p-4 border-t border-gray-700 bg-gray-800">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              sendMessage();
+            }}
+            className="max-w-3xl mx-auto"
+          >
+            <div className="relative">
+              <Input
+                ref={inputRef}
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Envoyer un message..."
+                className="w-full pr-12 bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:ring-0 focus:outline-none focus:border-gray-500"
+              />
+              <Button
+                type="submit"
+                size="icon"
+                disabled={!input.trim()}
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 h-8 w-8 bg-transparent hover:bg-gray-600 text-gray-400 hover:text-white"
+              >
+                <Send size={16} />
+              </Button>
+            </div>
+            <p className="text-xs text-gray-500 mt-2 text-center">
+              ChatGPT peut faire des erreurs. Vérifiez les informations
+              importantes.
+            </p>
+          </form>
+        </div>
+      </main>
     </div>
   );
 }
