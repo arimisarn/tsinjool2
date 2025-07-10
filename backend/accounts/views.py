@@ -11,6 +11,7 @@ from .models import Profile
 from rest_framework.views import APIView
 from .models import Profile          # import local correct
 from rest_framework import status
+from django.core.mail import send_mail
 
 
 
@@ -56,3 +57,13 @@ class LoginView(APIView):
             return Response({'token': token.key})
         return Response({'detail': 'Nom d\'utilisateur ou mot de passe incorrect.'}, status=status.HTTP_400_BAD_REQUEST)
 
+class TestEmailView(APIView):
+    def get(self, request):
+        send_mail(
+            "Test Tsinjool",
+            "Ceci est un test d'envoi d'email depuis Django.",
+            "Tsinjool <noreply@tsinjool.com>",
+            ["arimisa.dev@gmail.com"],  # ← remplace ici par ton email
+            fail_silently=False,
+        )
+        return Response({"message": "Email envoyé !"})
