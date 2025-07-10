@@ -32,13 +32,20 @@ export default function ChatBot() {
     setIsTyping(true);
 
     try {
+      const token = localStorage.getItem("token"); // Récupérer le token
+
       const response = await axios.post(
-        "https://ton-backend.onrender.com/api/chat/",
+        "https://tsinjool-backend.onrender.com/api/chat/",
         {
           prompt: userMessage.content,
           conversation_id: conversationId,
         },
-        { withCredentials: true }
+        {
+          headers: {
+            Authorization: token ? `Token ${token}` : "",
+            "Content-Type": "application/json",
+          },
+        }
       );
 
       setConversationId(response.data.conversation_id);
