@@ -399,7 +399,7 @@ export default function ChatBot() {
   );
 
   return (
-    <div className="flex h-screen bg-gray-900 text-white overflow-hidden">
+    <div className="flex h-[100vh] dark:bg-gray-900 dark:text-white overflow-hidden">
       {/* Sidebar with Framer Motion animation */}
       <AnimatePresence>
         {sidebarOpen && (
