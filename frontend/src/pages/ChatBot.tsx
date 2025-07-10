@@ -231,8 +231,9 @@ import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, Send, Plus, Menu, X } from "lucide-react";
+import { Search, Send, Plus, PanelRight, PanelLeft } from "lucide-react";
 import chatbotGif from "@/public/images/chatbot.gif";
+import { motion, AnimatePresence } from "framer-motion";
 
 type Message = {
   sender: "user" | "ai";
@@ -386,6 +387,7 @@ export default function ChatBot() {
       sendMessage();
     }
   };
+  console.log(handleKeyDown);
 
   const filteredConversations = conversations.filter(
     (conv) =>
@@ -398,63 +400,71 @@ export default function ChatBot() {
 
   return (
     <div className="flex h-screen bg-gray-900 text-white overflow-hidden">
-      {/* Sidebar ChatGPT style */}
-      {sidebarOpen && (
-        <aside className="w-64 bg-gray-900 text-gray-100 flex flex-col p-2 border-r border-gray-700">
-          <div className="p-2">
-            <Button
-              onClick={handleNewChat}
-              className="w-full justify-start gap-2 border border-gray-600 hover:bg-gray-700"
-            >
-              <Plus size={16} />
-              Nouveau chat
-            </Button>
-          </div>
-
-          <div className="px-2 pb-2">
-            <div className="relative">
-              <Search
-                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-                size={16}
-              />
-              <Input
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Rechercher un chat..."
-                className="w-full pl-9 bg-gray-800 border-gray-700 text-white placeholder-gray-400 focus:ring-0 focus:outline-none"
-              />
-            </div>
-          </div>
-
-          <div className="flex-1 overflow-y-auto space-y-1 px-2">
-            {filteredConversations.map((conv) => (
-              <button
-                key={conv.id}
-                onClick={() => loadConversation(conv)}
-                className={`w-full text-left px-3 py-3 rounded-md transition-all text-sm ${
-                  conv.id === conversationId
-                    ? "bg-gray-800 text-white"
-                    : "hover:bg-gray-800/50 text-gray-300"
-                }`}
+      {/* Sidebar with Framer Motion animation */}
+      <AnimatePresence>
+        {sidebarOpen && (
+          <motion.aside
+            initial={{ x: -300, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: -300, opacity: 0 }}
+            transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            className="w-64 bg-gray-900 text-gray-100 flex flex-col p-2 border-r border-gray-700"
+          >
+            <div className="p-2">
+              <Button
+                onClick={handleNewChat}
+                className="w-full justify-start gap-2 border border-gray-600 hover:bg-gray-700"
               >
-                <div className="font-medium truncate flex items-center gap-2">
-                  <span className="flex-1 truncate">
-                    {conv.title || `Conversation #${conv.id}`}
-                  </span>
-                </div>
-                <div className="text-xs truncate text-gray-400 mt-1">
-                  {messageCache[conv.id]?.slice(-1)[0]?.content ||
-                    "Aucun message"}
-                </div>
-              </button>
-            ))}
-          </div>
-        </aside>
-      )}
+                <Plus size={16} />
+                Nouveau chat
+              </Button>
+            </div>
+
+            <div className="px-2 pb-2">
+              <div className="relative">
+                <Search
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                  size={16}
+                />
+                <Input
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Rechercher un chat..."
+                  className="w-full pl-9 bg-gray-800 border-gray-700 text-white placeholder-gray-400 focus:ring-0 focus:outline-none"
+                />
+              </div>
+            </div>
+
+            <div className="flex-1 overflow-y-auto space-y-1 px-2">
+              {filteredConversations.map((conv) => (
+                <button
+                  key={conv.id}
+                  onClick={() => loadConversation(conv)}
+                  className={`w-full text-left px-3 py-3 rounded-md transition-all text-sm ${
+                    conv.id === conversationId
+                      ? "bg-gray-800 text-white"
+                      : "hover:bg-gray-800/50 text-gray-300"
+                  }`}
+                >
+                  <div className="font-medium truncate flex items-center gap-2">
+                    <span className="flex-1 truncate">
+                      {conv.title || `Conversation #${conv.id}`}
+                    </span>
+                  </div>
+                  <div className="text-xs truncate text-gray-400 mt-1">
+                    {messageCache[conv.id]?.slice(-1)[0]?.content ||
+                      "Aucun message"}
+                  </div>
+                </button>
+              ))}
+            </div>
+          </motion.aside>
+        )}
+      </AnimatePresence>
 
       {/* Main chat area */}
       <main className="flex-1 flex flex-col bg-gray-800 relative">
-        {/* Header with menu button */}
+        {/* Header with PanelRight/PanelLeft button */}
         <header className="h-14 flex items-center px-4 border-b border-gray-700">
           <Button
             variant="ghost"
@@ -462,7 +472,7 @@ export default function ChatBot() {
             onClick={() => setSidebarOpen(!sidebarOpen)}
             className="text-gray-400 hover:text-white"
           >
-            {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
+            {sidebarOpen ? <PanelLeft size={20} /> : <PanelRight size={20} />}
           </Button>
           <h1 className="ml-2 font-semibold">
             {conversationId
@@ -566,7 +576,6 @@ export default function ChatBot() {
             </div>
           )}
         </div>
-
         {/* Input area */}
         <div className="p-4 border-t border-gray-700 bg-gray-800">
           <form
