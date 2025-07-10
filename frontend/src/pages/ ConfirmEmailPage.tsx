@@ -45,9 +45,8 @@ export default function ConfirmEmailPage() {
 
       const loginRes = await axios.post(
         "https://tsinjool-backend.onrender.com/api/login/",
-        { nom_utilisateur: username, password }
+        { username: username, password }
       );
-
       const token = loginRes.data.token;
       localStorage.setItem("token", token);
       sessionStorage.removeItem("pendingPassword");
