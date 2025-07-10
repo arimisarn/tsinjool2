@@ -399,7 +399,7 @@ export default function ChatBot() {
   );
 
   return (
-    <div className="flex h-[100vh] dark:bg-gray-900 dark:text-white overflow-hidden">
+    <div className="flex h-[100vh] bg-white text-gray-700 dark:bg-gray-900 dark:text-white overflow-hidden">
       {/* Sidebar with Framer Motion animation */}
       <AnimatePresence>
         {sidebarOpen && (
@@ -408,12 +408,12 @@ export default function ChatBot() {
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: -300, opacity: 0 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="w-64 bg-gray-900 text-gray-100 flex flex-col p-2 border-r border-gray-700"
+            className="w-64 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 flex flex-col p-2 border-r"
           >
             <div className="p-2">
               <Button
                 onClick={handleNewChat}
-                className="w-full justify-start gap-2 border border-gray-600 hover:bg-gray-700"
+                className="w-full justify-start gap-2 border border-gray-200 hover:bg-gray-300 dark:border-gray-600 dark:hover:bg-gray-700"
               >
                 <Plus size={16} />
                 Nouveau chat
@@ -423,14 +423,14 @@ export default function ChatBot() {
             <div className="px-2 pb-2">
               <div className="relative">
                 <Search
-                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-900 dark:text-gray-400"
                   size={16}
                 />
                 <Input
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Rechercher un chat..."
-                  className="w-full pl-9 bg-gray-800 border-gray-700 text-white placeholder-gray-400 focus:ring-0 focus:outline-none"
+                  className="w-full pl-9 dark:bg-gray-900 bg-white dark:border-gray-700 border-gray-200 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-0 focus:outline-none"
                 />
               </div>
             </div>
@@ -442,8 +442,8 @@ export default function ChatBot() {
                   onClick={() => loadConversation(conv)}
                   className={`w-full text-left px-3 py-3 rounded-md transition-all text-sm ${
                     conv.id === conversationId
-                      ? "bg-gray-800 text-white"
-                      : "hover:bg-gray-800/50 text-gray-300"
+                      ? "dark:bg-gray-900 bg-white text-gray-900 dark:text-white"
+                      : "dark:hover:bg-gray-900/50 hover:bg-slate-300 text-slate-200  dark:text-gray-300"
                   }`}
                 >
                   <div className="font-medium truncate flex items-center gap-2">
@@ -451,7 +451,7 @@ export default function ChatBot() {
                       {conv.title || `Conversation #${conv.id}`}
                     </span>
                   </div>
-                  <div className="text-xs truncate text-gray-400 mt-1">
+                  <div className="text-xs truncate text-gray-100 dark:text-gray-400 mt-1">
                     {messageCache[conv.id]?.slice(-1)[0]?.content ||
                       "Aucun message"}
                   </div>
@@ -470,7 +470,7 @@ export default function ChatBot() {
             variant="ghost"
             size="icon"
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="text-gray-400 hover:text-white"
+            className="dark:text-gray-400 text-gray-900 hover:text-gray-500 dark:hover:text-white"
           >
             {sidebarOpen ? <PanelLeft size={20} /> : <PanelRight size={20} />}
           </Button>
@@ -488,7 +488,7 @@ export default function ChatBot() {
             <div className="flex flex-col items-center justify-center h-full text-center px-4">
               <div className="mb-6">
                 {/* Replace with your actual GIF - this is a placeholder */}
-                <div className="w-32 h-32 bg-gray-700 rounded-full flex items-center justify-center mb-4 mx-auto">
+                <div className="w-32 h-32 bg-gray-400 dark:bg-gray-700 rounded-full flex items-center justify-center mb-4 mx-auto">
                   {/* <svg
                     className="w-16 h-16 text-gray-400"
                     fill="none"
@@ -503,7 +503,7 @@ export default function ChatBot() {
                       d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
                     />
                   </svg> */}
-                  <div className="mb-6 w-40 h-40">
+                  <div className="mb-6 w-50 h-50">
                     <img
                       src={chatbotGif}
                       alt="Assistant IA"
@@ -512,7 +512,7 @@ export default function ChatBot() {
                   </div>
                 </div>
               </div>
-              <h2 className="text-2xl font-semibold text-gray-200 mb-2">
+              <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-2">
                 Comment puis-je vous aider aujourd'hui ?
               </h2>
               <p className="text-gray-400 max-w-md">
@@ -532,8 +532,8 @@ export default function ChatBot() {
                   <div
                     className={`max-w-xs md:max-w-md lg:max-w-lg xl:max-w-xl rounded-lg px-4 py-2 ${
                       msg.sender === "user"
-                        ? "bg-blue-600 text-white rounded-br-none"
-                        : "bg-gray-700 text-white rounded-bl-none"
+                        ? "bg-gradient-to-br from-purple-500 to-blue-600 text-gray-900 dark:text-white rounded-br-none"
+                        : "bg-gray-700 text-gray-900 dark:text-white rounded-bl-none"
                     }`}
                   >
                     <div className="whitespace-pre-wrap">{msg.content}</div>
@@ -551,20 +551,20 @@ export default function ChatBot() {
 
               {isTyping && (
                 <div className="flex justify-start">
-                  <div className="max-w-xs bg-gray-700 text-white rounded-lg rounded-bl-none px-4 py-2">
+                  <div className="max-w-xs bg-white dark:bg-gray-800text-gray-900 dark:text-white rounded-lg rounded-bl-none px-4 py-2">
                     <div className="flex items-center">
                       <span className="mr-2">L'IA écrit...</span>
                       <div className="flex space-x-1">
                         <div
-                          className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                          className="w-2 h-2 dark:bg-gray-400 bg-gray-200 rounded-full animate-bounce"
                           style={{ animationDelay: "0ms" }}
                         />
                         <div
-                          className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                          className="w-2 h-2 dark:bg-gray-400 bg-gray-200rounded-full animate-bounce"
                           style={{ animationDelay: "150ms" }}
                         />
                         <div
-                          className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                          className="w-2 h-2 dark:bg-gray-400 bg-gray-200rounded-full animate-bounce"
                           style={{ animationDelay: "300ms" }}
                         />
                       </div>
