@@ -162,19 +162,13 @@
 //   );
 // }
 
-
-
-
-
-
-
-
-
 import React, { useState, useEffect } from "react";
 import { Eye, EyeOff, Brain } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
+import axios from "axios";
+
 
 interface Slide {
   image: string;
@@ -240,12 +234,23 @@ export default function RegisterPage() {
 
     setLoading(true);
     try {
-      // Simulation de l'appel API
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      const res = await axios.post(
+        "https://tsinjool-backend.onrender.com/api/register/",
+        formData
+      );
+
+      // Stocker le token
+      localStorage.setItem("token", res.data.token);
+
       toast.success("Inscription réussie !");
       navigate("/profile-setup");
-    } catch (error) {
-      toast.error("Erreur lors de l'inscription.");
+    } catch (error: any) {
+      const msg =
+        error?.response?.data?.email?.[0] ||
+        error?.response?.data?.nom_utilisateur?.[0] ||
+        error?.response?.data?.non_field_errors?.[0] ||
+        "Erreur lors de l'inscription.";
+      toast.error(msg);
     } finally {
       setLoading(false);
     }
