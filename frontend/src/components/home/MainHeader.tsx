@@ -1,6 +1,6 @@
 import { Brain, LogIn, UserPlus } from "lucide-react";
-import { DarkModeToggle } from "../uiperso/DarkModeToggle";
 import { Link } from "react-router-dom";
+import DarkMode from "../theme/DarkMode";
 const MainHeader = () => {
   return (
     <div className="border-b border-border bg-background px-6 py-4 transition-colors duration-500">
@@ -20,7 +20,7 @@ const MainHeader = () => {
         </div>
 
         <div className="flex items-center gap-4">
-          <DarkModeToggle />
+          <DarkMode/>
 
           <div className="flex items-center gap-2">
             <Link
