@@ -5,6 +5,7 @@ interface Slide {
   image: string;
   title: string;
   subtitle: string;
+  gradient: string;
 }
 
 interface FormData {
@@ -19,16 +20,19 @@ const slides: Slide[] = [
     image: "/carousel1.jpg",
     title: "Coaching personnalisé",
     subtitle: "Un accompagnement adapté à vos besoins et objectifs.",
+    gradient: "from-blue-400 via-teal-400 to-green-500"
   },
   {
     image: "/carousel2.jpg",
     title: "Suivi intelligent",
     subtitle: "L'IA suit vos progrès et vous motive chaque jour.",
+    gradient: "from-purple-400 via-pink-400 to-red-500"
   },
   {
     image: "/carousel3.jpg",
     title: "Atteignez vos objectifs",
     subtitle: "Avec un coach digital qui ne vous laisse jamais tomber.",
+    gradient: "from-orange-400 via-yellow-400 to-green-500"
   },
 ];
 
@@ -212,45 +216,92 @@ export default function RegisterPage() {
           </div>
         </div>
 
-        {/* Section image avec carrousel */}
-        <div className="w-full lg:w-1/2 relative overflow-hidden bg-gradient-to-br from-blue-400 to-teal-500 min-h-[300px] lg:min-h-full">
-          <div className="absolute inset-0 w-full h-full">
-            {/* Image de fond par défaut avec effet de montagne */}
-            <div className="w-full h-full bg-gradient-to-br from-blue-400 via-teal-400 to-green-500 relative">
-              {/* Simulation d'un paysage de montagne */}
-              <div className="absolute inset-0 bg-gradient-to-t from-teal-600/20 to-transparent"></div>
-              <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-teal-800/30 to-transparent"></div>
-              
-              {/* Contenu du slide */}
-              <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-8 text-white">
-                <h3 className="text-3xl lg:text-4xl font-bold mb-4 drop-shadow-lg">
-                  {slides[current].title}
-                </h3>
-                <p className="text-lg lg:text-xl font-light max-w-md">
-                  {slides[current].subtitle}
-                </p>
-              </div>
+        {/* Section carrousel animé */}
+        <div className="w-full lg:w-1/2 relative overflow-hidden min-h-[300px] lg:min-h-full">
+          
+          {/* Container des slides */}
+          <div className="relative w-full h-full">
+            {slides.map((slide, index) => (
+              <div
+                key={index}
+                className={`absolute inset-0 w-full h-full transition-all duration-1000 ease-in-out ${
+                  index === current 
+                    ? 'opacity-100 transform translate-x-0' 
+                    : index < current 
+                      ? 'opacity-0 transform -translate-x-full' 
+                      : 'opacity-0 transform translate-x-full'
+                }`}
+              >
+                <div className={`w-full h-full bg-gradient-to-br ${slide.gradient} relative`}>
+                  {/* Overlay décoratif */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                  <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-black/30 to-transparent"></div>
+                  
+                  {/* Contenu du slide avec animation */}
+                  <div className={`absolute inset-0 flex flex-col items-center justify-center text-center px-8 text-white transition-all duration-1000 delay-300 ${
+                    index === current ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-8'
+                  }`}>
+                    <h3 className="text-3xl lg:text-4xl font-bold mb-4 drop-shadow-lg">
+                      {slide.title}
+                    </h3>
+                    <p className="text-lg lg:text-xl font-light max-w-md">
+                      {slide.subtitle}
+                    </p>
+                  </div>
 
-              {/* Indicateurs de slide */}
-              <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-2">
-                {slides.map((_, index: number) => (
-                  <div
-                    key={index}
-                    className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                      index === current ? 'bg-white' : 'bg-white/50'
-                    }`}
-                  />
-                ))}
-              </div>
+                  {/* Éléments décoratifs animés */}
+                  <div className={`absolute top-8 left-8 transition-all duration-1000 delay-500 ${
+                    index === current ? 'opacity-60 transform scale-100' : 'opacity-0 transform scale-75'
+                  }`}>
+                    <div className="w-16 h-16 bg-white/20 rounded-full blur-sm"></div>
+                  </div>
+                  
+                  <div className={`absolute top-1/4 right-12 transition-all duration-1000 delay-700 ${
+                    index === current ? 'opacity-40 transform scale-100' : 'opacity-0 transform scale-75'
+                  }`}>
+                    <div className="w-24 h-24 bg-white/10 rounded-full blur-lg"></div>
+                  </div>
 
-              {/* Logo décoratif */}
-              <div className="absolute bottom-8 right-8">
-                <div className="flex space-x-1">
-                  <div className="w-8 h-2 bg-white/80 rounded-full transform rotate-45"></div>
-                  <div className="w-8 h-2 bg-white/80 rounded-full transform rotate-45"></div>
-                  <div className="w-8 h-2 bg-white/80 rounded-full transform rotate-45"></div>
+                  <div className={`absolute bottom-1/4 left-12 transition-all duration-1000 delay-900 ${
+                    index === current ? 'opacity-50 transform scale-100' : 'opacity-0 transform scale-75'
+                  }`}>
+                    <div className="w-20 h-20 bg-white/15 rounded-full blur-md"></div>
+                  </div>
                 </div>
               </div>
+            ))}
+          </div>
+
+          {/* Indicateurs de slide */}
+          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-3 z-10">
+            {slides.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrent(index)}
+                className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                  index === current 
+                    ? 'bg-white scale-125' 
+                    : 'bg-white/50 hover:bg-white/75'
+                }`}
+              />
+            ))}
+          </div>
+
+          {/* Logo décoratif animé */}
+          <div className="absolute bottom-8 right-8 z-10">
+            <div className="flex space-x-1">
+              {[0, 1, 2].map((i) => (
+                <div
+                  key={i}
+                  className={`w-8 h-2 bg-white/80 rounded-full transform rotate-45 transition-all duration-300 ${
+                    current === i ? 'scale-110 bg-white' : ''
+                  }`}
+                  style={{
+                    animationDelay: `${i * 0.1}s`,
+                    animation: current === i ? 'pulse 2s infinite' : 'none'
+                  }}
+                />
+              ))}
             </div>
           </div>
         </div>
