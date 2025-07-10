@@ -158,25 +158,7 @@ export default function ChatBot() {
       {/* 💬 Zone de chat */}
       <div className="flex flex-col flex-1 max-w-4xl mx-auto h-full">
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
-          {messages.map((msg, i) => (
-            <div
-              key={i}
-              className={`flex ${
-                msg.sender === "user" ? "justify-end" : "justify-start"
-              }`}
-            >
-              <div
-                className={`max-w-[70%] px-4 py-2 rounded-lg ${
-                  msg.sender === "user"
-                    ? "bg-indigo-600 text-white"
-                    : "bg-gray-200 text-gray-900"
-                }`}
-              >
-                {msg.content}
-              </div>
-            </div>
-          ))}
-
+          messages.map
           {isTyping && (
             <div className="flex justify-start">
               <div className="max-w-[70%] px-4 py-2 rounded-lg bg-gray-200 text-gray-900 italic">
@@ -185,7 +167,6 @@ export default function ChatBot() {
               </div>
             </div>
           )}
-
           <div ref={messagesEndRef} />
         </div>
 
