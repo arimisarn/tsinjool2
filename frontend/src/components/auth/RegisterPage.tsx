@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { Eye, EyeOff, Brain } from "lucide-react";
+import { Eye, EyeOff, Brain, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
 import axios from "axios";
-
 
 interface Slide {
   image: string;
@@ -55,8 +53,7 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState<boolean>(false);
   const [current, setCurrent] = useState<number>(0);
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [showConfirmPassword, setShowConfirmPassword] =
-    useState<boolean>(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -92,7 +89,6 @@ export default function RegisterPage() {
     }
   };
 
-  // Carrousel auto slide
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrent((prev) => (prev + 1) % slides.length);
@@ -101,8 +97,8 @@ export default function RegisterPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-6xl bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col lg:flex-row min-h-[600px]">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-gray-900 dark:to-indigo-900 flex items-center justify-center p-4">
+      <div className="w-full max-w-6xl bg-white dark:bg-gray-800 rounded-3xl shadow-2xl overflow-hidden flex flex-col lg:flex-row min-h-[600px]">
         {/* Section formulaire */}
         <div className="w-full lg:w-1/2 flex flex-col relative">
           {/* Header avec logo et navigation */}
@@ -112,42 +108,32 @@ export default function RegisterPage() {
                 <Brain className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-foreground transition-colors duration-300">
+                <h1 className="text-2xl font-bold text-purple-900 dark:text-purple-400 transition-colors duration-300">
                   Tsinjool
                 </h1>
-                <p className="text-sm text-muted-foreground transition-colors duration-300">
+                <p className="text-sm text-muted-foreground dark:text-gray-300 transition-colors duration-300">
                   Votre coach personnel intelligent
                 </p>
               </div>
             </div>
-            {/* <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                <span className="text-white font-bold text-sm">A</span>
-              </div>
-              <span className="font-semibold text-gray-900">Anywhere app.</span>
-            </div>
-            <div className="hidden md:flex items-center gap-6">
-              <a href="#" className="text-gray-500 hover:text-blue-500 font-medium">Home</a>
-              <a href="#" className="text-gray-500 hover:text-blue-500 font-medium">Join</a>
-            </div> */}
           </div>
 
           {/* Formulaire */}
           <div className="flex-1 flex items-center justify-center p-6 lg:p-8">
             <div className="w-full max-w-md">
               <div className="mb-8">
-                <p className="text-xs uppercase tracking-wide text-gray-400 mb-2">
+                <p className="text-xs uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-2">
                   COMMENCEZ GRATUITEMENT
                 </p>
-                <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-3">
+                <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-gray-100 mb-3">
                   Créer un nouveau compte
-                  <span className="text-blue-500">.</span>
+                  <span className="text-blue-500 dark:text-blue-400">.</span>
                 </h1>
-                <p className="text-gray-600">
+                <p className="text-gray-600 dark:text-gray-400">
                   Vousavez déjà un compte?{" "}
                   <a
                     href="#"
-                    className="text-purple-500 hover:underline font-medium"
+                    className="text-purple-500 dark:text-purple-400 hover:underline font-medium"
                   >
                     Se connecter
                   </a>
@@ -158,7 +144,7 @@ export default function RegisterPage() {
                 {/* Nom et email sur la même ligne */}
                 <div className="flex gap-3">
                   <div className="flex-1">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Nom d'utilisateur
                     </label>
                     <div className="relative">
@@ -167,14 +153,14 @@ export default function RegisterPage() {
                         name="nom_utilisateur"
                         value={formData.nom_utilisateur}
                         onChange={handleChange}
-                        className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all duration-200 outline-none"
+                        className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 focus:bg-white focus:dark:bg-gray-600 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 transition-all duration-200 outline-none text-gray-900 dark:text-gray-100"
                         placeholder="Michel"
                         required
                       />
                     </div>
                   </div>
                   <div className="flex-1">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                       Email
                     </label>
                     <div className="relative">
@@ -183,7 +169,7 @@ export default function RegisterPage() {
                         name="email"
                         value={formData.email}
                         onChange={handleChange}
-                        className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all duration-200 outline-none"
+                        className="w-full px-4 py-3 border border-gray-200 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 focus:bg-white focus:dark:bg-gray-600 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 transition-all duration-200 outline-none text-gray-900 dark:text-gray-100"
                         placeholder="michel.masiak@anywhere.co"
                         required
                       />
@@ -193,7 +179,7 @@ export default function RegisterPage() {
 
                 {/* Mot de passe */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Mot de passe
                   </label>
                   <div className="relative">
@@ -202,14 +188,15 @@ export default function RegisterPage() {
                       name="password"
                       value={formData.password}
                       onChange={handleChange}
-                      className="w-full px-4 py-3 pr-12 border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all duration-200 outline-none"
+                      className="w-full px-4 py-3 pr-12 border border-gray-200 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 focus:bg-white focus:dark:bg-gray-600 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 transition-all duration-200 outline-none text-gray-900 dark:text-gray-100"
                       placeholder="••••••••"
                       required
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors duration-200"
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200"
+                      aria-label={showPassword ? "Masquer mot de passe" : "Afficher mot de passe"}
                     >
                       {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                     </button>
@@ -218,7 +205,7 @@ export default function RegisterPage() {
 
                 {/* Confirmer mot de passe */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Confirmer le mot de passe
                   </label>
                   <div className="relative">
@@ -227,22 +214,17 @@ export default function RegisterPage() {
                       name="password2"
                       value={formData.password2}
                       onChange={handleChange}
-                      className="w-full px-4 py-3 pr-12 border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all duration-200 outline-none"
+                      className="w-full px-4 py-3 pr-12 border border-gray-200 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-700 focus:bg-white focus:dark:bg-gray-600 focus:border-blue-500 dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 transition-all duration-200 outline-none text-gray-900 dark:text-gray-100"
                       placeholder="••••••••"
                       required
                     />
                     <button
                       type="button"
-                      onClick={() =>
-                        setShowConfirmPassword(!showConfirmPassword)
-                      }
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors duration-200"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors duration-200"
+                      aria-label={showConfirmPassword ? "Masquer mot de passe" : "Afficher mot de passe"}
                     >
-                      {showConfirmPassword ? (
-                        <EyeOff size={20} />
-                      ) : (
-                        <Eye size={20} />
-                      )}
+                      {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                     </button>
                   </div>
                 </div>
@@ -252,7 +234,7 @@ export default function RegisterPage() {
                   <button
                     type="button"
                     onClick={() => navigate(-1)}
-                    className="flex items-center justify-center gap-2 py-3 px-6 border border-gray-200 rounded-xl text-gray-700 hover:bg-gray-50 transition-all duration-200 font-medium group"
+                    className="flex items-center justify-center gap-2 py-3 px-6 border border-gray-200 dark:border-gray-600 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition-all duration-200 font-medium group"
                   >
                     <ArrowLeft className="w-5 h-5 transform transition-transform duration-300 group-hover:-translate-x-1" />
                     Retour
@@ -261,7 +243,7 @@ export default function RegisterPage() {
                     type="button"
                     onClick={handleSubmit}
                     disabled={loading}
-                    className="flex-1 py-3 px-6 bg-blue-500 hover:bg-blue-600 text-white rounded-xl transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex-1 py-3 px-6 bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 text-white rounded-xl transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {loading ? "Chargement..." : "S'inscrire"}
                   </button>
