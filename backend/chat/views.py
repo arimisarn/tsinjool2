@@ -1,6 +1,6 @@
 import os
 import requests
-from backend.chat.serializers import ConversationSerializer, MessageSerializer
+from .serializers import ConversationSerializer, MessageSerializer
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status, permissions
