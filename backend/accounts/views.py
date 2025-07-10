@@ -25,17 +25,12 @@ class RegisterView(generics.CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        # Crée l'utilisateur
         user = serializer.save()
 
-        # Génère le token d'authentification
-        token, _ = Token.objects.get_or_create(user=user)
-
         return Response({
-            "message": "Inscription réussie",
-            "token": token.key
-        }, status=201)
-        
+            "message": "Inscription réussie. Un code de confirmation a été envoyé à votre email.",
+            "email": user.email,
+        }, status=201)  
         
 class ProfileUpdateView(generics.RetrieveUpdateAPIView):
     serializer_class = ProfileSerializer
@@ -57,13 +52,40 @@ class LoginView(APIView):
             return Response({'token': token.key})
         return Response({'detail': 'Nom d\'utilisateur ou mot de passe incorrect.'}, status=status.HTTP_400_BAD_REQUEST)
 
-class TestEmailView(APIView):
-    def get(self, request):
-        send_mail(
-            "Test Tsinjool",
-            "Ceci est un test d'envoi d'email depuis Django.",
-            "Tsinjool <noreply@tsinjool.com>",
-            ["arimisa.dev@gmail.com"],  # ← remplace ici par ton email
-            fail_silently=False,
-        )
-        return Response({"message": "Email envoyé !"})
+# class TestEmailView(APIView):
+#     def get(self, request):
+#         send_mail(
+#             "Test Tsinjool",
+#             "Ceci est un test d'envoi d'email depuis Django.",
+#             "Tsinjool <noreply@tsinjool.com>",
+#             ["arimisa.dev@gmail.com"],  # ← remplace ici par ton email
+#             fail_silently=False,
+#         )
+#         return Response({"message": "Email envoyé !"})
+
+
+class ConfirmEmailView(APIView):
+    permission_classes = []  # Ou AllowAny si tu préfères
+
+    def post(self, request):
+        email = request.data.get("email")
+        code = request.data.get("code")
+
+        if not email or not code:
+            return Response({"error": "Email et code sont requis."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return Response({"error": "Utilisateur introuvable."}, status=status.HTTP_404_NOT_FOUND)
+
+        if user.is_active:
+            return Response({"message": "Compte déjà activé."})
+
+        if user.confirmation_code == code:
+            user.is_active = True
+            user.confirmation_code = None
+            user.save()
+            return Response({"message": "Email confirmé avec succès. Vous pouvez maintenant vous connecter."})
+        else:
+            return Response({"error": "Code incorrect."}, status=status.HTTP_400_BAD_REQUEST)
