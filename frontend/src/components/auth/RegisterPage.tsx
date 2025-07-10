@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Eye, EyeOff } from "lucide-react";
-
+import { toast } from "sonner"; // Assurez-vous que ceci est bien présent en haut
 interface Slide {
   image: string;
   title: string;
@@ -54,7 +54,7 @@ export default function RegisterPage() {
   const handleSubmit = async (e: React.FormEvent<HTMLButtonElement>) => {
     e.preventDefault();
     if (formData.password !== formData.password2) {
-      alert("Les mots de passe ne correspondent pas.");
+      toast.error("Les mots de passe ne correspondent pas.");
       return;
     }
 
@@ -62,10 +62,10 @@ export default function RegisterPage() {
     try {
       // Simulation de l'appel API
       await new Promise(resolve => setTimeout(resolve, 2000));
-      alert("Inscription réussie !");
+      toast.success("Inscription réussie !");
       // navigate("/profile-setup");
     } catch (error) {
-      alert("Erreur lors de l'inscription.");
+      toast.error("Erreur lors de l'inscription.");
     } finally {
       setLoading(false);
     }
