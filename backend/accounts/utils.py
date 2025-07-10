@@ -1,14 +1,16 @@
 import random
+import string
 from django.core.mail import send_mail
+from django.conf import settings
 
-def generate_confirmation_code():
-    return str(random.randint(100000, 999999))
+def generate_confirmation_code(length=6):
+    """Génère un code aléatoire de confirmation (ex: 6 chiffres)."""
+    return ''.join(random.choices(string.digits, k=length))
 
 def send_confirmation_email(email, code):
-    send_mail(
-        "Confirmation de votre compte Tsinjool",
-        f"Bonjour,\n\nVoici votre code de confirmation : {code}\n\nMerci.",
-        "Tsinjool <noreply@tsinjool.com>",
-        [email],
-        fail_silently=False,
-    )
+    """Envoie l'email de confirmation contenant le code."""
+    subject = "Confirmation de votre adresse email"
+    message = f"Bonjour,\n\nVoici votre code de confirmation : {code}\n\nMerci de l'entrer pour activer votre compte."
+    from_email = settings.DEFAULT_FROM_EMAIL
+
+    send_mail(subject, message, from_email, [email])

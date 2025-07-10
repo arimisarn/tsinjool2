@@ -5,5 +5,5 @@ urlpatterns = [
     path('register/', RegisterView.as_view(), name='register'),
     path('login/', ObtainAuthToken.as_view(), name='api-login'),
     path('profile/', ProfileUpdateView.as_view(), name='profile'),
-    path("verify-email/", ConfirmEmailView.as_view(), name="verify-email"),
+    path("confirm-email/", ConfirmEmailView.as_view(), name="verify-email"),
 ]

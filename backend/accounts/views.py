@@ -64,8 +64,9 @@ class LoginView(APIView):
 #         return Response({"message": "Email envoyé !"})
 
 
+
 class ConfirmEmailView(APIView):
-    permission_classes = []  # Ou AllowAny si tu préfères
+    permission_classes = []  # Ou [AllowAny]
 
     def post(self, request):
         email = request.data.get("email")
