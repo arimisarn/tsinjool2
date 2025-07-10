@@ -17,19 +17,19 @@ interface FormData {
 
 const slides: Slide[] = [
   {
-    image: "/carousel1.jpg",
+    image: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=600&fit=crop",
     title: "Coaching personnalisé",
     subtitle: "Un accompagnement adapté à vos besoins et objectifs.",
     gradient: "from-blue-400 via-teal-400 to-green-500"
   },
   {
-    image: "/carousel2.jpg",
+    image: "https://images.unsplash.com/photo-1594737625785-a6cbdabd333c?w=800&h=600&fit=crop",
     title: "Suivi intelligent",
     subtitle: "L'IA suit vos progrès et vous motive chaque jour.",
     gradient: "from-purple-400 via-pink-400 to-red-500"
   },
   {
-    image: "/carousel3.jpg",
+    image: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=800&h=600&fit=crop",
     title: "Atteignez vos objectifs",
     subtitle: "Avec un coach digital qui ne vous laisse jamais tomber.",
     gradient: "from-orange-400 via-yellow-400 to-green-500"
@@ -233,9 +233,18 @@ export default function RegisterPage() {
                 }`}
               >
                 <div className={`w-full h-full bg-gradient-to-br ${slide.gradient} relative`}>
+                  {/* Image de fond */}
+                  <div 
+                    className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+                    style={{
+                      backgroundImage: `url(${slide.image})`,
+                      backgroundBlendMode: 'overlay'
+                    }}
+                  />
+                  
                   {/* Overlay décoratif */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-                  <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-black/30 to-transparent"></div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+                  <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-black/50 to-transparent"></div>
                   
                   {/* Contenu du slide avec animation */}
                   <div className={`absolute inset-0 flex flex-col items-center justify-center text-center px-8 text-white transition-all duration-1000 delay-300 ${
