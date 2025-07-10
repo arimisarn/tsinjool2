@@ -232,7 +232,7 @@ import axios from "axios";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, Send, Plus, Menu, X } from "lucide-react";
-import chatbotGif from "@/public/images/chatbot.gif"; // Si vous utilisez un alias @
+import chatbotGif from "@/public/images/chatbot.gif";
 
 type Message = {
   sender: "user" | "ai";
