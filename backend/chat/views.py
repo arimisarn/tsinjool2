@@ -1,5 +1,6 @@
 import os
 import requests
+from backend.chat.serializers import ConversationSerializer, MessageSerializer
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status, permissions
@@ -68,3 +69,24 @@ def chat_with_ai(request):
 
     except requests.RequestException as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(['GET'])
+@permission_classes([permissions.IsAuthenticated])
+def conversation_list(request):
+    user = request.user
+    conversations = Conversation.objects.filter(user=user).order_by('-created_at')
+    serializer = ConversationSerializer(conversations, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+@permission_classes([permissions.IsAuthenticated])
+def conversation_messages(request, conversation_id):
+    try:
+        conversation = Conversation.objects.get(id=conversation_id, user=request.user)
+    except Conversation.DoesNotExist:
+        return Response({"detail": "Conversation introuvable."}, status=status.HTTP_404_NOT_FOUND)
+
+    messages = Message.objects.filter(conversation=conversation).order_by("timestamp")
+    serializer = MessageSerializer(messages, many=True)
+    return Response(serializer.data)
