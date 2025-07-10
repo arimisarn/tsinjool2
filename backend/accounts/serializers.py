@@ -3,12 +3,21 @@ from .models import CustomUser
 from .models import Profile
 from django.contrib.auth import get_user_model
 from rest_framework.authtoken.models import Token
-from .utils import generate_confirmation_code, send_confirmation_email
-
 User = get_user_model()
+from .utils import generate_confirmation_code, send_confirmation_email
+from rest_framework.validators import UniqueValidator
+
 
 class RegisterSerializer(serializers.ModelSerializer):
     password2 = serializers.CharField(write_only=True)
+    email = serializers.EmailField(
+        required=True,
+        validators=[UniqueValidator(queryset=User.objects.all(), message="Un utilisateur avec cet email existe déjà.")]
+    )
+    nom_utilisateur = serializers.CharField(
+        required=True,
+        validators=[UniqueValidator(queryset=User.objects.all(), message="Ce nom d'utilisateur est déjà pris.")]
+    )
 
     class Meta:
         model = User
@@ -42,8 +51,8 @@ class RegisterSerializer(serializers.ModelSerializer):
         # Envoyer email de confirmation
         send_confirmation_email(user.email, code)
 
-        # Ne PAS créer de token ici, car utilisateur non actif
-
+        return user
+    
 
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
