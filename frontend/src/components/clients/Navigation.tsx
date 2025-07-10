@@ -47,7 +47,7 @@ const Navigation = () => {
           <NavigationMenuItem>
             <NavigationMenuTrigger className="text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800">
               <BotMessageSquare className="w-5 h-5 mr-2" />
-              Discuter avec l'IA
+              <Link to="/chat">Discuter avec l'IA</Link>
             </NavigationMenuTrigger>
             <NavigationMenuContent>
               <ul className="grid gap-3 p-4 md:w-[500px] lg:w-[600px] lg:grid-cols-[.75fr_1fr] bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">

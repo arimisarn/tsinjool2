@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from decouple import config
 from pathlib import Path
 import os
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -44,7 +43,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'corsheaders',
-    'accounts'
+    'accounts',
+    'chat',
 ]
 
 MIDDLEWARE = [
@@ -154,3 +154,4 @@ EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = "Tsinjool <noreply@tsinjool.com>"  # Nom d’expéditeur visible
 EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
+TOGETHER_API_KEY = os.getenv("TOGETHER_API_KEY")
