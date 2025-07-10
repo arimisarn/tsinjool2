@@ -227,6 +227,8 @@
 
 "use client";
 
+"use client";
+
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
@@ -250,6 +252,7 @@ export default function ChatBot() {
   const [conversationId, setConversationId] = useState<number | null>(null);
   const [isTyping, setIsTyping] = useState(false);
   const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [messageCache, setMessageCache] = useState<{ [key: number]: Message[] }>({});
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -280,6 +283,12 @@ export default function ChatBot() {
 
   const loadConversation = async (conv: Conversation) => {
     setConversationId(conv.id);
+
+    if (messageCache[conv.id]) {
+      setMessages(messageCache[conv.id]);
+      return;
+    }
+
     const token = localStorage.getItem("token");
 
     try {
@@ -291,18 +300,18 @@ export default function ChatBot() {
           },
         }
       );
+      setMessageCache((prev) => ({ ...prev, [conv.id]: res.data }));
       setMessages(res.data);
     } catch (err) {
       console.error("Erreur chargement messages", err);
-      setMessages([]);
     }
   };
 
   const handleNewChat = () => {
     setConversationId(null);
     setMessages([]);
+    setInput("");
   };
-  console.log(handleNewChat);
 
   const sendMessage = async () => {
     if (!input.trim()) return;
@@ -311,8 +320,8 @@ export default function ChatBot() {
     const userMessage = { sender: "user" as const, content: input.trim() };
 
     setMessages((prev) => [...prev, userMessage]);
-    setInput("");
     setIsTyping(true);
+    setInput("");
 
     try {
       const res = await axios.post(
@@ -329,17 +338,27 @@ export default function ChatBot() {
         }
       );
 
-      if (res.data.conversation_id) {
+      // Si c'est une nouvelle conversation, mettre à jour l'ID
+      if (!conversationId && res.data.conversation_id) {
         setConversationId(res.data.conversation_id);
-        fetchConversations();
+        fetchConversations(); // pour mettre à jour la liste
       }
 
       const aiMessage = {
         sender: "ai" as const,
         content: res.data.response,
       };
-      setMessages((prev) => [...prev, aiMessage]);
+
+      const newConvId = res.data.conversation_id || conversationId!;
+      const updatedMessages = [...(messageCache[newConvId] || []), userMessage, aiMessage];
+
+      setMessages(updatedMessages);
+      setMessageCache((prev) => ({
+        ...prev,
+        [newConvId]: updatedMessages,
+      }));
     } catch (err) {
+      console.error("Erreur d'envoi du message", err);
       setMessages((prev) => [
         ...prev,
         { sender: "ai", content: "Erreur avec l'IA." },
@@ -360,7 +379,12 @@ export default function ChatBot() {
     <div className="flex h-screen overflow-hidden bg-white">
       {/* 📁 Sidebar gauche */}
       <div className="w-72 border-r bg-slate-50 p-4 flex flex-col">
-        <h2 className="text-xl font-semibold mb-4 text-gray-800">Tickets</h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-semibold text-gray-800">Tickets</h2>
+          <Button variant="outline" size="sm" onClick={handleNewChat}>
+            + New
+          </Button>
+        </div>
         <div className="space-y-2 overflow-y-auto">
           {conversations.map((conv) => (
             <button
@@ -384,9 +408,7 @@ export default function ChatBot() {
                 </div>
               </div>
               <div className="text-sm truncate text-gray-300">
-                {messages.length > 0 && conv.id === conversationId
-                  ? messages[messages.length - 1]?.content
-                  : "No messages yet"}
+                {messageCache[conv.id]?.slice(-1)[0]?.content || "No messages yet"}
               </div>
             </button>
           ))}
@@ -398,8 +420,10 @@ export default function ChatBot() {
         {/* 🔘 Header avec actions */}
         <div className="flex justify-between items-center border-b px-6 py-4 bg-gray-50">
           <div className="text-lg font-medium text-gray-800">
-            {conversations.find((c) => c.id === conversationId)?.title ||
-              "Nouvelle conversation"}
+            {
+              conversations.find((c) => c.id === conversationId)?.title ||
+              "Nouvelle conversation"
+            }
           </div>
           <div className="space-x-2">
             <Button variant="outline">Edit</Button>
