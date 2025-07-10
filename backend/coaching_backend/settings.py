@@ -152,3 +152,10 @@ EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = "Tsinjool <noreply@tsinjool.com>"  # Nom d’expéditeur visible
 EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
+
+
+TEMPLATES = [
+    {
+        'DIRS': [BASE_DIR / 'templates'],  # important pour que Django trouve le HTML
+    },
+]
