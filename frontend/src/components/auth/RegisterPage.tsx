@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Eye, EyeOff, Brain } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 
 interface Slide {
   image: string;
@@ -126,7 +127,8 @@ export default function RegisterPage() {
                   COMMENCEZ GRATUITEMENT
                 </p>
                 <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-3">
-                   Créer un nouveau compte<span className="text-blue-500">.</span>
+                  Créer un nouveau compte
+                  <span className="text-blue-500">.</span>
                 </h1>
                 <p className="text-gray-600">
                   Vousavez déjà un compte?{" "}
@@ -204,7 +206,7 @@ export default function RegisterPage() {
                 {/* Confirmer mot de passe */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Confirm Password
+                    Confirmer le mot de passe
                   </label>
                   <div className="relative">
                     <input
@@ -236,9 +238,11 @@ export default function RegisterPage() {
                 <div className="flex gap-3 pt-4">
                   <button
                     type="button"
-                    className="flex-1 py-3 px-6 border border-gray-200 rounded-xl text-gray-700 hover:bg-gray-50 transition-all duration-200 font-medium"
+                    onClick={() => navigate(-1)}
+                    className="flex items-center justify-center gap-2 py-3 px-6 border border-gray-200 rounded-xl text-gray-700 hover:bg-gray-50 transition-all duration-200 font-medium group"
                   >
-                    Confirmer le mot de passe 
+                    <ArrowLeft className="w-5 h-5 transform transition-transform duration-300 group-hover:-translate-x-1" />
+                    Retour
                   </button>
                   <button
                     type="button"
