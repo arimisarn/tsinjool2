@@ -253,9 +253,7 @@ export default function ChatBot() {
   const [conversationId, setConversationId] = useState<number | null>(null);
   const [isTyping, setIsTyping] = useState(false);
   const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [messageCache, setMessageCache] = useState<{
-    [key: number]: Message[];
-  }>({});
+  const [messageCache, setMessageCache] = useState<{ [key: number]: Message[] }>({});
   const [searchQuery, setSearchQuery] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
@@ -279,14 +277,11 @@ export default function ChatBot() {
   const fetchConversations = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.get(
-        "https://tsinjool-backend.onrender.com/api/conversations/",
-        {
-          headers: {
-            Authorization: token ? `Token ${token}` : "",
-          },
-        }
-      );
+      const res = await axios.get("https://tsinjool-backend.onrender.com/api/conversations/", {
+        headers: {
+          Authorization: token ? `Token ${token}` : "",
+        },
+      });
       setConversations(res.data);
     } catch (err) {
       console.error("Erreur récupération historique", err);
@@ -295,23 +290,16 @@ export default function ChatBot() {
 
   const loadConversation = async (conv: Conversation) => {
     setConversationId(conv.id);
-
     if (messageCache[conv.id]) {
       setMessages(messageCache[conv.id]);
       return;
     }
 
     const token = localStorage.getItem("token");
-
     try {
-      const res = await axios.get(
-        `https://ton-backend.onrender.com/api/conversations/${conv.id}/messages/`,
-        {
-          headers: {
-            Authorization: `Token ${token}`,
-          },
-        }
-      );
+      const res = await axios.get(`https://ton-backend.onrender.com/api/conversations/${conv.id}/messages/`, {
+        headers: { Authorization: `Token ${token}` },
+      });
       setMessageCache((prev) => ({ ...prev, [conv.id]: res.data }));
       setMessages(res.data);
     } catch (err) {
@@ -323,7 +311,7 @@ export default function ChatBot() {
     setConversationId(null);
     setMessages([]);
     setInput("");
-    if (inputRef.current) inputRef.current.focus();
+    inputRef.current?.focus();
   };
 
   const sendMessage = async () => {
@@ -331,51 +319,32 @@ export default function ChatBot() {
 
     const token = localStorage.getItem("token");
     const userMessage = { sender: "user" as const, content: input.trim() };
-
     setMessages((prev) => [...prev, userMessage]);
     setIsTyping(true);
     setInput("");
 
     try {
-      const res = await axios.post(
-        "https://tsinjool-backend.onrender.com/api/chat/",
-        {
-          prompt: userMessage.content,
-          conversation_id: conversationId,
+      const res = await axios.post("https://tsinjool-backend.onrender.com/api/chat/", {
+        prompt: userMessage.content,
+        conversation_id: conversationId,
+      }, {
+        headers: {
+          Authorization: token ? `Token ${token}` : "",
+          "Content-Type": "application/json",
         },
-        {
-          headers: {
-            Authorization: token ? `Token ${token}` : "",
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      });
 
-      const aiMessage = {
-        sender: "ai" as const,
-        content: res.data.response,
-      };
-
+      const aiMessage = { sender: "ai" as const, content: res.data.response };
       const newConvId = res.data.conversation_id || conversationId!;
-      const updatedMessages = [
-        ...(messageCache[newConvId] || []),
-        userMessage,
-        aiMessage,
-      ];
+      const updatedMessages = [...(messageCache[newConvId] || []), userMessage, aiMessage];
 
       setConversationId(newConvId);
       setMessages(updatedMessages);
-      setMessageCache((prev) => ({
-        ...prev,
-        [newConvId]: updatedMessages,
-      }));
+      setMessageCache((prev) => ({ ...prev, [newConvId]: updatedMessages }));
 
       fetchConversations();
     } catch (err) {
-      setMessages((prev) => [
-        ...prev,
-        { sender: "ai", content: "Erreur avec l'IA." },
-      ]);
+      setMessages((prev) => [...prev, { sender: "ai", content: "Erreur avec l'IA." }]);
     } finally {
       setIsTyping(false);
     }
@@ -387,20 +356,15 @@ export default function ChatBot() {
       sendMessage();
     }
   };
-  console.log(handleKeyDown);
 
   const filteredConversations = conversations.filter(
     (conv) =>
       conv.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (messageCache[conv.id]?.[0]?.content
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase()) ??
-        false)
+      (messageCache[conv.id]?.[0]?.content?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false)
   );
 
   return (
-    <div className="flex h-[100vh] bg-white text-gray-700 dark:bg-gray-900 dark:text-white overflow-hidden">
-      {/* Sidebar with Framer Motion animation */}
+    <div className="flex h-screen bg-white text-gray-800 dark:bg-gray-900 dark:text-white overflow-hidden">
       <AnimatePresence>
         {sidebarOpen && (
           <motion.aside
@@ -408,29 +372,22 @@ export default function ChatBot() {
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: -300, opacity: 0 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="w-64 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 flex flex-col p-2 border-r"
+            className="w-64 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-200 border-r border-gray-200 dark:border-gray-700 p-2 flex flex-col"
           >
             <div className="p-2">
-              <Button
-                onClick={handleNewChat}
-                className="w-full justify-start gap-2 border border-gray-200 hover:bg-gray-300 dark:border-gray-600 dark:hover:bg-gray-700"
-              >
-                <Plus size={16} />
-                Nouveau chat
+              <Button onClick={handleNewChat} className="w-full gap-2 border dark:border-gray-600 dark:hover:bg-gray-700">
+                <Plus size={16} /> Nouveau chat
               </Button>
             </div>
 
             <div className="px-2 pb-2">
               <div className="relative">
-                <Search
-                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-900 dark:text-gray-400"
-                  size={16}
-                />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400" size={16} />
                 <Input
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Rechercher un chat..."
-                  className="w-full pl-9 dark:bg-gray-900 bg-white dark:border-gray-700 border-gray-200 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-0 focus:outline-none"
+                  className="w-full pl-9 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-0"
                 />
               </div>
             </div>
@@ -440,20 +397,15 @@ export default function ChatBot() {
                 <button
                   key={conv.id}
                   onClick={() => loadConversation(conv)}
-                  className={`w-full text-left px-3 py-3 rounded-md transition-all text-sm ${
+                  className={`w-full text-left px-3 py-3 rounded-md text-sm transition-all ${
                     conv.id === conversationId
-                      ? "dark:bg-gray-900 bg-white text-gray-900 dark:text-white"
-                      : "dark:hover:bg-gray-900/50 hover:bg-slate-300 text-slate-200  dark:text-gray-300"
+                      ? "bg-gray-300 dark:bg-gray-800 text-gray-900 dark:text-white"
+                      : "hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
                   }`}
                 >
-                  <div className="font-medium truncate flex items-center gap-2">
-                    <span className="flex-1 truncate">
-                      {conv.title || `Conversation #${conv.id}`}
-                    </span>
-                  </div>
-                  <div className="text-xs truncate text-gray-100 dark:text-gray-400 mt-1">
-                    {messageCache[conv.id]?.slice(-1)[0]?.content ||
-                      "Aucun message"}
+                  <div className="font-medium truncate">{conv.title || `Conversation #${conv.id}`}</div>
+                  <div className="text-xs truncate text-gray-500 dark:text-gray-400">
+                    {messageCache[conv.id]?.slice(-1)[0]?.content || "Aucun message"}
                   </div>
                 </button>
               ))}
@@ -462,81 +414,41 @@ export default function ChatBot() {
         )}
       </AnimatePresence>
 
-      {/* Main chat area */}
-      <main className="flex-1 flex flex-col bg-gray-800 relative">
-        {/* Header with PanelRight/PanelLeft button */}
-        <header className="h-14 flex items-center px-4 border-b border-gray-700">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="dark:text-gray-400 text-gray-900 hover:text-gray-500 dark:hover:text-white"
-          >
+      <main className="flex-1 flex flex-col bg-gray-100 dark:bg-gray-900">
+        <header className="h-14 flex items-center px-4 border-b border-gray-300 dark:border-gray-700">
+          <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(!sidebarOpen)}>
             {sidebarOpen ? <PanelLeft size={20} /> : <PanelRight size={20} />}
           </Button>
           <h1 className="ml-2 font-semibold">
             {conversationId
-              ? conversations.find((c) => c.id === conversationId)?.title ||
-                "Chat"
+              ? conversations.find((c) => c.id === conversationId)?.title || "Chat"
               : "Nouveau chat"}
           </h1>
         </header>
 
-        {/* Messages area */}
         <div className="flex-1 overflow-y-auto">
           {messages.length === 0 && !isTyping ? (
             <div className="flex flex-col items-center justify-center h-full text-center px-4">
-              <div className="mb-6">
-                {/* Replace with your actual GIF - this is a placeholder */}
-                <div className="w-32 h-32 bg-gray-400 dark:bg-gray-700 rounded-full flex items-center justify-center mb-4 mx-auto">
-                  {/* <svg
-                    className="w-16 h-16 text-gray-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={1}
-                      d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
-                    />
-                  </svg> */}
-                  <div className="mb-6 w-50 h-50">
-                    <img
-                      src={chatbotGif}
-                      alt="Assistant IA"
-                      className="w-full h-full object-contain rounded-lg"
-                    />
-                  </div>
-                </div>
+              <div className="w-32 h-32 mb-4">
+                <img src={chatbotGif} alt="Assistant IA" className="w-full h-full object-contain rounded-lg" />
               </div>
-              <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-200 mb-2">
-                Comment puis-je vous aider aujourd'hui ?
-              </h2>
-              <p className="text-gray-400 max-w-md">
-                Posez-moi n'importe quelle question ou discutez avec moi sur
-                n'importe quel sujet.
+              <h2 className="text-2xl font-semibold mb-2">Comment puis-je vous aider aujourd'hui ?</h2>
+              <p className="text-gray-500 dark:text-gray-400 max-w-md">
+                Posez-moi n'importe quelle question ou discutez avec moi sur n'importe quel sujet.
               </p>
             </div>
           ) : (
-            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            <div className="p-4 space-y-4">
               {messages.map((msg, i) => (
-                <div
-                  key={i}
-                  className={`flex ${
-                    msg.sender === "user" ? "justify-end" : "justify-start"
-                  }`}
-                >
+                <div key={i} className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"}`}>
                   <div
-                    className={`max-w-xs md:max-w-md lg:max-w-lg xl:max-w-xl rounded-lg px-4 py-2 ${
+                    className={`max-w-xl rounded-lg px-4 py-2 whitespace-pre-wrap ${
                       msg.sender === "user"
-                        ? "bg-gradient-to-br from-purple-500 to-blue-600 text-gray-900 dark:text-white rounded-br-none"
-                        : "bg-gray-700 text-gray-900 dark:text-white rounded-bl-none"
+                        ? "bg-gradient-to-br from-purple-500 to-blue-600 text-white rounded-br-none"
+                        : "bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded-bl-none"
                     }`}
                   >
-                    <div className="whitespace-pre-wrap">{msg.content}</div>
+                    {msg.content}
                     {msg.timestamp && (
                       <div className="text-xs opacity-70 mt-1 text-right">
                         {new Date(msg.timestamp).toLocaleTimeString([], {
@@ -551,22 +463,17 @@ export default function ChatBot() {
 
               {isTyping && (
                 <div className="flex justify-start">
-                  <div className="max-w-xs bg-white dark:bg-gray-800text-gray-900 dark:text-white rounded-lg rounded-bl-none px-4 py-2">
+                  <div className="max-w-xs bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg px-4 py-2">
                     <div className="flex items-center">
                       <span className="mr-2">L'IA écrit...</span>
                       <div className="flex space-x-1">
-                        <div
-                          className="w-2 h-2 dark:bg-gray-400 bg-gray-200 rounded-full animate-bounce"
-                          style={{ animationDelay: "0ms" }}
-                        />
-                        <div
-                          className="w-2 h-2 dark:bg-gray-400 bg-gray-200rounded-full animate-bounce"
-                          style={{ animationDelay: "150ms" }}
-                        />
-                        <div
-                          className="w-2 h-2 dark:bg-gray-400 bg-gray-200rounded-full animate-bounce"
-                          style={{ animationDelay: "300ms" }}
-                        />
+                        {[0, 150, 300].map((d, i) => (
+                          <div
+                            key={i}
+                            className="w-2 h-2 bg-gray-400 dark:bg-gray-300 rounded-full animate-bounce"
+                            style={{ animationDelay: `${d}ms` }}
+                          />
+                        ))}
                       </div>
                     </div>
                   </div>
@@ -576,15 +483,9 @@ export default function ChatBot() {
             </div>
           )}
         </div>
-        {/* Input area */}
-        <div className="p-4 border-t border-gray-700 bg-gray-800">
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              sendMessage();
-            }}
-            className="max-w-3xl mx-auto"
-          >
+
+        <div className="p-4 border-t border-gray-300 dark:border-gray-700">
+          <form onSubmit={(e) => { e.preventDefault(); sendMessage(); }} className="max-w-3xl mx-auto">
             <div className="relative">
               <Input
                 ref={inputRef}
@@ -592,20 +493,19 @@ export default function ChatBot() {
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder="Envoyer un message..."
-                className="w-full pr-12 bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:ring-0 focus:outline-none focus:border-gray-500"
+                className="w-full pr-12 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
               />
               <Button
                 type="submit"
                 size="icon"
                 disabled={!input.trim()}
-                className="absolute right-2 top-1/2 transform -translate-y-1/2 h-8 w-8 bg-transparent hover:bg-gray-600 text-gray-400 hover:text-white"
+                className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 bg-transparent hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-300"
               >
                 <Send size={16} />
               </Button>
             </div>
-            <p className="text-xs text-gray-500 mt-2 text-center">
-              ChatGPT peut faire des erreurs. Vérifiez les informations
-              importantes.
+            <p className="text-xs text-center text-gray-500 dark:text-gray-400 mt-2">
+              ChatGPT peut faire des erreurs. Vérifiez les informations importantes.
             </p>
           </form>
         </div>
