@@ -66,27 +66,38 @@ class LoginView(APIView):
 
 
 class ConfirmEmailView(APIView):
-    permission_classes = []  # Ou [AllowAny]
-
+    permission_classes = [AllowAny]
+    
     def post(self, request):
         email = request.data.get("email")
         code = request.data.get("code")
-
+        
         if not email or not code:
             return Response({"error": "Email et code sont requis."}, status=status.HTTP_400_BAD_REQUEST)
-
+        
         try:
             user = User.objects.get(email=email)
         except User.DoesNotExist:
             return Response({"error": "Utilisateur introuvable."}, status=status.HTTP_404_NOT_FOUND)
-
+        
         if user.is_active:
             return Response({"message": "Compte déjà activé."})
-
+        
         if user.confirmation_code == code:
             user.is_active = True
             user.confirmation_code = None
             user.save()
-            return Response({"message": "Email confirmé avec succès. Vous pouvez maintenant vous connecter."})
+            
+            # 👇 AJOUT : Générer le token automatiquement après confirmation
+            token, created = Token.objects.get_or_create(user=user)
+            
+            return Response({
+                "message": "Email confirmé avec succès.",
+                "token": token.key,  # 👈 Token pour connexion automatique
+                "user": {
+                    "email": user.email,
+                    "nom_utilisateur": user.nom_utilisateur,
+                }
+            })
         else:
             return Response({"error": "Code incorrect."}, status=status.HTTP_400_BAD_REQUEST)
