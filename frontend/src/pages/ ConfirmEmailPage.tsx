@@ -7,9 +7,9 @@ import { toast } from "sonner";
 export default function ConfirmEmailPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const emailFromState = location.state?.email || "";
+  const initialEmail = location.state?.email || sessionStorage.getItem("pendingEmail") || "";
+  const [email, setEmail] = useState(initialEmail);
 
-  const [email, setEmail] = useState(emailFromState);
   const [code, setCode] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -22,11 +22,35 @@ export default function ConfirmEmailPage() {
     }
     setLoading(true);
     try {
-      const res = await axios.post(
+      // 1. Valider le code
+      await axios.post(
         "https://tsinjool-backend.onrender.com/api/confirm-email/",
         { email, code }
       );
-      toast.success(res.data.message || "Email confirmé !");
+      toast.success("Email confirmé avec succès !");
+
+      // 2. Login automatique après confirmation
+      // ATTENTION : il faut stocker le mot de passe dans un state/sessionStorage ou récupérer autrement
+      // Ici, supposons que tu as stocké temporairement le mdp dans sessionStorage sous "pendingPassword"
+      const password = sessionStorage.getItem("pendingPassword");
+      if (!password) {
+        toast.error(
+          "Mot de passe manquant. Veuillez vous connecter manuellement."
+        );
+        navigate("/login");
+        return;
+      }
+
+      const loginRes = await axios.post(
+        "https://tsinjool-backend.onrender.com/api/login/",
+        { email, password }
+      );
+
+      const token = loginRes.data.token;
+      localStorage.setItem("token", token);
+      sessionStorage.removeItem("pendingPassword");
+
+      toast.success("Connecté automatiquement !");
       navigate("/profile-setup");
     } catch (error: any) {
       const msg =
@@ -40,7 +64,6 @@ export default function ConfirmEmailPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center p-2 sm:p-4">
       <div className="w-full max-w-4xl bg-white rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col lg:flex-row min-h-[500px]">
-
         {/* Section formulaire */}
         <div className="w-full lg:w-3/5 flex flex-col relative">
           {/* Header avec logo */}
@@ -170,14 +193,20 @@ export default function ConfirmEmailPage() {
                   <div className="w-6 h-6 sm:w-8 sm:h-8 bg-white rounded-full flex items-center justify-center">
                     <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-purple-500" />
                   </div>
-                  <span className="ml-1 sm:ml-2 text-xs sm:text-sm text-white/90">Confirmer Email</span>
+                  <span className="ml-1 sm:ml-2 text-xs sm:text-sm text-white/90">
+                    Confirmer Email
+                  </span>
                 </div>
                 <div className="w-4 sm:w-8 h-0.5 bg-white/30"></div>
                 <div className="flex items-center">
                   <div className="w-6 h-6 sm:w-8 sm:h-8 bg-white/30 rounded-full flex items-center justify-center">
-                    <span className="text-purple-500 font-bold text-xs sm:text-sm">2</span>
+                    <span className="text-purple-500 font-bold text-xs sm:text-sm">
+                      2
+                    </span>
                   </div>
-                  <span className="ml-1 sm:ml-2 text-xs sm:text-sm text-white/70">Profil</span>
+                  <span className="ml-1 sm:ml-2 text-xs sm:text-sm text-white/70">
+                    Profil
+                  </span>
                 </div>
               </div>
             </div>
