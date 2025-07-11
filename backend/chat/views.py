@@ -8,9 +8,9 @@ from .models import Conversation, Message
 from django.conf import settings
 
 TOGETHER_API_KEY = os.getenv("TOGETHER_API_KEY")
-# URL du modèle chatbot sur Hugging Face
-# HUGGINGFACE_API_URL = "https://api-inference.huggingface.co/models/facebook/blenderbot-400M-distill"
-HUGGINGFACE_API_URL = "https://api-inference.huggingface.co/models/microsoft/DialoGPT-small"
+
+GROQ_API_URL = "https://api.groq.ai/v1/chat/completions"
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")  # 🔐 Appelle la clé depuis l'environnement
 
 
 # On lit le token depuis settings (chargé depuis .env)
@@ -110,39 +110,27 @@ def conversation_messages(request, conversation_id):
 
 @api_view(['POST'])
 def voice_chat(request):
-    print("Body reçu :", request.data)  # Pour debug
-    user_input = request.data.get('message', '')
+    user_message = request.data.get("message", "").strip()
+    if not user_message:
+        return Response({"reply": "Je n'ai rien reçu. Réessaie."}, status=400)
 
-    if not user_input:
-        return Response({"reply": "Je n'ai rien entendu. Réessaie."}, status=400)
+    headers = {
+        "Authorization": f"Bearer {GROQ_API_KEY}",
+        "Content-Type": "application/json",
+    }
 
     payload = {
-        "inputs": {
-            "text": user_input
-        }
+        "model": "gpt-4o-mini",  # ou "mixtral-8x7b-32768", etc.
+        "messages": [{"role": "user", "content": user_message}],
+        "max_tokens": 300,
+        "temperature": 0.7,
     }
 
     try:
-        response = requests.post(HUGGINGFACE_API_URL, headers=headers, json=payload)
-
-        if response.status_code != 200:
-            # Affiche la réponse complète pour debug
-            return Response({
-                "reply": "Erreur Hugging Face",
-                "details": response.text,
-                "status_code": response.status_code
-            }, status=response.status_code)
-
+        response = requests.post(GROQ_API_URL, headers=headers, json=payload)
+        response.raise_for_status()
         data = response.json()
-
-        if isinstance(data, dict) and "generated_text" in data:
-            reply = data["generated_text"]
-        elif isinstance(data, list) and len(data) > 0 and "generated_text" in data[0]:
-            reply = data[0]["generated_text"]
-        else:
-            reply = "Je n’ai pas pu générer de réponse."
-
+        reply = data["choices"][0]["message"]["content"]
         return Response({"reply": reply})
-
     except Exception as e:
-        return Response({"reply": f"Erreur serveur : {str(e)}"}, status=500)
+        return Response({"reply": "Erreur lors de la communication avec Groq.", "error": str(e)}, status=500)
