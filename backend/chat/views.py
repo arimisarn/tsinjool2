@@ -122,7 +122,7 @@ def voice_chat(request):
         }
 
         payload = {
-            "model": "gpt-4o",  # ✅ Modèle recommandé par Groq (ou mixtral-8x7b-32768)
+            "model": "mixtral-8x7b-32768",  # ✅ Modèle recommandé par Groq (ou mixtral-8x7b-32768)
             "messages": [{"role": "user", "content": user_message}],
             "max_tokens": 200,
             "temperature": 0.7,
