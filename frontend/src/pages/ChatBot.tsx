@@ -1,230 +1,3 @@
-// "use client";
-
-// import React, { useState, useEffect, useRef } from "react";
-// import axios from "axios";
-// import { Button } from "@/components/ui/button";
-// import { Input } from "@/components/ui/input";
-
-// type Message = {
-//   sender: "user" | "ai";
-//   content: string;
-//   timestamp?: string; // facultatif car parfois, on crée le message localement
-// };
-
-// type Conversation = {
-//   id: number;
-//   title: string;
-//   created_at: string;
-// };
-
-// export default function ChatBot() {
-//   const [messages, setMessages] = useState<Message[]>([]);
-//   const [input, setInput] = useState("");
-//   const [conversationId, setConversationId] = useState<number | null>(null);
-//   const [isTyping, setIsTyping] = useState(false);
-//   const [conversations, setConversations] = useState<Conversation[]>([]);
-
-//   const messagesEndRef = useRef<HTMLDivElement>(null);
-
-//   // Scroll automatique vers le bas
-//   useEffect(() => {
-//     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-//   }, [messages, isTyping]);
-
-//   useEffect(() => {
-//     fetchConversations();
-//   }, []);
-
-//   const fetchConversations = async () => {
-//     try {
-//       const token = localStorage.getItem("token");
-
-//       const res = await axios.get(
-//         "https://tsinjool-backend.onrender.com/api/conversations/",
-//         {
-//           headers: {
-//             Authorization: token ? `Token ${token}` : "",
-//           },
-//         }
-//       );
-//       setConversations(res.data);
-//     } catch (err) {
-//       console.error("Erreur récupération historique", err);
-//     }
-//   };
-
-//   const loadConversation = async (conv: Conversation) => {
-//     setConversationId(conv.id);
-
-//     const token = localStorage.getItem("token");
-
-//     try {
-//       const res = await axios.get(
-//         `https://ton-backend.onrender.com/api/conversations/${conv.id}/messages/`,
-//         {
-//           headers: {
-//             Authorization: `Token ${token}`,
-//           },
-//         }
-//       );
-//       setMessages(res.data);
-//     } catch (err) {
-//       console.error("Erreur chargement messages", err);
-//       setMessages([]);
-//     }
-//   };
-
-//   const handleNewChat = () => {
-//     setConversationId(null);
-//     setMessages([]);
-//   };
-
-//   const sendMessage = async () => {
-//     if (!input.trim()) return;
-
-//     const token = localStorage.getItem("token");
-//     const userMessage = { sender: "user" as const, content: input.trim() };
-
-//     setMessages((prev) => [...prev, userMessage]);
-//     setInput("");
-//     setIsTyping(true);
-
-//     try {
-//       const res = await axios.post(
-//         "https://tsinjool-backend.onrender.com/api/chat/",
-//         {
-//           prompt: userMessage.content,
-//           conversation_id: conversationId,
-//         },
-//         {
-//           headers: {
-//             Authorization: token ? `Token ${token}` : "",
-//             "Content-Type": "application/json",
-//           },
-//         }
-//       );
-
-//       if (res.data.conversation_id) {
-//         setConversationId(res.data.conversation_id);
-//         fetchConversations();
-//       }
-
-//       const aiMessage = {
-//         sender: "ai" as const,
-//         content: res.data.response,
-//       };
-//       setMessages((prev) => [...prev, aiMessage]);
-//     } catch (err) {
-//       setMessages((prev) => [
-//         ...prev,
-//         { sender: "ai", content: "Erreur avec l'IA." },
-//       ]);
-//     } finally {
-//       setIsTyping(false);
-//     }
-//   };
-
-//   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-//     if (e.key === "Enter" && !e.shiftKey) {
-//       e.preventDefault();
-//       sendMessage();
-//     }
-//   };
-
-//   return (
-//     <div className="flex h-screen bg-slate-50">
-//       {/* 📚 Sidebar conversations */}
-//       <div className="w-64 border-r bg-white p-4">
-//         <div className="flex justify-between items-center mb-4">
-//           <h2 className="text-lg font-bold">Conversations</h2>
-//           <Button variant="outline" size="sm" onClick={handleNewChat}>
-//             + Nouveau
-//           </Button>
-//         </div>
-
-//         <div className="space-y-2 overflow-y-auto max-h-[80vh]">
-//           {conversations.map((conv) => (
-//             <Button
-//               key={conv.id}
-//               variant={conv.id === conversationId ? "default" : "ghost"}
-//               onClick={() => loadConversation(conv)}
-//               className="w-full justify-start"
-//             >
-//               {conv.title || `Conversation #${conv.id}`}
-//             </Button>
-//           ))}
-//         </div>
-//       </div>
-
-//       {/* 💬 Zone de chat */}
-//       <div className="flex flex-col flex-1 max-w-4xl mx-auto h-full">
-//         <div className="flex-1 overflow-y-auto p-4 space-y-4">
-//           {messages.map((msg, i) => (
-//             <div
-//               key={i}
-//               className={`flex ${
-//                 msg.sender === "user" ? "justify-end" : "justify-start"
-//               }`}
-//             >
-//               <div
-//                 className={`relative max-w-[70%] px-4 py-2 rounded-lg ${
-//                   msg.sender === "user"
-//                     ? "bg-indigo-600 text-white"
-//                     : "bg-gray-200 text-gray-900"
-//                 }`}
-//                 style={{ paddingBottom: "1.5rem", paddingRight: "3rem" }} // espace pour l'heure
-//               >
-//                 <p className="whitespace-pre-wrap">{msg.content}</p>
-
-//                 {/* ⏰ Heure en bas à droite */}
-//                 {msg.timestamp && (
-//                   <span className="text-xs text-gray-400 absolute bottom-1 right-2">
-//                     {new Date(msg.timestamp).toLocaleTimeString([], {
-//                       hour: "2-digit",
-//                       minute: "2-digit",
-//                     })}
-//                   </span>
-//                 )}
-//               </div>
-//             </div>
-//           ))}
-
-//           {isTyping && (
-//             <div className="flex justify-start">
-//               <div className="max-w-[70%] px-4 py-2 rounded-lg bg-gray-200 text-gray-900 italic">
-//                 L’IA réfléchit...
-//                 <span className="animate-pulse"> •••</span>
-//               </div>
-//             </div>
-//           )}
-
-//           <div ref={messagesEndRef} />
-//         </div>
-
-//         <form
-//           onSubmit={(e) => {
-//             e.preventDefault();
-//             sendMessage();
-//           }}
-//           className="p-4 border-t flex gap-2 bg-white"
-//         >
-//           <Input
-//             value={input}
-//             onChange={(e) => setInput(e.target.value)}
-//             onKeyDown={handleKeyDown}
-//             placeholder="Tapez votre message..."
-//             autoFocus
-//             className="flex-1"
-//           />
-//           <Button type="submit" disabled={!input.trim()}>
-//             Envoyer
-//           </Button>
-//         </form>
-//       </div>
-//     </div>
-//   );
-// }
-
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
@@ -278,9 +51,7 @@ export default function ChatBot() {
     try {
       const token = localStorage.getItem("token");
       const res = await axios.get("https://tsinjool-backend.onrender.com/api/conversations/", {
-        headers: {
-          Authorization: token ? `Token ${token}` : "",
-        },
+        headers: { Authorization: token ? `Token ${token}` : "" },
       });
       setConversations(res.data);
     } catch (err) {
@@ -324,15 +95,19 @@ export default function ChatBot() {
     setInput("");
 
     try {
-      const res = await axios.post("https://tsinjool-backend.onrender.com/api/chat/", {
-        prompt: userMessage.content,
-        conversation_id: conversationId,
-      }, {
-        headers: {
-          Authorization: token ? `Token ${token}` : "",
-          "Content-Type": "application/json",
+      const res = await axios.post(
+        "https://tsinjool-backend.onrender.com/api/chat/",
+        {
+          prompt: userMessage.content,
+          conversation_id: conversationId,
         },
-      });
+        {
+          headers: {
+            Authorization: token ? `Token ${token}` : "",
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       const aiMessage = { sender: "ai" as const, content: res.data.response };
       const newConvId = res.data.conversation_id || conversationId!;
@@ -364,7 +139,7 @@ export default function ChatBot() {
   );
 
   return (
-    <div className="flex h-[85vh] bg-white text-gray-800 dark:bg-gray-900 dark:text-white overflow-hidden">
+    <div className="flex h-[85vh] bg-white dark:bg-zinc-900 text-gray-900 dark:text-white overflow-hidden">
       <AnimatePresence>
         {sidebarOpen && (
           <motion.aside
@@ -372,10 +147,10 @@ export default function ChatBot() {
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: -300, opacity: 0 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className="w-64 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-200 border-r border-gray-200 dark:border-gray-700 p-2 flex flex-col"
+            className="w-64 bg-white dark:bg-zinc-800 text-gray-900 dark:text-gray-200 border-r border-gray-200 dark:border-zinc-700 p-2 flex flex-col"
           >
             <div className="p-2">
-              <Button onClick={handleNewChat} className="w-full gap-2 border dark:border-gray-600 dark:hover:bg-gray-700">
+              <Button onClick={handleNewChat} className="w-full gap-2 border dark:border-zinc-600 dark:hover:bg-zinc-700">
                 <Plus size={16} /> Nouveau chat
               </Button>
             </div>
@@ -387,7 +162,7 @@ export default function ChatBot() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Rechercher un chat..."
-                  className="w-full pl-9 bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:ring-0"
+                  className="w-full pl-9 bg-white dark:bg-zinc-800 border-gray-300 dark:border-zinc-700 text-gray-900 dark:text-white placeholder-gray-500"
                 />
               </div>
             </div>
@@ -399,8 +174,8 @@ export default function ChatBot() {
                   onClick={() => loadConversation(conv)}
                   className={`w-full text-left px-3 py-3 rounded-md text-sm transition-all ${
                     conv.id === conversationId
-                      ? "bg-gray-300 dark:bg-gray-800 text-gray-900 dark:text-white"
-                      : "hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300"
+                      ? "bg-gray-300 dark:bg-zinc-700 text-gray-900 dark:text-white"
+                      : "hover:bg-gray-200 dark:hover:bg-zinc-700 text-gray-700 dark:text-gray-300"
                   }`}
                 >
                   <div className="font-medium truncate">{conv.title || `Conversation #${conv.id}`}</div>
@@ -414,8 +189,8 @@ export default function ChatBot() {
         )}
       </AnimatePresence>
 
-      <main className="flex-1 flex flex-col bg-gray-100 dark:bg-gray-900">
-        <header className="h-14 flex items-center px-4 border-b border-gray-300 dark:border-gray-700">
+      <main className="flex-1 flex flex-col bg-white dark:bg-zinc-900">
+        <header className="h-14 flex items-center px-4 border-b border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-900">
           <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(!sidebarOpen)}>
             {sidebarOpen ? <PanelLeft size={20} /> : <PanelRight size={20} />}
           </Button>
@@ -445,7 +220,7 @@ export default function ChatBot() {
                     className={`max-w-xl rounded-lg px-4 py-2 whitespace-pre-wrap ${
                       msg.sender === "user"
                         ? "bg-gradient-to-br from-purple-500 to-blue-600 text-white rounded-br-none"
-                        : "bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded-bl-none"
+                        : "bg-gray-200 dark:bg-zinc-700 text-gray-900 dark:text-white rounded-bl-none"
                     }`}
                   >
                     {msg.content}
@@ -463,7 +238,7 @@ export default function ChatBot() {
 
               {isTyping && (
                 <div className="flex justify-start">
-                  <div className="max-w-xs bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg px-4 py-2">
+                  <div className="max-w-xs bg-gray-200 dark:bg-zinc-700 text-gray-900 dark:text-white rounded-lg px-4 py-2">
                     <div className="flex items-center">
                       <span className="mr-2">L'IA écrit...</span>
                       <div className="flex space-x-1">
@@ -484,7 +259,7 @@ export default function ChatBot() {
           )}
         </div>
 
-        <div className="p-4 border-t border-gray-300 dark:border-gray-700">
+        <div className="p-4 border-t border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-900">
           <form onSubmit={(e) => { e.preventDefault(); sendMessage(); }} className="max-w-3xl mx-auto">
             <div className="relative">
               <Input
@@ -493,20 +268,17 @@ export default function ChatBot() {
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder="Envoyer un message..."
-                className="w-full pr-12 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                className="w-full pr-12 bg-gray-100 dark:bg-zinc-800 border border-gray-300 dark:border-zinc-600 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
               />
               <Button
                 type="submit"
                 size="icon"
                 disabled={!input.trim()}
-                className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 bg-transparent hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-300"
+                className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 bg-transparent hover:bg-gray-300 dark:hover:bg-zinc-700 text-gray-600 dark:text-gray-300"
               >
                 <Send size={16} />
               </Button>
             </div>
-            <p className="text-xs text-center text-gray-500 dark:text-gray-400 mt-2">
-              ChatGPT peut faire des erreurs. Vérifiez les informations importantes.
-            </p>
           </form>
         </div>
       </main>
