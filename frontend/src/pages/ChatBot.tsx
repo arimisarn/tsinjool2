@@ -340,7 +340,7 @@ export default function ChatBot() {
             }}
             className="w-full"
           >
-            <div className="relative w-full">
+            <div className="relative w-full mb-4">
               <Input
                 ref={inputRef}
                 value={input}
