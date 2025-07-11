@@ -1,87 +1,80 @@
-"use client";
+import React, { useRef, useState } from "react";
 
-import { useState, useRef } from "react";
-
-export default function AssistantVocal() {
+const AssistantVocal: React.FC = () => {
   const [recording, setRecording] = useState(false);
-  const [reply, setReply] = useState("");
-  const [audioSrc, setAudioSrc] = useState<string | null>(null);
+  const [responseAudioUrl, setResponseAudioUrl] = useState<string | null>(null);
+  const [transcription, setTranscription] = useState<string>("");
+  const [responseText, setResponseText] = useState<string>("");
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const chunksRef = useRef<Blob[]>([]);
+  const audioChunksRef = useRef<Blob[]>([]);
 
   const startRecording = async () => {
-    setReply("");
-    setAudioSrc(null);
-    chunksRef.current = [];
-
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    const mediaRecorder = new MediaRecorder(stream);
+    const recorder = new MediaRecorder(stream);
+    mediaRecorderRef.current = recorder;
+    audioChunksRef.current = [];
 
-    mediaRecorder.ondataavailable = (e) => {
-      if (e.data.size > 0) chunksRef.current.push(e.data);
-    };
-
-    mediaRecorder.onstop = async () => {
-      const audioBlob = new Blob(chunksRef.current, { type: "audio/webm" });
-      const formData = new FormData();
-      formData.append("audio", audioBlob, "audio.webm");
-
-      try {
-        const res = await fetch("https://tsinjool-backend.onrender.com/api/voice-chat/", {
-          method: "POST",
-          body: formData,
-        });
-
-        if (!res.ok) {
-          setReply("Erreur serveur : " + res.statusText);
-          return;
-        }
-
-        const data = await res.json();
-        setReply(data.reply);
-
-        if (data.audio_base64 && data.audio_format) {
-          const src = `data:audio/${data.audio_format};base64,${data.audio_base64}`;
-          setAudioSrc(src);
-        }
-      } catch (error) {
-        setReply("Erreur réseau ou serveur.");
+    recorder.ondataavailable = (event) => {
+      if (event.data.size > 0) {
+        audioChunksRef.current.push(event.data);
       }
     };
 
-    mediaRecorder.start();
-    setRecording(true);
-    mediaRecorderRef.current = mediaRecorder;
+    recorder.onstop = async () => {
+      const audioBlob = new Blob(audioChunksRef.current, { type: "audio/webm" });
+      const formData = new FormData();
+      formData.append("audio", audioBlob, "voice.webm");
 
-    setTimeout(() => {
-      mediaRecorder.stop();
-      setRecording(false);
-      stream.getTracks().forEach((track) => track.stop());
-    }, 5000);
+      const response = await fetch("https://ton-backend.com/api/voice-chat/", {
+        method: "POST",
+        body: formData,
+      });
+
+      // Lire le contenu audio de la réponse
+      const responseBlob = await response.blob();
+      const audioUrl = URL.createObjectURL(responseBlob);
+      setResponseAudioUrl(audioUrl);
+
+      // Extraire la transcription et le texte depuis les headers (à adapter selon ton backend)
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const json = JSON.parse(reader.result as string);
+          setTranscription(json.transcription || "");
+          setResponseText(json.response_text || "");
+        } catch (e) {
+          console.warn("Impossible d'analyser la réponse JSON.");
+        }
+      };
+      reader.readAsText(responseBlob);
+    };
+
+    recorder.start();
+    setRecording(true);
+  };
+
+  const stopRecording = () => {
+    mediaRecorderRef.current?.stop();
+    setRecording(false);
   };
 
   return (
-    <div className="p-4 text-center max-w-md mx-auto">
-      <button
-        className={`px-6 py-2 rounded-lg text-white ${
-          recording ? "bg-red-600" : "bg-blue-600 hover:bg-blue-700"
-        }`}
-        onClick={startRecording}
-        disabled={recording}
-      >
-        {recording ? "Enregistrement..." : "Parlez"}
+    <div style={{ textAlign: "center" }}>
+      <button onClick={recording ? stopRecording : startRecording}>
+        {recording ? "🛑 Stop" : "🎙️ Talk to AI"}
       </button>
 
-      {reply && <p className="mt-4 text-lg font-semibold text-gray-800">🤖 {reply}</p>}
-
-      {audioSrc && (
-        <audio
-          src={audioSrc}
-          controls
-          autoPlay
-          className="mt-4 mx-auto"
-        />
+      {transcription && (
+        <p><strong>🗣️ Toi :</strong> {transcription}</p>
+      )}
+      {responseText && (
+        <p><strong>🤖 IA :</strong> {responseText}</p>
+      )}
+      {responseAudioUrl && (
+        <audio src={responseAudioUrl} controls autoPlay />
       )}
     </div>
   );
-}
+};
+
+export default AssistantVocal;

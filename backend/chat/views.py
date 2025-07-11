@@ -6,7 +6,11 @@ from rest_framework.response import Response
 from rest_framework import status, permissions
 from .models import Conversation, Message
 from django.conf import settings
-
+from rest_framework.parsers import MultiPartParser
+from transformers import pipeline
+import tempfile
+from rest_framework.views import APIView
+from TTS.api import TTS
 
 TOGETHER_API_KEY = os.getenv("TOGETHER_API_KEY")
 
@@ -103,28 +107,59 @@ def conversation_messages(request, conversation_id):
 
 
 
+class VoiceChatView(APIView):
+    parser_classes = [MultiPartParser]
 
-@api_view(['POST'])
-def chat_api(request):
-    user_message = request.data.get("message", "")
-    if not user_message:
-        return Response({"reply": "Je n'ai pas compris votre message."})
+    def post(self, request, *args, **kwargs):
+        audio_file = request.FILES.get("audio")
+        if not audio_file:
+            return Response({"error": "Aucun fichier audio reçu."}, status=400)
 
-    API_URL = "https://api-inference.huggingface.co/models/facebook/blenderbot-400M-distill"
-    headers = {"Authorization": f"Bearer {settings.HUGGINGFACE_TOKEN}"}
+        # ⏺️ Sauver le fichier temporairement
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".webm") as tmp_audio:
+            for chunk in audio_file.chunks():
+                tmp_audio.write(chunk)
+            audio_path = tmp_audio.name
 
-    payload = {"inputs": user_message}
+        # 🧠 Transcription avec Whisper
+        transcriber = pipeline("automatic-speech-recognition", model="openai/whisper-large")
+        transcription = transcriber(audio_path)["text"]
 
-    response = requests.post(API_URL, headers=headers, json=payload)
-    
-    print("HF API status code:", response.status_code)
-    print("HF API response text:", response.text)
+        # 🤖 Génération de réponse avec Mistral
+        chat = pipeline("text-generation", model="mistralai/Mistral-7B-Instruct-v0.1")
+        response_text = chat(f"L'utilisateur a dit : {transcription}")[0]["generated_text"]
 
-    if response.status_code == 200:
-        result = response.json()
-        print("HF API JSON:", result)
-        reply = result.get('generated_text', 'Désolé, je n’ai pas de réponse.')
-    else:
-        reply = "Erreur lors de la génération."
+        # 🔊 Synthèse vocale avec TTS
+        tts = TTS(model_name="tts_models/fr/thorsten/tacotron2-DCA")  # adapte selon la langue !
+        response_audio_path = os.path.join(tempfile.gettempdir(), "response.wav")
+        tts.tts_to_file(text=response_text, file_path=response_audio_path)
 
-    return Response({"reply": reply})
+        # 📤 Envoie l'audio de réponse au frontend
+        with open(response_audio_path, "rb") as audio_response:
+            return Response(
+                {
+                    "transcription": transcription,
+                    "response_text": response_text
+                },
+                headers={"Content-Disposition": "attachment; filename=response.wav"},
+                content_type="audio/wav",
+            )
+
+    parser_classes = [MultiPartParser]
+
+    def post(self, request, *args, **kwargs):
+        audio_file = request.FILES.get("audio")
+
+        if not audio_file:
+            return Response({"error": "Aucun fichier audio reçu."}, status=400)
+
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".webm") as tmp:
+            for chunk in audio_file.chunks():
+                tmp.write(chunk)
+            tmp_path = tmp.name
+
+        # 🧠 Transcription avec Hugging Face
+        transcriber = pipeline("automatic-speech-recognition", model="openai/whisper-large")
+        transcription = transcriber(tmp_path)["text"]
+
+        return Response({"transcription": transcription})
