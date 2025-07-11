@@ -122,9 +122,9 @@ def voice_chat(request):
         }
 
         payload = {
-            "model": "mixtral-8x7b-32768",  # ✅ Modèle recommandé par Groq (ou mixtral-8x7b-32768)
+            "model": "meta-llama/llama-guard-4-12b",  # Changement de modèle ici
             "messages": [{"role": "user", "content": user_message}],
-            "max_tokens": 200,
+            "max_tokens": 1024,                      # Max autorisé pour ce modèle
             "temperature": 0.7,
         }
 
