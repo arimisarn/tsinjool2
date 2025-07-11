@@ -5,15 +5,8 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status, permissions
 from .models import Conversation, Message
-from django.conf import settings
 from rest_framework import status
-import speech_recognition as sr
-import openai
-import io
-import base64
-from pydub import AudioSegment
-from django.conf import settings
-from .models import ConversationVoice
+
 
 TOGETHER_API_KEY = os.getenv("TOGETHER_API_KEY")
 
@@ -169,63 +162,63 @@ def conversation_messages(request, conversation_id):
 
 
 
-@api_view(['POST'])
-def process_audio(request):
-    try:
-        # Récupération de l'audio depuis le frontend
-        audio_data = request.data.get('audio')
-        if not audio_data:
-            return Response({'error': 'No audio data'}, status=400)
+# @api_view(['POST'])
+# def process_audio(request):
+#     try:
+#         # Récupération de l'audio depuis le frontend
+#         audio_data = request.data.get('audio')
+#         if not audio_data:
+#             return Response({'error': 'No audio data'}, status=400)
         
-        # Conversion base64 vers audio
-        audio_bytes = base64.b64decode(audio_data.split(',')[1])
+#         # Conversion base64 vers audio
+#         audio_bytes = base64.b64decode(audio_data.split(',')[1])
         
-        # Conversion en WAV pour speech recognition
-        audio = AudioSegment.from_file(io.BytesIO(audio_bytes))
-        wav_buffer = io.BytesIO()
-        audio.export(wav_buffer, format="wav")
-        wav_buffer.seek(0)
+#         # Conversion en WAV pour speech recognition
+#         audio = AudioSegment.from_file(io.BytesIO(audio_bytes))
+#         wav_buffer = io.BytesIO()
+#         audio.export(wav_buffer, format="wav")
+#         wav_buffer.seek(0)
         
-        # Reconnaissance vocale avec SpeechRecognition (gratuit)
-        recognizer = sr.Recognizer()
-        with sr.AudioFile(wav_buffer) as source:
-            audio_data = recognizer.record(source)
-            text = recognizer.recognize_google(audio_data, language='fr-FR')
+#         # Reconnaissance vocale avec SpeechRecognition (gratuit)
+#         recognizer = sr.Recognizer()
+#         with sr.AudioFile(wav_buffer) as source:
+#             audio_data = recognizer.record(source)
+#             text = recognizer.recognize_google(audio_data, language='fr-FR')
         
-        # Traitement avec OpenAI (crédits gratuits)
-        response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": "system", "content": "Tu es un assistant vocal serviable en français."},
-                {"role": "user", "content": text}
-            ],
-            max_tokens=150
-        )
+#         # Traitement avec OpenAI (crédits gratuits)
+#         response = openai.ChatCompletion.create(
+#             model="gpt-3.5-turbo",
+#             messages=[
+#                 {"role": "system", "content": "Tu es un assistant vocal serviable en français."},
+#                 {"role": "user", "content": text}
+#             ],
+#             max_tokens=150
+#         )
         
-        ai_response = response.choices[0].message.content
+#         ai_response = response.choices[0].message.content
         
-        # Sauvegarde en base
-        conversation = ConversationVoice.objects.create(
-            user_message=text,
-            ai_response=ai_response
-        )
+#         # Sauvegarde en base
+#         conversation = ConversationVoice.objects.create(
+#             user_message=text,
+#             ai_response=ai_response
+#         )
         
-        return Response({
-            'user_message': text,
-            'ai_response': ai_response,
-            'conversation_id': conversation.id
-        })
+#         return Response({
+#             'user_message': text,
+#             'ai_response': ai_response,
+#             'conversation_id': conversation.id
+#         })
         
-    except Exception as e:
-        return Response({'error': str(e)}, status=500)
+#     except Exception as e:
+#         return Response({'error': str(e)}, status=500)
 
-@api_view(['GET'])
-def get_conversations(request):
-    conversations = ConversationVoice.objects.all()[:10]
-    data = [{
-        'id': conv.id,
-        'user_message': conv.user_message,
-        'ai_response': conv.ai_response,
-        'created_at': conv.created_at
-    } for conv in conversations]
-    return Response(data)
+# @api_view(['GET'])
+# def get_conversations(request):
+#     conversations = ConversationVoice.objects.all()[:10]
+#     data = [{
+#         'id': conv.id,
+#         'user_message': conv.user_message,
+#         'ai_response': conv.ai_response,
+#         'created_at': conv.created_at
+#     } for conv in conversations]
+#     return Response(data)
