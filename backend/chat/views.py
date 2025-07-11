@@ -110,27 +110,40 @@ def conversation_messages(request, conversation_id):
 
 @api_view(['POST'])
 def voice_chat(request):
-    user_message = request.data.get("message", "").strip()
-    if not user_message:
-        return Response({"reply": "Je n'ai rien reçu. Réessaie."}, status=400)
-
-    headers = {
-        "Authorization": f"Bearer {GROQ_API_KEY}",
-        "Content-Type": "application/json",
-    }
-
-    payload = {
-        "model": "gpt-4o-mini",  # ou "mixtral-8x7b-32768", etc.
-        "messages": [{"role": "user", "content": user_message}],
-        "max_tokens": 300,
-        "temperature": 0.7,
-    }
-
     try:
-        response = requests.post(GROQ_API_URL, headers=headers, json=payload)
-        response.raise_for_status()
-        data = response.json()
+        user_message = request.data.get("message", "").strip()
+        if not user_message:
+            return Response({"reply": "Je n'ai rien reçu. Réessaie."}, status=400)
+
+        print("Message reçu:", user_message)
+
+        api_key = os.getenv("GROQ_API_KEY")
+        if not api_key:
+            print("❌ Clé API manquante")
+            return Response({"reply": "Clé API manquante"}, status=500)
+
+        headers = {
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json",
+        }
+
+        payload = {
+            "model": "gpt-4o-mini",
+            "messages": [{"role": "user", "content": user_message}],
+            "max_tokens": 200,
+            "temperature": 0.7,
+        }
+
+        res = requests.post("https://api.groq.ai/v1/chat/completions", headers=headers, json=payload)
+        print("Groq response status:", res.status_code)
+        print("Groq response body:", res.text)
+
+        res.raise_for_status()
+        data = res.json()
         reply = data["choices"][0]["message"]["content"]
+
         return Response({"reply": reply})
+
     except Exception as e:
-        return Response({"reply": "Erreur lors de la communication avec Groq.", "error": str(e)}, status=500)
+        print("❌ Exception:", str(e))
+        return Response({"reply": "Erreur serveur Groq.", "error": str(e)}, status=500)
