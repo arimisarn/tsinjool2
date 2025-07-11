@@ -7,5 +7,5 @@ urlpatterns = [
     path("conversations/<int:conversation_id>/messages/", conversation_messages),
     # path("api/voice-chat/", VoiceChatView.as_view(), name="voice-chat"),
     path("process-audio/", process_audio),
-    path("conversations/", get_conversations),
+    path("assistant/", get_conversations),
     ]
