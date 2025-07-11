@@ -21,6 +21,7 @@ import ChatBot from "./pages/ChatBot";
 import AssistantVocal from "./pages/AssistantVocal";
 import CoachVisuel from "./pages/CoachVisuel";
 import Evaluation from "./pages/Evaluation";
+import { AuthProvider } from "./context/AuthContext";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
@@ -33,70 +34,72 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         defaultTheme="system"
       >
         <HeroUIProvider>
-          <Routes>
-            <Route path="/" element={<App />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/register" element={<RegisterPage />} />
-            <Route path="/confirm-email" element={<ConfirmEmailPage />} />
-            <Route
-              path="/profile-setup"
-              element={
-                <RequireAuth>
-                  <ProfileSetup />
-                </RequireAuth>
-              }
-            />
-            <Route
-              path="/evaluation"
-              element={
-                <RequireAuth>
-                  <Evaluation />
-                </RequireAuth>
-              }
-            />
-            <Route element={<Layout />}>
+          <AuthProvider>
+            <Routes>
+              <Route path="/" element={<App />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<RegisterPage />} />
+              <Route path="/confirm-email" element={<ConfirmEmailPage />} />
               <Route
-                path="/profile"
+                path="/profile-setup"
                 element={
                   <RequireAuth>
-                    <ProfilePage />
+                    <ProfileSetup />
                   </RequireAuth>
                 }
               />
               <Route
-                path="/coach-tsinjo"
+                path="/evaluation"
                 element={
                   <RequireAuth>
-                    <ChatBot />
+                    <Evaluation />
                   </RequireAuth>
                 }
               />
-              <Route
-                path="/assistant-vocal"
-                element={
-                  <RequireAuth>
-                    <AssistantVocal />
-                  </RequireAuth>
-                }
-              />
-              <Route
-                path="/coach-visuel"
-                element={
-                  <RequireAuth>
-                    <CoachVisuel />
-                  </RequireAuth>
-                }
-              />
-              <Route
-                path="/dashboard"
-                element={
-                  <RequireAuth>
-                    <Dashboard />
-                  </RequireAuth>
-                }
-              />
-            </Route>
-          </Routes>
+              <Route element={<Layout />}>
+                <Route
+                  path="/profile"
+                  element={
+                    <RequireAuth>
+                      <ProfilePage />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="/coach-tsinjo"
+                  element={
+                    <RequireAuth>
+                      <ChatBot />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="/assistant-vocal"
+                  element={
+                    <RequireAuth>
+                      <AssistantVocal />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="/coach-visuel"
+                  element={
+                    <RequireAuth>
+                      <CoachVisuel />
+                    </RequireAuth>
+                  }
+                />
+                <Route
+                  path="/dashboard"
+                  element={
+                    <RequireAuth>
+                      <Dashboard />
+                    </RequireAuth>
+                  }
+                />
+              </Route>
+            </Routes>
+          </AuthProvider>
         </HeroUIProvider>
       </ThemeProvider>
     </BrowserRouter>
