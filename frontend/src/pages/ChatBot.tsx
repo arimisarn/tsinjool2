@@ -353,7 +353,7 @@ export default function ChatBot() {
                 type="submit"
                 size="icon"
                 disabled={!input.trim()}
-                className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 bg-transparent hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-300"
+                className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 bg-transparent mr-6 px-2 bg-purple-700 hover:bg-gray-300 dark:hover:bg-purple-500 text-gray-600 dark:text-gray-300"
               >
                 <Send size={16} />
               </Button>
