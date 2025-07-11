@@ -59,7 +59,7 @@ const AssistantVocal: React.FC = () => {
         const base64Audio = reader.result as string;
         
         const response = await axios.post(
-          `${process.env.REACT_APP_API_URL}/api/assistant/process-audio/`,
+          `https://tsinjool-backend/api/assistant/assistant/`,
           { audio: base64Audio },
           { headers: { 'Content-Type': 'application/json' } }
         );
