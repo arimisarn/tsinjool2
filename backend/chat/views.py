@@ -107,59 +107,59 @@ def conversation_messages(request, conversation_id):
 
 
 
-class VoiceChatView(APIView):
-    parser_classes = [MultiPartParser]
+# class VoiceChatView(APIView):
+#     parser_classes = [MultiPartParser]
 
-    def post(self, request, *args, **kwargs):
-        audio_file = request.FILES.get("audio")
-        if not audio_file:
-            return Response({"error": "Aucun fichier audio reçu."}, status=400)
+#     def post(self, request, *args, **kwargs):
+#         audio_file = request.FILES.get("audio")
+#         if not audio_file:
+#             return Response({"error": "Aucun fichier audio reçu."}, status=400)
 
-        # ⏺️ Sauver le fichier temporairement
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".webm") as tmp_audio:
-            for chunk in audio_file.chunks():
-                tmp_audio.write(chunk)
-            audio_path = tmp_audio.name
+#         # ⏺️ Sauver le fichier temporairement
+#         with tempfile.NamedTemporaryFile(delete=False, suffix=".webm") as tmp_audio:
+#             for chunk in audio_file.chunks():
+#                 tmp_audio.write(chunk)
+#             audio_path = tmp_audio.name
 
-        # 🧠 Transcription avec Whisper
-        transcriber = pipeline("automatic-speech-recognition", model="openai/whisper-large")
-        transcription = transcriber(audio_path)["text"]
+#         # 🧠 Transcription avec Whisper
+#         transcriber = pipeline("automatic-speech-recognition", model="openai/whisper-large")
+#         transcription = transcriber(audio_path)["text"]
 
-        # 🤖 Génération de réponse avec Mistral
-        chat = pipeline("text-generation", model="mistralai/Mistral-7B-Instruct-v0.1")
-        response_text = chat(f"L'utilisateur a dit : {transcription}")[0]["generated_text"]
+#         # 🤖 Génération de réponse avec Mistral
+#         chat = pipeline("text-generation", model="mistralai/Mistral-7B-Instruct-v0.1")
+#         response_text = chat(f"L'utilisateur a dit : {transcription}")[0]["generated_text"]
 
-        # 🔊 Synthèse vocale avec TTS
-        tts = TTS(model_name="tts_models/fr/thorsten/tacotron2-DCA")  # adapte selon la langue !
-        response_audio_path = os.path.join(tempfile.gettempdir(), "response.wav")
-        tts.tts_to_file(text=response_text, file_path=response_audio_path)
+#         # 🔊 Synthèse vocale avec TTS
+#         tts = TTS(model_name="tts_models/fr/thorsten/tacotron2-DCA")  # adapte selon la langue !
+#         response_audio_path = os.path.join(tempfile.gettempdir(), "response.wav")
+#         tts.tts_to_file(text=response_text, file_path=response_audio_path)
 
-        # 📤 Envoie l'audio de réponse au frontend
-        with open(response_audio_path, "rb") as audio_response:
-            return Response(
-                {
-                    "transcription": transcription,
-                    "response_text": response_text
-                },
-                headers={"Content-Disposition": "attachment; filename=response.wav"},
-                content_type="audio/wav",
-            )
+#         # 📤 Envoie l'audio de réponse au frontend
+#         with open(response_audio_path, "rb") as audio_response:
+#             return Response(
+#                 {
+#                     "transcription": transcription,
+#                     "response_text": response_text
+#                 },
+#                 headers={"Content-Disposition": "attachment; filename=response.wav"},
+#                 content_type="audio/wav",
+#             )
 
-    parser_classes = [MultiPartParser]
+#     parser_classes = [MultiPartParser]
 
-    def post(self, request, *args, **kwargs):
-        audio_file = request.FILES.get("audio")
+#     def post(self, request, *args, **kwargs):
+#         audio_file = request.FILES.get("audio")
 
-        if not audio_file:
-            return Response({"error": "Aucun fichier audio reçu."}, status=400)
+#         if not audio_file:
+#             return Response({"error": "Aucun fichier audio reçu."}, status=400)
 
-        with tempfile.NamedTemporaryFile(delete=False, suffix=".webm") as tmp:
-            for chunk in audio_file.chunks():
-                tmp.write(chunk)
-            tmp_path = tmp.name
+#         with tempfile.NamedTemporaryFile(delete=False, suffix=".webm") as tmp:
+#             for chunk in audio_file.chunks():
+#                 tmp.write(chunk)
+#             tmp_path = tmp.name
 
-        # 🧠 Transcription avec Hugging Face
-        transcriber = pipeline("automatic-speech-recognition", model="openai/whisper-large")
-        transcription = transcriber(tmp_path)["text"]
+#         # 🧠 Transcription avec Hugging Face
+#         transcriber = pipeline("automatic-speech-recognition", model="openai/whisper-large")
+#         transcription = transcriber(tmp_path)["text"]
 
-        return Response({"transcription": transcription})
+#         return Response({"transcription": transcription})
