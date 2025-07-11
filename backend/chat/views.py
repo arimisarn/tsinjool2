@@ -9,7 +9,9 @@ from django.conf import settings
 
 TOGETHER_API_KEY = os.getenv("TOGETHER_API_KEY")
 # URL du modèle chatbot sur Hugging Face
-HUGGINGFACE_API_URL = "https://api-inference.huggingface.co/models/facebook/blenderbot-400M-distill"
+# HUGGINGFACE_API_URL = "https://api-inference.huggingface.co/models/facebook/blenderbot-400M-distill"
+HUGGINGFACE_API_URL = "https://api-inference.huggingface.co/models/microsoft/DialoGPT-small"
+
 
 # On lit le token depuis settings (chargé depuis .env)
 headers = {
@@ -124,7 +126,12 @@ def voice_chat(request):
         response = requests.post(HUGGINGFACE_API_URL, headers=headers, json=payload)
 
         if response.status_code != 200:
-            return Response({"reply": "Erreur Hugging Face"}, status=response.status_code)
+            # Affiche la réponse complète pour debug
+            return Response({
+                "reply": "Erreur Hugging Face",
+                "details": response.text,
+                "status_code": response.status_code
+            }, status=response.status_code)
 
         data = response.json()
 
