@@ -18,6 +18,8 @@ import RequireAuth from "./components/auth/RequireAuth";
 import "./index.css";
 import ConfirmEmailPage from "./pages/ ConfirmEmailPage";
 import ChatBot from "./pages/ChatBot";
+import AssistantVocal from "./pages/AssistantVocal";
+import CoachVisuel from "./pages/CoachVisuel";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
@@ -54,10 +56,26 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
                 }
               />
               <Route
-                path="/chat"
+                path="/chat-tsinjo"
                 element={
                   <RequireAuth>
                     <ChatBot />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="/assistant-vocal"
+                element={
+                  <RequireAuth>
+                    <AssistantVocal />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="/coach-visuel"
+                element={
+                  <RequireAuth>
+                    <CoachVisuel />
                   </RequireAuth>
                 }
               />

@@ -6,9 +6,7 @@ import {
   MessageCircle,
   Trophy,
   CheckCircle,
-  Zap,
   TrendingUp,
-  Heart,
   Sparkles,
   Search,
   Filter,
@@ -46,7 +44,7 @@ const Navigation = () => {
           <NavigationMenuItem>
             <NavigationMenuTrigger className="text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800">
               <BotMessageSquare className="w-5 h-5 mr-2" />
-              <Link to="/chat">Discuter avec l'IA</Link>
+              Discuter avec l'IA
             </NavigationMenuTrigger>
             <NavigationMenuContent className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700">
               <ul className="grid gap-3 p-4 md:w-[500px] lg:w-[600px] lg:grid-cols-[.75fr_1fr]">
@@ -65,36 +63,46 @@ const Navigation = () => {
                 </li>
 
                 {[
-                  "Développement Personnel",
-                  "Coaching Professionnel",
-                  "Bien-être & Santé",
-                ].map((title, i) => {
-                  const icons = [
-                    <TrendingUp className="w-4 h-4 mr-2 text-green-500" />,
-                    <Zap className="w-4 h-4 mr-2 text-yellow-500" />,
-                    <Heart className="w-4 h-4 mr-2 text-red-500" />,
-                  ];
-                  const descriptions = [
-                    "Confiance en soi, gestion du stress, habitudes positives",
-                    "Leadership, productivité, évolution de carrière",
-                    "Équilibre vie-travail, nutrition, fitness mental",
-                  ];
-                  return (
-                    <li key={i}>
-                      <NavigationMenuLink asChild>
-                        <a className="block space-y-1 rounded-md p-3 transition-colors hover:bg-gray-100 dark:hover:bg-gray-700 focus:bg-gray-100 dark:focus:bg-gray-700">
-                          <div className="text-sm font-medium flex items-center text-gray-900 dark:text-white">
-                            {icons[i]}
-                            {title}
-                          </div>
-                          <p className="text-sm text-gray-600 dark:text-gray-400">
-                            {descriptions[i]}
-                          </p>
-                        </a>
-                      </NavigationMenuLink>
-                    </li>
-                  );
-                })}
+                  {
+                    title: "Tsinjo (Coach IA)",
+                    icon: <Sparkles className="w-4 h-4 text-purple-500 mr-2" />,
+                    description: "Votre assistant IA personnel disponible 24/7",
+                    path: "/coach-tsinjo",
+                  },
+                  {
+                    title: "Assistant Vocal IA",
+                    icon: (
+                      <MessageCircle className="w-4 h-4 text-cyan-500 mr-2" />
+                    ),
+                    description:
+                      "Discutez oralement avec l’IA comme un vrai coach",
+                    path: "/assistant-vocal",
+                  },
+                  {
+                    title: "SenseAI (Coach Visuel)",
+                    icon: <Search className="w-4 h-4 text-blue-500 mr-2" />,
+                    description:
+                      "L’IA qui vous comprend par votre expression visuelle",
+                    path: "/coach-visuel",
+                  },
+                ].map((item, i) => (
+                  <li key={i}>
+                    <NavigationMenuLink asChild>
+                      <Link
+                        to={item.path}
+                        className="block space-y-1 rounded-md p-3 transition-colors hover:bg-gray-100 dark:hover:bg-gray-700 focus:bg-gray-100 dark:focus:bg-gray-700"
+                      >
+                        <div className="text-sm font-medium flex items-center text-gray-900 dark:text-white">
+                          {item.icon}
+                          {item.title}
+                        </div>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                          {item.description}
+                        </p>
+                      </Link>
+                    </NavigationMenuLink>
+                  </li>
+                ))}
               </ul>
             </NavigationMenuContent>
           </NavigationMenuItem>
