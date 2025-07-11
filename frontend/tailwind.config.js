@@ -2,7 +2,7 @@ const { heroui } = require("@heroui/react");
 
 /** @type {import('tailwindcss').Config} */
 export default {
-  darkMode: ["class", "class"], // Un seul darkMode suffit
+  darkMode: "class", // Un seul darkMode suffit
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
