@@ -1,10 +1,9 @@
 from django.urls import path
-from .views import chat_with_ai,conversation_list, conversation_messages
-from .views import voice_chat
+from .views import chat_api, chat_with_ai,conversation_list, conversation_messages
 
 urlpatterns = [
     path("chat/", chat_with_ai, name="chat_with_ai"),
     path("conversations/", conversation_list, name="conversation_list"),
     path("conversations/<int:conversation_id>/messages/", conversation_messages),
-    path("voice-chat/", voice_chat, name="voice_chat"),
+    path("voice-chat/", chat_api, name="voice_chat"),
 ]
