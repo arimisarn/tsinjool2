@@ -5,8 +5,16 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status, permissions
 from .models import Conversation, Message
+from django.conf import settings
 
 TOGETHER_API_KEY = os.getenv("TOGETHER_API_KEY")
+# URL du modèle chatbot sur Hugging Face
+HUGGINGFACE_API_URL = "https://api-inference.huggingface.co/models/facebook/blenderbot-400M-distill"
+
+# On lit le token depuis settings (chargé depuis .env)
+headers = {
+    "Authorization": f"Bearer {settings.HUGGINGFACE_API_TOKEN}"
+}
 
 @api_view(["POST"])
 @permission_classes([permissions.IsAuthenticated])
@@ -95,3 +103,38 @@ def conversation_messages(request, conversation_id):
     messages = Message.objects.filter(conversation=conversation).order_by("timestamp")
     serializer = MessageSerializer(messages, many=True)
     return Response(serializer.data)
+
+
+
+@api_view(['POST'])
+def voice_chat(request):
+    user_input = request.data.get('message', '')
+
+    if not user_input:
+        return Response({"reply": "Je n'ai rien entendu. Réessaie."}, status=400)
+
+    payload = {
+        "inputs": {
+            "text": user_input
+        }
+    }
+
+    try:
+        response = requests.post(HUGGINGFACE_API_URL, headers=headers, json=payload)
+
+        if response.status_code != 200:
+            return Response({"reply": "Erreur Hugging Face"}, status=response.status_code)
+
+        data = response.json()
+
+        if isinstance(data, dict) and "generated_text" in data:
+            reply = data["generated_text"]
+        elif isinstance(data, list) and len(data) > 0 and "generated_text" in data[0]:
+            reply = data[0]["generated_text"]
+        else:
+            reply = "Je n’ai pas pu générer de réponse."
+
+        return Response({"reply": reply})
+
+    except Exception as e:
+        return Response({"reply": f"Erreur serveur : {str(e)}"}, status=500)

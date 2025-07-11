@@ -155,3 +155,4 @@ DEFAULT_FROM_EMAIL = "Tsinjool <noreply@tsinjool.com>"  # Nom d’expéditeur vi
 EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
 TOGETHER_API_KEY = os.getenv("TOGETHER_API_KEY")
+HUGGINGFACE_API_TOKEN = config("HUGGINGFACE_API_TOKEN")
