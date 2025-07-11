@@ -364,7 +364,7 @@ export default function ChatBot() {
   );
 
   return (
-    <div className="flex h-screen bg-white text-gray-800 dark:bg-gray-900 dark:text-white overflow-hidden">
+    <div className="flex h-[85vh] bg-white text-gray-800 dark:bg-gray-900 dark:text-white overflow-hidden">
       <AnimatePresence>
         {sidebarOpen && (
           <motion.aside
