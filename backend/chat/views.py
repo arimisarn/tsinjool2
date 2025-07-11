@@ -108,6 +108,7 @@ def conversation_messages(request, conversation_id):
 
 @api_view(['POST'])
 def voice_chat(request):
+    print("Body reçu :", request.data)  # Pour debug
     user_input = request.data.get('message', '')
 
     if not user_input:
