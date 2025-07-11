@@ -5,12 +5,16 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status, permissions
 from .models import Conversation, Message
-from django.conf import settings
+from gtts import gTTS
+import whisper
+import tempfile
+
 
 TOGETHER_API_KEY = os.getenv("TOGETHER_API_KEY")
 
 GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")  # 🔐 Appelle la clé depuis l'environnement
+model_whisper = whisper.load_model("base")
 
 @api_view(["POST"])
 @permission_classes([permissions.IsAuthenticated])
@@ -100,21 +104,33 @@ def conversation_messages(request, conversation_id):
     serializer = MessageSerializer(messages, many=True)
     return Response(serializer.data)
 
-
-
 @api_view(['POST'])
 def voice_chat(request):
     try:
-        user_message = request.data.get("message", "").strip()
+        # 1. Récupère le fichier audio envoyé (form-data)
+        audio_file = request.FILES.get("audio")
+        if not audio_file:
+            return Response({"reply": "Aucun fichier audio reçu."}, status=400)
+
+        # Sauvegarde temporaire du fichier audio pour Whisper
+        with tempfile.NamedTemporaryFile(suffix=".webm") as tmp:
+            for chunk in audio_file.chunks():
+                tmp.write(chunk)
+            tmp.flush()
+
+            # 2. Transcription audio → texte avec Whisper
+            transcription = model_whisper.transcribe(tmp.name)
+            user_message = transcription.get("text", "").strip()
+
         if not user_message:
-            return Response({"reply": "Je n'ai rien reçu. Réessaie."}, status=400)
+            return Response({"reply": "Je n'ai rien compris à l'audio."}, status=400)
 
-        print("✅ Message reçu:", user_message)
+        print("✅ Message transcrit:", user_message)
 
+        # 3. Appel API Groq (Llama)
         api_key = os.getenv("GROQ_API_KEY")
         if not api_key:
-            print("❌ Clé API manquante")
-            return Response({"reply": "Clé API manquante"}, status=500)
+            return Response({"reply": "Clé API manquante."}, status=500)
 
         headers = {
             "Authorization": f"Bearer {api_key}",
@@ -122,22 +138,36 @@ def voice_chat(request):
         }
 
         payload = {
-            "model": "llama-3.1-8b-instant",  # ✅ Nouveau modèle
+            "model": "llama-3.1-8b-instant",
             "messages": [{"role": "user", "content": user_message}],
             "max_tokens": 200,
             "temperature": 0.7,
         }
 
         response = requests.post(GROQ_API_URL, headers=headers, json=payload)
-        print("🌐 Groq response status:", response.status_code)
-        print("🌐 Groq response body:", response.text)
-
         response.raise_for_status()
         data = response.json()
-        reply = data["choices"][0]["message"]["content"]
+        reply_text = data["choices"][0]["message"]["content"]
+        print("🌐 Réponse Groq:", reply_text)
 
-        return Response({"reply": reply})
+        # 4. Texte → audio avec gTTS (Google Text-to-Speech)
+        tts = gTTS(text=reply_text, lang="fr")
+        with tempfile.NamedTemporaryFile(suffix=".mp3") as tmp_audio:
+            tts.save(tmp_audio.name)
+            tmp_audio.seek(0)
+            audio_data = tmp_audio.read()
+
+        # 5. Retourne audio binaire encodé en base64 + texte
+        import base64
+        audio_base64 = base64.b64encode(audio_data).decode("utf-8")
+
+        return Response({
+            "reply": reply_text,
+            "audio_base64": audio_base64,
+            "audio_format": "mp3"
+        })
 
     except Exception as e:
         print("❌ Exception attrapée:", str(e))
-        return Response({"reply": "Erreur serveur Groq.", "error": str(e)}, status=500)
+        return Response({"reply": "Erreur serveur.", "error": str(e)}, status=500)
+

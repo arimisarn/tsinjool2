@@ -11,3 +11,8 @@ python-decouple==3.8
 sqlparse==0.5.3
 Pillow==11.3.0
 requests
+torch
+torchaudio
+openai-whisper
+gtts
+
