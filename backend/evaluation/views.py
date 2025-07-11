@@ -14,6 +14,7 @@ class EvaluationView(APIView):
         serializer = EvaluationSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             evaluation = serializer.save()
+
             try:
                 ia_result = analyser_evaluation_ia(
                     request.user.profile.coaching_type,
@@ -21,9 +22,15 @@ class EvaluationView(APIView):
                 )
                 evaluation.resultat_ia = ia_result
                 evaluation.save()
+
+                # Re-serializer pour inclure le résultat IA
+                serializer = EvaluationSerializer(evaluation)
+
             except Exception as e:
                 print("Erreur IA:", e)
+
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET'])
