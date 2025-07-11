@@ -35,12 +35,35 @@ export default function ChatBot() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // Scroll automatique en bas à chaque nouveau message ou changement d'état typing
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isTyping]);
 
+  // Chargement initial des conversations + chargement de la première conversation si existe
   useEffect(() => {
-    fetchConversations();
+    const fetchAndLoad = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await axios.get(
+          "https://tsinjool-backend.onrender.com/api/conversations/",
+          {
+            headers: { Authorization: token ? `Token ${token}` : "" },
+          }
+        );
+        setConversations(res.data);
+
+        if (res.data.length > 0) {
+          await loadConversation(res.data[0]);
+        } else {
+          setConversationId(null);
+          setMessages([]);
+        }
+      } catch (err) {
+        console.error("Erreur récupération historique", err);
+      }
+    };
+    fetchAndLoad();
   }, []);
 
   useEffect(() => {
@@ -49,23 +72,10 @@ export default function ChatBot() {
     }
   }, [sidebarOpen]);
 
-  const fetchConversations = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const res = await axios.get(
-        "https://tsinjool-backend.onrender.com/api/conversations/",
-        {
-          headers: { Authorization: token ? `Token ${token}` : "" },
-        }
-      );
-      setConversations(res.data);
-    } catch (err) {
-      console.error("Erreur récupération historique", err);
-    }
-  };
-
+  // Charge les messages d'une conversation donnée, avec cache
   const loadConversation = async (conv: Conversation) => {
     setConversationId(conv.id);
+
     if (messageCache[conv.id]) {
       setMessages(messageCache[conv.id]);
       return;
@@ -74,7 +84,7 @@ export default function ChatBot() {
     const token = localStorage.getItem("token");
     try {
       const res = await axios.get(
-        `https://ton-backend.onrender.com/api/conversations/${conv.id}/messages/`,
+        `https://tsinjool-backend.onrender.com/api/conversations/${conv.id}/messages/`,
         {
           headers: { Authorization: `Token ${token}` },
         }
@@ -83,9 +93,11 @@ export default function ChatBot() {
       setMessages(res.data);
     } catch (err) {
       console.error("Erreur chargement messages", err);
+      setMessages([]);
     }
   };
 
+  // Démarre une nouvelle conversation
   const handleNewChat = () => {
     setConversationId(null);
     setMessages([]);
@@ -93,6 +105,7 @@ export default function ChatBot() {
     inputRef.current?.focus();
   };
 
+  // Envoi d'un message à l'API, mise à jour du cache et affichage
   const sendMessage = async () => {
     if (!input.trim()) return;
 
@@ -129,6 +142,7 @@ export default function ChatBot() {
       setMessages(updatedMessages);
       setMessageCache((prev) => ({ ...prev, [newConvId]: updatedMessages }));
 
+      // Rafraîchir la liste des conversations après ajout
       fetchConversations();
     } catch (err) {
       setMessages((prev) => [
@@ -137,6 +151,22 @@ export default function ChatBot() {
       ]);
     } finally {
       setIsTyping(false);
+    }
+  };
+
+  // Recharge les conversations (utile après un nouveau chat)
+  const fetchConversations = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.get(
+        "https://tsinjool-backend.onrender.com/api/conversations/",
+        {
+          headers: { Authorization: token ? `Token ${token}` : "" },
+        }
+      );
+      setConversations(res.data);
+    } catch (err) {
+      console.error("Erreur récupération historique", err);
     }
   };
 
@@ -222,7 +252,6 @@ export default function ChatBot() {
             variant="ghost"
             size="icon"
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="text-gray-700 dark:text-gray-300"
           >
             {sidebarOpen ? <PanelLeft size={20} /> : <PanelRight size={20} />}
           </Button>
@@ -303,7 +332,7 @@ export default function ChatBot() {
           )}
         </div>
 
-        <div className="border-t border-gray-300 dark:border-zinc-700 w-full">
+        <div className="border-t border-gray-300 dark:border-gray-700 w-full">
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -318,13 +347,13 @@ export default function ChatBot() {
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder="Envoyer un message..."
-                className="w-full pr-12 rounded-none bg-gray-100 dark:bg-zinc-800 border-none text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                className="w-full pr-12 rounded-none bg-gray-100 dark:bg-gray-800 border-none text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
               />
               <Button
                 type="submit"
                 size="icon"
                 disabled={!input.trim()}
-                className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 bg-transparent hover:bg-gray-300 dark:hover:bg-zinc-600 text-gray-600 dark:text-gray-300"
+                className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 bg-transparent hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-300"
               >
                 <Send size={16} />
               </Button>
