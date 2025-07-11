@@ -302,7 +302,7 @@ export default function ChatBot() {
             </div>
           )}
         </div>
-        <div className="border-t border-gray-200 dark:border-zinc-700">
+        <div className="border-t border-gray-300 dark:border-gray-700 w-full">
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -317,13 +317,13 @@ export default function ChatBot() {
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder="Envoyer un message..."
-                className="w-full pr-12 bg-gray-100 dark:bg-zinc-800 border border-gray-300 dark:border-zinc-600 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                className="w-full pr-12 rounded-none bg-gray-100 dark:bg-gray-800 border-none text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
               />
               <Button
                 type="submit"
                 size="icon"
                 disabled={!input.trim()}
-                className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 bg-transparent hover:bg-gray-300 dark:hover:bg-zinc-700 text-gray-600 dark:text-gray-300"
+                className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 bg-transparent hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-600 dark:text-gray-300"
               >
                 <Send size={16} />
               </Button>
