@@ -116,8 +116,13 @@ def chat_api(request):
     payload = {"inputs": user_message}
 
     response = requests.post(API_URL, headers=headers, json=payload)
+    
+    print("HF API status code:", response.status_code)
+    print("HF API response text:", response.text)
+
     if response.status_code == 200:
         result = response.json()
+        print("HF API JSON:", result)
         reply = result.get('generated_text', 'Désolé, je n’ai pas de réponse.')
     else:
         reply = "Erreur lors de la génération."
