@@ -340,20 +340,20 @@ export default function ChatBot() {
             }}
             className="w-full"
           >
-            <div className="relative w-full mb-4 px-4">
+            <div className="relative w-full mb-4 px-4 flex">
               <Input
                 ref={inputRef}
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
                 placeholder="Envoyer un message..."
-                className="w-full pr-12 rounded-none bg-gray-100 dark:bg-gray-800 border-none text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400"
+                className="w-full rounded-l-md rounded-r-none bg-gray-100 dark:bg-gray-800 border-none text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 h-12"
               />
               <Button
                 type="submit"
                 size="icon"
                 disabled={!input.trim()}
-                className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 bg-transparent mr-6 px-2 bg-purple-700 hover:bg-gray-300 dark:hover:bg-purple-500 text-gray-600 dark:text-gray-300"
+                className="rounded-r-md rounded-l-none h-12 w-12 bg-purple-700 hover:bg-purple-600 dark:hover:bg-purple-500 text-white"
               >
                 <Send size={16} />
               </Button>
