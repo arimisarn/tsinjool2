@@ -122,9 +122,9 @@ def voice_chat(request):
         }
 
         payload = {
-            "model": "meta-llama/llama-guard-4-12b",  # Changement de modèle ici
+            "model": "llama-3.1-8b-instant",  # ✅ Nouveau modèle
             "messages": [{"role": "user", "content": user_message}],
-            "max_tokens": 1024,                      # Max autorisé pour ce modèle
+            "max_tokens": 200,
             "temperature": 0.7,
         }
 
