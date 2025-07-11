@@ -56,7 +56,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
                 }
               />
               <Route
-                path="/chat-tsinjo"
+                path="/coach-tsinjo"
                 element={
                   <RequireAuth>
                     <ChatBot />
