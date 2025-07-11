@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import chat_with_ai,conversation_list, conversation_messages, voice_chat_from_audio
+from .views import chat_with_ai,conversation_list, conversation_messages
 from .views import voice_chat
 
 urlpatterns = [
