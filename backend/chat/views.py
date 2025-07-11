@@ -6,11 +6,6 @@ from rest_framework.response import Response
 from rest_framework import status, permissions
 from .models import Conversation, Message
 from django.conf import settings
-from rest_framework.parsers import MultiPartParser
-from transformers import pipeline
-import tempfile
-from rest_framework.views import APIView
-from TTS.api import TTS
 
 TOGETHER_API_KEY = os.getenv("TOGETHER_API_KEY")
 
