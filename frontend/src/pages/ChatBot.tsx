@@ -187,7 +187,7 @@ export default function ChatBot() {
   );
 
   return (
-    <div className="flex h-[85vh] bg-white dark:bg-zinc-900 text-gray-900 dark:text-white overflow-hidden">
+    <div className="flex h-[80vh] bg-white dark:bg-zinc-900 text-gray-900 dark:text-white overflow-hidden">
       <AnimatePresence>
         {sidebarOpen && (
           <motion.aside
@@ -340,7 +340,7 @@ export default function ChatBot() {
             }}
             className="w-full"
           >
-            <div className="relative w-full mb-4">
+            <div className="relative w-full mb-4 px-4">
               <Input
                 ref={inputRef}
                 value={input}
