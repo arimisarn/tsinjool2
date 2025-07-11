@@ -15,4 +15,8 @@ torch
 torchaudio
 openai-whisper
 gtts
+transformers
+sentencepiece
+TTS
+
 
