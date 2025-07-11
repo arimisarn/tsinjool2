@@ -9,7 +9,7 @@ from django.conf import settings
 
 TOGETHER_API_KEY = os.getenv("TOGETHER_API_KEY")
 
-GROQ_API_URL = "https://api.groq.ai/v1/chat/completions"
+GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")  # 🔐 Appelle la clé depuis l'environnement
 
 @api_view(["POST"])
@@ -109,7 +109,7 @@ def voice_chat(request):
         if not user_message:
             return Response({"reply": "Je n'ai rien reçu. Réessaie."}, status=400)
 
-        print("Message reçu:", user_message)
+        print("✅ Message reçu:", user_message)
 
         api_key = os.getenv("GROQ_API_KEY")
         if not api_key:
@@ -122,22 +122,22 @@ def voice_chat(request):
         }
 
         payload = {
-            "model": "gpt-4o-mini",
+            "model": "gpt-4o",  # ✅ Modèle recommandé par Groq (ou mixtral-8x7b-32768)
             "messages": [{"role": "user", "content": user_message}],
             "max_tokens": 200,
             "temperature": 0.7,
         }
 
-        res = requests.post("https://api.groq.ai/v1/chat/completions", headers=headers, json=payload)
-        print("Groq response status:", res.status_code)
-        print("Groq response body:", res.text)
+        response = requests.post(GROQ_API_URL, headers=headers, json=payload)
+        print("🌐 Groq response status:", response.status_code)
+        print("🌐 Groq response body:", response.text)
 
-        res.raise_for_status()
-        data = res.json()
+        response.raise_for_status()
+        data = response.json()
         reply = data["choices"][0]["message"]["content"]
 
         return Response({"reply": reply})
 
     except Exception as e:
-        print("❌ Exception:", str(e))
+        print("❌ Exception attrapée:", str(e))
         return Response({"reply": "Erreur serveur Groq.", "error": str(e)}, status=500)
