@@ -12,12 +12,6 @@ TOGETHER_API_KEY = os.getenv("TOGETHER_API_KEY")
 GROQ_API_URL = "https://api.groq.ai/v1/chat/completions"
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")  # 🔐 Appelle la clé depuis l'environnement
 
-
-# On lit le token depuis settings (chargé depuis .env)
-headers = {
-    "Authorization": f"Bearer {settings.HUGGINGFACE_API_TOKEN}"
-}
-
 @api_view(["POST"])
 @permission_classes([permissions.IsAuthenticated])
 def chat_with_ai(request):
