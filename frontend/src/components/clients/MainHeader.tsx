@@ -35,18 +35,17 @@ const MainHeader: React.FC = () => {
 
         {/* Actions */}
         <div className="flex items-center gap-4">
-          <div className="bg-orange-500 text-white px-4 py-2 rounded-lg text-sm font-medium">
+          <div className="bg-orange-500 text-white px-4 py-2 rounded-lg text-sm font-medium shadow hover:opacity-90 transition">
             Démo 0/7 jours
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-4">
             <DarkMode />
 
             <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
               <Calendar className="w-4 h-4" />
               <span className="text-sm">{ordreDate}</span>
-              <Bell className="w-5 h-5" />
-
+              <Bell className="w-5 h-5 hover:text-blue-500 dark:hover:text-blue-400 cursor-pointer transition" />
               <img
                 src={pic}
                 className="w-8 h-8 rounded-full border-2 border-gray-400 dark:border-white cursor-pointer transition-all"
