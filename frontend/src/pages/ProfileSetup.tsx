@@ -99,10 +99,11 @@ export default function ProfileSetup() {
         }
       );
       console.log(response);
-      
 
       toast.success("Profil mis à jour avec succès !");
-      navigate("/dashboard");
+      navigate("/evaluation", {
+        state: { coachingType },
+      });
     } catch (error: any) {
       console.error(error?.response?.data || error.message);
       toast.error(
@@ -119,7 +120,6 @@ export default function ProfileSetup() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center p-2 sm:p-4">
       <div className="w-full max-w-4xl bg-white rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col lg:flex-row min-h-[600px]">
-
         {/* SECTION FORMULAIRE */}
         <div className="w-full lg:w-3/5 flex flex-col">
           <div className="flex justify-between items-center p-4 sm:p-6 lg:p-8">
@@ -129,18 +129,22 @@ export default function ProfileSetup() {
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">Tsinjool</h1>
-                <p className="text-sm text-gray-600">Coach personnel intelligent</p>
+                <p className="text-sm text-gray-600">
+                  Coach personnel intelligent
+                </p>
               </div>
             </div>
           </div>
 
           <div className="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-8">
             <form onSubmit={handleSubmit} className="w-full max-w-md space-y-6">
-
               <div>
-                <p className="text-xs uppercase tracking-wide text-gray-400 mb-2">ÉTAPE 2 SUR 2</p>
+                <p className="text-xs uppercase tracking-wide text-gray-400 mb-2">
+                  ÉTAPE 2 SUR 2
+                </p>
                 <h1 className="text-3xl font-bold text-gray-900 mb-1">
-                  Configurez votre profil<span className="text-purple-500">.</span>
+                  Configurez votre profil
+                  <span className="text-purple-500">.</span>
                 </h1>
                 <p className="text-sm text-gray-600">
                   Personnalisez votre expérience de coaching
@@ -152,7 +156,11 @@ export default function ProfileSetup() {
                 <div className="relative group">
                   <div className="w-24 h-24 bg-gradient-to-br from-purple-400 to-blue-500 rounded-full flex items-center justify-center overflow-hidden border-4 border-white shadow-lg">
                     {preview ? (
-                      <img src={preview} alt="Aperçu" className="w-full h-full object-cover" />
+                      <img
+                        src={preview}
+                        alt="Aperçu"
+                        className="w-full h-full object-cover"
+                      />
                     ) : (
                       <User className="w-10 h-10 text-white" />
                     )}
@@ -162,7 +170,12 @@ export default function ProfileSetup() {
                     className="absolute -bottom-2 -right-2 w-8 h-8 bg-blue-500 hover:bg-blue-600 rounded-full flex items-center justify-center cursor-pointer shadow-lg transition-all duration-200 transform hover:scale-110"
                   >
                     <Camera className="w-4 h-4 text-white" />
-                    <input type="file" accept="image/*" onChange={handlePhotoChange} className="hidden" />
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handlePhotoChange}
+                      className="hidden"
+                    />
                   </label>
                 </div>
                 {photo && (
@@ -174,7 +187,9 @@ export default function ProfileSetup() {
 
               {/* BIO */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Présentez-vous</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Présentez-vous
+                </label>
                 <textarea
                   value={bio}
                   onChange={(e) => setBio(e.target.value)}
@@ -215,8 +230,12 @@ export default function ProfileSetup() {
                           {option.icon}
                         </div>
                         <div className="flex-1">
-                          <h3 className="font-semibold text-gray-900">{option.label}</h3>
-                          <p className="text-sm text-gray-600">{option.description}</p>
+                          <h3 className="font-semibold text-gray-900">
+                            {option.label}
+                          </h3>
+                          <p className="text-sm text-gray-600">
+                            {option.description}
+                          </p>
                         </div>
                         {coachingType === option.value && (
                           <CheckCircle className="w-5 h-5 text-blue-500" />

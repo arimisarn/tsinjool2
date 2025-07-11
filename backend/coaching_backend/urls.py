@@ -7,6 +7,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('accounts.urls')),  # 👈 Ajouté ici
     path("api/", include("chat.urls")),
+    path("api/", include("evaluation.urls")),  # Ajoute ça
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

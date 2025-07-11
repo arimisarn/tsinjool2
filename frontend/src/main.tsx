@@ -20,6 +20,7 @@ import ConfirmEmailPage from "./pages/ ConfirmEmailPage";
 import ChatBot from "./pages/ChatBot";
 import AssistantVocal from "./pages/AssistantVocal";
 import CoachVisuel from "./pages/CoachVisuel";
+import Evaluation from "./pages/Evaluation";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
@@ -45,7 +46,14 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
                 </RequireAuth>
               }
             />
-
+            <Route
+              path="/evaluation"
+              element={
+                <RequireAuth>
+                  <Evaluation />
+                </RequireAuth>
+              }
+            />
             <Route element={<Layout />}>
               <Route
                 path="/profile"

@@ -41,9 +41,9 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
 class Profile(models.Model):
     COACHING_TYPES = [
-        ('life', 'Coaching de vie'),
-        ('career', 'Coaching de carrière'),
-        ('health', 'Coaching santé'),
+        ('coaching de vie', 'Coaching de vie'),
+        ('coaching de carrière', 'Coaching de carrière'),
+        ('coaching santé', 'Coaching santé'),
     ]
 
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='profile')
