@@ -1,6 +1,6 @@
 from django.urls import path
 
-from backend.accounts import views
+from accounts import views
 from .views import EvaluationView
 
 urlpatterns = [
