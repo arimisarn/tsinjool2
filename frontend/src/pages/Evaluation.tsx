@@ -30,7 +30,6 @@ export default function Evaluation() {
   );
   const [responses, setResponses] = useState<Record<string, any>>({});
   const [loading, setLoading] = useState(false);
-  console.log(setLoading);
 
   useEffect(() => {
     const mockData: AssessmentData = {
@@ -73,12 +72,27 @@ export default function Evaluation() {
     if (currentStep > 0) setCurrentStep((prev) => prev - 1);
   };
 
+  const isValidResponse = (question: Question): boolean => {
+    const response = responses[question.id];
+
+    if (!response) return false;
+
+    if (question.type === "scale_multiple") {
+      return typeof response === "object" && Object.keys(response).length > 0;
+    }
+
+    if (question.type === "textarea") {
+      return typeof response === "string" && response.trim().length > 0;
+    }
+
+    return true; // default true for other types
+  };
+
   const handleSubmit = async () => {
     try {
-      const token = localStorage.getItem("token"); // ou "access_token" selon ton app
-      if (!token) {
-        throw new Error("Utilisateur non authentifié");
-      }
+      setLoading(true);
+      const token = localStorage.getItem("token");
+      if (!token) throw new Error("Utilisateur non authentifié");
 
       const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/assessment/submit/`,
@@ -98,7 +112,8 @@ export default function Evaluation() {
       }
     } catch (error) {
       console.error("Erreur lors de la soumission :", error);
-      // toast.error("Erreur lors de l'envoi de l'évaluation");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -164,7 +179,7 @@ export default function Evaluation() {
           {currentStep < assessmentData.questions.length - 1 ? (
             <button
               onClick={handleNext}
-              disabled={question.required && !responses[question.id]}
+              disabled={question.required && !isValidResponse(question)}
               className="px-4 py-2 bg-blue-600 text-white rounded-lg disabled:opacity-50"
             >
               Suivant <ArrowRight className="w-4 h-4 inline" />
@@ -172,9 +187,7 @@ export default function Evaluation() {
           ) : (
             <button
               onClick={handleSubmit}
-              disabled={
-                (question.required && !responses[question.id]) || loading
-              }
+              disabled={question.required && !isValidResponse(question)}
               className="px-4 py-2 bg-green-600 text-white rounded-lg disabled:opacity-50"
             >
               {loading ? (
