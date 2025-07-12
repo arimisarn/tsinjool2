@@ -21,7 +21,7 @@ import ChatBot from "./pages/ChatBot";
 import AssistantVocal from "./pages/AssistantVocal";
 import CoachVisuel from "./pages/CoachVisuel";
 import Evaluation from "./pages/Evaluation";
-import { AuthProvider } from "./context/AuthContext";
+// import { AuthProvider } from "./context/AuthContext";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
@@ -34,7 +34,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         defaultTheme="system"
       >
         <HeroUIProvider>
-          <AuthProvider>
+          {/* <AuthProvider> */}
             <Routes>
               <Route path="/" element={<App />} />
               <Route path="/login" element={<LoginPage />} />
@@ -99,7 +99,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
                 />
               </Route>
             </Routes>
-          </AuthProvider>
+          {/* </AuthProvider> */}
         </HeroUIProvider>
       </ThemeProvider>
     </BrowserRouter>

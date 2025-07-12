@@ -1,12 +1,27 @@
-from django.conf import settings
+# models.py (ajoutez à vos modèles existants)
 from django.db import models
+from django.contrib.auth.models import User
 
-# Create your models here.
-class Evaluation(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    answers = models.JSONField()
-    resultat_ia = models.TextField(blank=True, null=True)  # <-- Nouveau champ IA
+class Assessment(models.Model):
+    COACHING_TYPES = [
+        ('life', 'Coaching de vie'),
+        ('career', 'Coaching de carrière'),
+        ('health', 'Coaching santé'),
+    ]
+    
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    coaching_type = models.CharField(max_length=20, choices=COACHING_TYPES)
+    responses = models.JSONField()
+    ai_analysis = models.TextField(blank=True, null=True)
+    completed_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        unique_together = ['user', 'coaching_type']
+
+class CoachingPath(models.Model):
+    assessment = models.OneToOneField(Assessment, on_delete=models.CASCADE)
+    goals = models.JSONField()
+    recommendations = models.JSONField()
+    timeline = models.JSONField()
     created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"Évaluation de {self.user.email} ({self.user.profile.coaching_type})"
+    updated_at = models.DateTimeField(auto_now=True)

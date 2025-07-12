@@ -1,12 +1,17 @@
+# serializers.py (ajoutez à vos serializers existants)
 from rest_framework import serializers
-from .models import Evaluation
+from .models import Assessment, CoachingPath
 
-class EvaluationSerializer(serializers.ModelSerializer):
-    coaching_type = serializers.SerializerMethodField()
-
+class AssessmentSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Evaluation
-        fields = ['id', 'answers', 'resultat_ia', 'coaching_type', 'created_at']
+        model = Assessment
+        fields = ['id', 'coaching_type', 'responses', 'completed_at']
+        read_only_fields = ['id', 'completed_at']
 
-    def get_coaching_type(self, obj):
-        return obj.user.profile.coaching_type
+class CoachingPathSerializer(serializers.ModelSerializer):
+    assessment = AssessmentSerializer(read_only=True)
+    
+    class Meta:
+        model = CoachingPath
+        fields = ['id', 'assessment', 'goals', 'recommendations', 'timeline', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'created_at', 'updated_at']
