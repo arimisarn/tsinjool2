@@ -40,6 +40,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           headers: { Authorization: `Token ${token}` },
         }
       );
+      console.log("Profil API:", res.data);
       setProfile(res.data);
     } catch (e) {
       console.error("Erreur profil:", e);
@@ -49,8 +50,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   useEffect(() => {
-    fetchProfile();
-  }, []);
+    if (token) fetchProfile();
+  }, [token]);
 
   return (
     <AuthContext.Provider
