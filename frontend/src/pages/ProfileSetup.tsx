@@ -13,6 +13,9 @@ import axios from "axios";
 import { toast } from "sonner";
 
 export default function ProfileSetup() {
+  useEffect(() => {
+    document.title = "Tsinjool - Configuration de profil";
+  }, []);
   const navigate = useNavigate();
 
   const [bio, setBio] = useState("");

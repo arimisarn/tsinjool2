@@ -5,7 +5,6 @@ import { HeroUIProvider } from "@heroui/react";
 import { ToastProvider } from "@heroui/toast";
 import { Toaster } from "sonner";
 import { ThemeProvider } from "next-themes"; // <-- Import ici
-import { HelmetProvider } from "react-helmet-async"; // <-- import
 
 import App from "./App";
 import LoginPage from "./components/auth/LoginPage";
@@ -26,19 +25,16 @@ import Evaluation from "./pages/Evaluation";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <HelmetProvider>
-      {" "}
-      {/* <-- Ajouter ici */}
-      <BrowserRouter>
-        <Toaster position="top-right" richColors />
-        <ToastProvider />
-        <ThemeProvider
-          attribute="class"
-          enableSystem={true}
-          defaultTheme="system"
-        >
-          <HeroUIProvider>
-            {/* <AuthProvider> */}
+    <BrowserRouter>
+      <Toaster position="top-right" richColors />
+      <ToastProvider />
+      <ThemeProvider
+        attribute="class"
+        enableSystem={true}
+        defaultTheme="system"
+      >
+        <HeroUIProvider>
+          {/* <AuthProvider> */}
             <Routes>
               <Route path="/" element={<App />} />
               <Route path="/login" element={<LoginPage />} />
@@ -103,10 +99,9 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
                 />
               </Route>
             </Routes>
-            {/* </AuthProvider> */}
-          </HeroUIProvider>
-        </ThemeProvider>
-      </BrowserRouter>
-    </HelmetProvider>
+          {/* </AuthProvider> */}
+        </HeroUIProvider>
+      </ThemeProvider>
+    </BrowserRouter>
   </React.StrictMode>
 );

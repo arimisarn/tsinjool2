@@ -1,10 +1,13 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Brain, ArrowLeft, CheckCircle } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import { toast } from "sonner";
 
 export default function ConfirmEmailPage() {
+  useEffect(() => {
+    document.title = "Tsinjool - Confirmation Email";
+  }, []);
   const navigate = useNavigate();
   const location = useLocation();
 

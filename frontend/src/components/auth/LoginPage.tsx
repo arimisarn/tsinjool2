@@ -24,6 +24,9 @@ const slides = [
 ];
 
 export default function LoginPage() {
+  useEffect(() => {
+    document.title = "Tsinjool - Connexion";
+  }, []);
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     username: "",

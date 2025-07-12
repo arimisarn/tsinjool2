@@ -43,6 +43,9 @@ const slides: Slide[] = [
 ];
 
 export default function RegisterPage() {
+    useEffect(() => {
+      document.title = "Tsinjool - Inscription";
+    }, []);
   const navigate = useNavigate();
   const [formData, setFormData] = useState<FormData>({
     email: "",
