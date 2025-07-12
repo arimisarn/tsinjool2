@@ -67,17 +67,14 @@ class EvaluationView(APIView):
 
         response = requests.post(url, headers=headers, json=data)
 
-        # Log de la réponse brute
         print("📥 Status code Together:", response.status_code)
         print("📥 Réponse texte:", response.text)
 
         response.raise_for_status()
         result = response.json()
 
-        # Gestion flexible des formats de réponse
-        if "text" in result:
-            return result["text"]
-        elif "generations" in result and len(result["generations"]) > 0:
-            return result["generations"][0].get("text", "").strip()
+        # ✅ Bonne extraction du texte
+        if "choices" in result and len(result["choices"]) > 0:
+            return result["choices"][0].get("text", "").strip()
         else:
             raise ValueError("Réponse inattendue de l'API Together.ai.")
