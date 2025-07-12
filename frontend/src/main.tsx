@@ -126,7 +126,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
                 }
               />
                  <Route
-                path="/setings"
+                path="/settings"
                 element={
                   <RequireAuth>
                     <Settings />
