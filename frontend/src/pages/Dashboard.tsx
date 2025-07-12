@@ -77,7 +77,7 @@ export default function Dashboard() {
       // Vérifier si un parcours existe déjà
       try {
         const pathResponse = await axios.get(
-          "https://tsinjool-backend.onrender.com/api/coaching-path/",
+          "https://tsinjool-backend.onrender.com/api/coaching-paths/",
           {
             headers: { Authorization: `Token ${token}` },
           }
