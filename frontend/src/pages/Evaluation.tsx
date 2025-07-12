@@ -1,206 +1,388 @@
-// EvaluationPage.tsx
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { Brain, ArrowLeft, ArrowRight, CheckCircle } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-import QuestionCard from "@/components/clients/QuestionCard";
-import ProgressBar from "@/components/clients/ProgressBar";
-import axios from "axios";
+"use client"
+
+import { useState, useEffect } from "react"
+import { Brain, ArrowLeft, ArrowRight, CheckCircle, MessageCircle } from "lucide-react"
+import { useNavigate, useLocation } from "react-router-dom"
+import axios from "axios"
+import { toast } from "sonner"
 
 interface Question {
-  id: string;
-  question: string;
-  type: string;
-  required: boolean;
-  placeholder?: string;
-  domains?: Array<{ name: string; key: string }>;
+  id: number
+  text: string
+  type: "multiple" | "scale" | "text"
+  options?: string[]
 }
 
-interface AssessmentData {
-  coaching_type: string;
-  questions: Question[];
-  total_questions: number;
+const questionsData = {
+  life: [
+    {
+      id: 1,
+      text: "Quel est votre principal défi dans votre vie personnelle actuellement ?",
+      type: "multiple" as const,
+      options: [
+        "Gestion du stress et de l'anxiété",
+        "Équilibre vie professionnelle/personnelle",
+        "Relations interpersonnelles",
+        "Confiance en soi et estime de soi",
+        "Gestion du temps et organisation",
+      ],
+    },
+    {
+      id: 2,
+      text: "Sur une échelle de 1 à 10, comment évaluez-vous votre niveau de satisfaction actuel dans la vie ?",
+      type: "scale" as const,
+    },
+    {
+      id: 3,
+      text: "Quels sont vos objectifs principaux pour les 6 prochains mois ?",
+      type: "text" as const,
+    },
+    {
+      id: 4,
+      text: "Comment gérez-vous habituellement le stress ?",
+      type: "multiple" as const,
+      options: [
+        "Sport et activité physique",
+        "Méditation et relaxation",
+        "Discussions avec des proches",
+        "Activités créatives",
+        "Je ne sais pas bien gérer le stress",
+      ],
+    },
+    {
+      id: 5,
+      text: "Décrivez une situation récente où vous vous êtes senti(e) particulièrement accompli(e).",
+      type: "text" as const,
+    },
+  ],
+  career: [
+    {
+      id: 1,
+      text: "Quel est votre principal défi professionnel actuellement ?",
+      type: "multiple" as const,
+      options: [
+        "Évolution de carrière et promotion",
+        "Développement de compétences",
+        "Leadership et management",
+        "Équilibre vie pro/perso",
+        "Changement de secteur ou reconversion",
+      ],
+    },
+    {
+      id: 2,
+      text: "Sur une échelle de 1 à 10, à quel point êtes-vous satisfait(e) de votre carrière actuelle ?",
+      type: "scale" as const,
+    },
+    {
+      id: 3,
+      text: "Où vous voyez-vous professionnellement dans 3 ans ?",
+      type: "text" as const,
+    },
+    {
+      id: 4,
+      text: "Quel type de leadership vous inspire le plus ?",
+      type: "multiple" as const,
+      options: [
+        "Leadership transformationnel",
+        "Leadership collaboratif",
+        "Leadership visionnaire",
+        "Leadership authentique",
+        "Je ne sais pas encore",
+      ],
+    },
+    {
+      id: 5,
+      text: "Décrivez votre plus grande réussite professionnelle récente.",
+      type: "text" as const,
+    },
+  ],
+  health: [
+    {
+      id: 1,
+      text: "Quel est votre principal objectif de santé et bien-être ?",
+      type: "multiple" as const,
+      options: [
+        "Perte de poids et forme physique",
+        "Gestion du stress et santé mentale",
+        "Amélioration du sommeil",
+        "Nutrition et habitudes alimentaires",
+        "Énergie et vitalité au quotidien",
+      ],
+    },
+    {
+      id: 2,
+      text: "Sur une échelle de 1 à 10, comment évaluez-vous votre niveau d'énergie quotidien ?",
+      type: "scale" as const,
+    },
+    {
+      id: 3,
+      text: "Quelles habitudes aimeriez-vous développer pour améliorer votre bien-être ?",
+      type: "text" as const,
+    },
+    {
+      id: 4,
+      text: "Quelle est votre approche préférée pour rester en forme ?",
+      type: "multiple" as const,
+      options: [
+        "Exercices en salle de sport",
+        "Activités en plein air",
+        "Sports d'équipe",
+        "Yoga et méditation",
+        "Je cherche encore ma méthode",
+      ],
+    },
+    {
+      id: 5,
+      text: "Décrivez les obstacles qui vous empêchent d'atteindre vos objectifs de santé.",
+      type: "text" as const,
+    },
+  ],
 }
 
 export default function Evaluation() {
-  const navigate = useNavigate();
-  const [currentStep, setCurrentStep] = useState(0);
-  const [assessmentData, setAssessmentData] = useState<AssessmentData | null>(
-    null
-  );
-  const [responses, setResponses] = useState<Record<string, any>>({});
-  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate()
+  const location = useLocation()
+  const [currentQuestion, setCurrentQuestion] = useState(0)
+  const [answers, setAnswers] = useState<Record<number, string>>({})
+  const [loading, setLoading] = useState(false)
+  const [coachingType, setCoachingType] = useState<string>("")
 
   useEffect(() => {
-    const mockData: AssessmentData = {
-      coaching_type: "life",
-      questions: [
-        {
-          id: "q1",
-          question: "Quels sont vos objectifs ?",
-          type: "textarea",
-          required: true,
-          placeholder: "Écrivez vos objectifs ici...",
-        },
-        {
-          id: "q2",
-          question: "Évaluez ces domaines de vie",
-          type: "scale_multiple",
-          required: true,
-          domains: [
-            { name: "Santé", key: "health" },
-            { name: "Carrière", key: "career" },
-          ],
-        },
-      ],
-      total_questions: 2,
-    };
-    setTimeout(() => setAssessmentData(mockData), 500);
-  }, []);
+    document.title = "Tsinjool - Évaluation personnalisée"
 
-  const handleResponseChange = (id: string, value: any) => {
-    setResponses((prev) => ({ ...prev, [id]: value }));
-  };
-
-  const handleNext = () => {
-    if (currentStep < (assessmentData?.questions.length || 0) - 1) {
-      setCurrentStep((prev) => prev + 1);
-    }
-  };
-
-  const handlePrevious = () => {
-    if (currentStep > 0) setCurrentStep((prev) => prev - 1);
-  };
-
-  const isValidResponse = (question: Question): boolean => {
-    const response = responses[question.id];
-
-    if (!response) return false;
-
-    if (question.type === "scale_multiple") {
-      return typeof response === "object" && Object.keys(response).length > 0;
+    const token = localStorage.getItem("token")
+    if (!token) {
+      toast.error("Veuillez vous connecter.")
+      navigate("/login")
+      return
     }
 
-    if (question.type === "textarea") {
-      return typeof response === "string" && response.trim().length > 0;
+    const type = location.state?.coachingType
+    if (!type) {
+      toast.error("Type de coaching non spécifié.")
+      navigate("/profile-setup")
+      return
     }
 
-    return true; // default true for other types
-  };
+    setCoachingType(type)
+  }, [navigate, location.state])
 
-  const handleSubmit = async () => {
-    try {
-      setLoading(true);
-      const token = localStorage.getItem("token");
-      if (!token) throw new Error("Utilisateur non authentifié");
+  // const questions = questionsData[coachingType as keyof typeof questionsData] || []
+  const questions: Question[] = questionsData[coachingType as keyof typeof questionsData] || []
 
-      const response = await axios.post(
-        `https://tsinjool-backend.onrender.com/api/assessment/submit/`,
-        {
-          coaching_type: assessmentData?.coaching_type,
-          responses,
-        },
-        {
-          headers: {
-            Authorization: `Token ${token}`,
-          },
-        }
-      );
 
-      if (response.data?.redirect_to_dashboard) {
-        navigate("/dashboard");
-      }
-    } catch (error) {
-      console.error("Erreur lors de la soumission :", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (!assessmentData) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div>Chargement de l'évaluation...</div>
-      </div>
-    );
+  const handleAnswer = (questionId: number, answer: string) => {
+    setAnswers((prev) => ({ ...prev, [questionId]: answer }))
   }
 
-  const question = assessmentData.questions[currentStep];
+  const handleNext = () => {
+    const currentQuestionData = questions[currentQuestion]
+    if (!answers[currentQuestionData.id]) {
+      toast.error("Veuillez répondre à cette question avant de continuer.")
+      return
+    }
+
+    if (currentQuestion < questions.length - 1) {
+      setCurrentQuestion((prev) => prev + 1)
+    }
+  }
+
+  const handlePrevious = () => {
+    if (currentQuestion > 0) {
+      setCurrentQuestion((prev) => prev - 1)
+    }
+  }
+
+  const handleSubmit = async () => {
+    setLoading(true)
+
+    try {
+      const token = localStorage.getItem("token")
+      const evaluationData = {
+        coaching_type: coachingType,
+        answers: answers,
+        completed_at: new Date().toISOString(),
+      }
+
+      const response = await axios.post("https://tsinjool-backend.onrender.com/api/evaluation/", evaluationData, {
+        headers: {
+          Authorization: `Token ${token}`,
+          "Content-Type": "application/json",
+        },
+      })
+
+      toast.success("Évaluation terminée ! Génération de votre parcours...")
+      navigate("/dashboard", {
+        state: {
+          coachingType,
+          evaluationId: response.data.id,
+        },
+      })
+    } catch (error: any) {
+      console.error(error)
+      toast.error("Erreur lors de l'enregistrement de l'évaluation.")
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  if (!questions.length) {
+    return <div>Chargement...</div>
+  }
+
+  const currentQuestionData = questions[currentQuestion]
+  const progress = ((currentQuestion + 1) / questions.length) * 100
+  const isLastQuestion = currentQuestion === questions.length - 1
+  const hasAnswered = answers[currentQuestionData.id]
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-6 flex flex-col items-center">
-      <div className="w-full max-w-3xl">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-2">
-            <Brain className="text-blue-600" />
-            <h1 className="text-xl font-bold">Évaluation</h1>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center p-4">
+      <div className="w-full max-w-4xl bg-white rounded-3xl shadow-2xl overflow-hidden">
+        {/* Header */}
+        <div className="bg-gradient-to-r from-purple-500 to-blue-600 p-6 text-white">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
+                <Brain className="w-6 h-6" />
+              </div>
+              <div>
+                <h1 className="text-xl font-bold">Évaluation personnalisée</h1>
+                <p className="text-sm opacity-90">
+                  Question {currentQuestion + 1} sur {questions.length}
+                </p>
+              </div>
+            </div>
+            <div className="text-right">
+              <div className="text-2xl font-bold">{Math.round(progress)}%</div>
+              <div className="text-sm opacity-90">Progression</div>
+            </div>
           </div>
-          <button
-            onClick={() => navigate(-1)}
-            className="flex items-center text-sm text-gray-600 hover:underline"
-          >
-            <ArrowLeft className="w-4 h-4 mr-1" /> Retour
-          </button>
+
+          {/* Progress Bar */}
+          <div className="mt-4 w-full bg-white/20 rounded-full h-2">
+            <div className="bg-white rounded-full h-2 transition-all duration-500" style={{ width: `${progress}%` }} />
+          </div>
         </div>
 
-        <ProgressBar
-          current={currentStep + 1}
-          total={assessmentData.questions.length}
-        />
+        {/* Question Content */}
+        <div className="p-8">
+          <div className="mb-8">
+            <div className="flex items-center gap-2 mb-4">
+              <MessageCircle className="w-5 h-5 text-purple-500" />
+              <span className="text-sm font-medium text-purple-600">Question {currentQuestion + 1}</span>
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">{currentQuestionData.text}</h2>
+          </div>
 
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={question.id}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.3 }}
-            className="mt-8"
-          >
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">
-              {question.question}
-            </h2>
-            <QuestionCard
-              question={question}
-              value={responses[question.id]}
-              onChange={(val) => handleResponseChange(question.id, val)}
-            />
-          </motion.div>
-        </AnimatePresence>
+          {/* Answer Options */}
+          <div className="mb-8">
+            {currentQuestionData.type === "multiple" && (
+              <div className="space-y-3">
+                {currentQuestionData.options?.map((option, index) => (
+                  <label
+                    key={index}
+                    className={`flex items-center p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 ${
+                      answers[currentQuestionData.id] === option
+                        ? "border-purple-500 bg-purple-50"
+                        : "border-gray-200 hover:bg-gray-50"
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name={`question-${currentQuestionData.id}`}
+                      value={option}
+                      checked={answers[currentQuestionData.id] === option}
+                      onChange={(e) => handleAnswer(currentQuestionData.id, e.target.value)}
+                      className="sr-only"
+                    />
+                    <div
+                      className={`w-5 h-5 rounded-full border-2 mr-3 flex items-center justify-center ${
+                        answers[currentQuestionData.id] === option
+                          ? "border-purple-500 bg-purple-500"
+                          : "border-gray-300"
+                      }`}
+                    >
+                      {answers[currentQuestionData.id] === option && <CheckCircle className="w-3 h-3 text-white" />}
+                    </div>
+                    <span className="text-gray-900">{option}</span>
+                  </label>
+                ))}
+              </div>
+            )}
 
-        <div className="mt-8 flex justify-between">
-          <button
-            onClick={handlePrevious}
-            disabled={currentStep === 0}
-            className="px-4 py-2 border border-gray-300 rounded-lg disabled:opacity-50"
-          >
-            <ArrowLeft className="w-4 h-4 inline" /> Précédent
-          </button>
-          {currentStep < assessmentData.questions.length - 1 ? (
+            {currentQuestionData.type === "scale" && (
+              <div className="space-y-4">
+                <div className="flex justify-between text-sm text-gray-600">
+                  <span>1 - Très insatisfait(e)</span>
+                  <span>10 - Très satisfait(e)</span>
+                </div>
+                <div className="flex gap-2">
+                  {[...Array(10)].map((_, index) => {
+                    const value = (index + 1).toString()
+                    return (
+                      <button
+                        key={index}
+                        onClick={() => handleAnswer(currentQuestionData.id, value)}
+                        className={`w-12 h-12 rounded-lg border-2 font-semibold transition-all duration-200 ${
+                          answers[currentQuestionData.id] === value
+                            ? "border-purple-500 bg-purple-500 text-white"
+                            : "border-gray-300 hover:border-purple-300"
+                        }`}
+                      >
+                        {index + 1}
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+            )}
+
+            {currentQuestionData.type === "text" && (
+              <textarea
+                value={answers[currentQuestionData.id] || ""}
+                onChange={(e) => handleAnswer(currentQuestionData.id, e.target.value)}
+                placeholder="Tapez votre réponse ici..."
+                className="w-full p-4 border-2 border-gray-200 rounded-xl focus:border-purple-500 focus:ring-2 focus:ring-purple-100 transition-all duration-200 outline-none resize-none"
+                rows={4}
+              />
+            )}
+          </div>
+
+          {/* Navigation Buttons */}
+          <div className="flex gap-4">
             <button
-              onClick={handleNext}
-              disabled={question.required && !isValidResponse(question)}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg disabled:opacity-50"
+              onClick={handlePrevious}
+              disabled={currentQuestion === 0}
+              className="flex items-center gap-2 px-6 py-3 border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-100 transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Suivant <ArrowRight className="w-4 h-4 inline" />
+              <ArrowLeft className="w-5 h-5" />
+              Précédent
             </button>
-          ) : (
-            <button
-              onClick={handleSubmit}
-              disabled={question.required && !isValidResponse(question)}
-              className="px-4 py-2 bg-green-600 text-white rounded-lg disabled:opacity-50"
-            >
-              {loading ? (
-                "Analyse..."
-              ) : (
-                <>
-                  <CheckCircle className="w-4 h-4 inline" /> Terminer
-                </>
-              )}
-            </button>
-          )}
+
+            <div className="flex-1" />
+
+            {isLastQuestion ? (
+              <button
+                onClick={handleSubmit}
+                disabled={!hasAnswered || loading}
+                className="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-600 hover:to-blue-700 text-white rounded-xl transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+              >
+                {loading ? "Génération du parcours..." : "Terminer l'évaluation"}
+                <CheckCircle className="w-5 h-5" />
+              </button>
+            ) : (
+              <button
+                onClick={handleNext}
+                disabled={!hasAnswered}
+                className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-600 hover:to-blue-700 text-white rounded-xl transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+              >
+                Suivant
+                <ArrowRight className="w-5 h-5" />
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>
-  );
+  )
 }

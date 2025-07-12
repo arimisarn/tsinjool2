@@ -1,22 +1,16 @@
-from django.urls import path
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from . import views
 
-# from accounts import views
-from .views import (
-    check_assessment_status,
-    get_assessment_questions,
-    get_coaching_path,
-    submit_assessment,
-)
+router = DefaultRouter()
+router.register(r"evaluations", views.EvaluationViewSet, basename="evaluation")
+router.register(r"coaching-paths", views.CoachingPathViewSet, basename="coaching-path")
+router.register(r"steps", views.StepViewSet, basename="step")
+router.register(r"exercises", views.ExerciseViewSet, basename="exercise")
 
 urlpatterns = [
-    # path('evaluation/', EvaluationView, name='evaluation'),
-    # path("evaluation/last/", latest_evaluation),
-    path(
-        "assessment/questions/<str:coaching_type>/",
-        get_assessment_questions,
-        name="get_assessment_questions",
-    ),
-    path("assessment/submit/", submit_assessment, name="submit_assessment"),
-    path("coaching-path/", get_coaching_path, name="get_coaching_path"),
-    path("assessment/status/", check_assessment_status, name="check_assessment_status"),
+    path("", include(router.urls)),
+    path("generate-path/", views.generate_coaching_path, name="generate-path"),
+    path("progress/", views.user_progress, name="user-progress"),
+    path("dashboard/", views.dashboard_data, name="dashboard-data"),
 ]

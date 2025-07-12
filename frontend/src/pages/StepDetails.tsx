@@ -1,0 +1,397 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import {
+  ArrowLeft,
+  Play,
+  CheckCircle,
+  Clock,
+  Target,
+  Video,
+  BookOpen,
+  Lightbulb,
+} from "lucide-react";
+import { useNavigate, useLocation, useParams } from "react-router-dom";
+import axios from "axios";
+import { toast } from "sonner";
+
+interface Exercise {
+  id: number;
+  title: string;
+  description: string;
+  duration: number;
+  type: string;
+  completed: boolean;
+  instructions: string[];
+  animation_character: string;
+  recommended_videos?: string[];
+}
+
+interface Step {
+  id: number;
+  title: string;
+  description: string;
+  exercises: Exercise[];
+  completed: boolean;
+  progress: number;
+}
+
+export default function StepDetail() {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { stepId } = useParams();
+  const [step, setStep] = useState<Step | null>(null);
+  const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(
+    null
+  );
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    document.title = "Tsinjool - Détail de l'étape";
+    loadStepData();
+  }, [stepId]);
+
+  const loadStepData = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        toast.error("Veuillez vous connecter.");
+        navigate("/login");
+        return;
+      }
+
+      // Utiliser les données passées via location.state si disponibles
+      if (location.state?.step) {
+        setStep(location.state.step);
+        setLoading(false);
+        return;
+      }
+
+      // Sinon, charger depuis l'API
+      const response = await axios.get(
+        `https://tsinjool-backend.onrender.com/api/steps/${stepId}/`,
+        {
+          headers: { Authorization: `Token ${token}` },
+        }
+      );
+      setStep(response.data);
+    } catch (error: any) {
+      console.error(error);
+      toast.error("Erreur lors du chargement de l'étape.");
+      navigate("/dashboard");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleExerciseSelect = (exercise: Exercise) => {
+    setSelectedExercise(exercise);
+  };
+
+  const handleStartExercise = (exercise: Exercise) => {
+    navigate(`/exercise/${exercise.id}`, {
+      state: {
+        exercise,
+        stepId: step?.id,
+        stepTitle: step?.title,
+      },
+    });
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-blue-600 rounded-full flex items-center justify-center mb-4 mx-auto animate-pulse">
+            <Target className="w-8 h-8 text-white" />
+          </div>
+          <p className="text-gray-600">Chargement de l'étape...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!step) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600">Étape non trouvée.</p>
+          <button
+            onClick={() => navigate("/dashboard")}
+            className="mt-4 px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+          >
+            Retour au tableau de bord
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const getExerciseIcon = (type: string) => {
+    switch (type) {
+      case "meditation":
+        return <Target className="w-5 h-5" />;
+      case "reflection":
+        return <BookOpen className="w-5 h-5" />;
+      case "practice":
+        return <Lightbulb className="w-5 h-5" />;
+      default:
+        return <Play className="w-5 h-5" />;
+    }
+  };
+
+  const getExerciseColor = (type: string) => {
+    switch (type) {
+      case "meditation":
+        return "from-green-400 to-teal-500";
+      case "reflection":
+        return "from-blue-400 to-indigo-500";
+      case "practice":
+        return "from-purple-400 to-pink-500";
+      default:
+        return "from-gray-400 to-gray-500";
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+      {/* Header */}
+      <div className="bg-white shadow-sm border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between py-4">
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => navigate("/dashboard")}
+                className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </button>
+              <div>
+                <h1 className="text-xl font-bold text-gray-900">
+                  {step.title}
+                </h1>
+                <p className="text-sm text-gray-600">
+                  {step.exercises.length} exercices disponibles
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-4">
+              <div className="text-right">
+                <p className="text-sm text-gray-600">Progression</p>
+                <p className="text-lg font-bold text-purple-600">
+                  {Math.round(step.progress)}%
+                </p>
+              </div>
+
+              <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-600 rounded-lg flex items-center justify-center">
+                {step.completed ? (
+                  <CheckCircle className="w-6 h-6 text-white" />
+                ) : (
+                  <Target className="w-6 h-6 text-white" />
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Exercise List */}
+          <div className="lg:col-span-1">
+            <div className="bg-white rounded-xl shadow-sm p-6">
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">
+                Exercices
+              </h2>
+
+              <div className="space-y-3">
+                {step.exercises.map((exercise, index) => (
+                  <div
+                    key={exercise.id}
+                    onClick={() => handleExerciseSelect(exercise)}
+                    className={`p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 ${
+                      selectedExercise?.id === exercise.id
+                        ? "border-purple-500 bg-purple-50"
+                        : exercise.completed
+                        ? "border-green-200 bg-green-50"
+                        : "border-gray-200 hover:bg-gray-50"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-3">
+                        <div
+                          className={`w-8 h-8 rounded-lg bg-gradient-to-br ${getExerciseColor(
+                            exercise.type
+                          )} flex items-center justify-center text-white`}
+                        >
+                          {exercise.completed ? (
+                            <CheckCircle className="w-4 h-4" />
+                          ) : (
+                            getExerciseIcon(exercise.type)
+                          )}
+                        </div>
+                        <div>
+                          <h3 className="font-medium text-gray-900">
+                            Exercice {index + 1}
+                          </h3>
+                          <p className="text-sm text-gray-600">
+                            {exercise.title}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-1 text-sm text-gray-500">
+                        <Clock className="w-4 h-4" />
+                        {exercise.duration}min
+                      </div>
+                    </div>
+
+                    <p className="text-sm text-gray-600 line-clamp-2">
+                      {exercise.description}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Exercise Detail */}
+          <div className="lg:col-span-2">
+            {selectedExercise ? (
+              <div className="bg-white rounded-xl shadow-sm p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                      {selectedExercise.title}
+                    </h2>
+                    <p className="text-gray-600">
+                      {selectedExercise.description}
+                    </p>
+                  </div>
+
+                  <div className="text-right">
+                    <div className="flex items-center gap-2 text-sm text-gray-600 mb-1">
+                      <Clock className="w-4 h-4" />
+                      {selectedExercise.duration} minutes
+                    </div>
+                    {selectedExercise.completed && (
+                      <div className="flex items-center gap-1 text-green-600">
+                        <CheckCircle className="w-4 h-4" />
+                        <span className="text-sm font-medium">Terminé</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Character Animation Preview */}
+                <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-xl p-8 mb-6 text-center">
+                  <div className="w-24 h-24 bg-gradient-to-br from-purple-400 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <span className="text-3xl">
+                      {selectedExercise.animation_character}
+                    </span>
+                  </div>
+                  <p className="text-gray-600">
+                    Votre coach virtuel vous guidera pendant cet exercice
+                  </p>
+                </div>
+
+                {/* Instructions */}
+                {selectedExercise.instructions &&
+                  selectedExercise.instructions.length > 0 && (
+                    <div className="mb-6">
+                      <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                        Instructions
+                      </h3>
+                      <div className="space-y-2">
+                        {selectedExercise.instructions.map(
+                          (instruction, index) => (
+                            <div key={index} className="flex items-start gap-3">
+                              <div className="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                                <span className="text-xs font-medium text-purple-600">
+                                  {index + 1}
+                                </span>
+                              </div>
+                              <p className="text-gray-700">{instruction}</p>
+                            </div>
+                          )
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                {/* Recommended Videos */}
+                {selectedExercise.recommended_videos &&
+                  selectedExercise.recommended_videos.length > 0 && (
+                    <div className="mb-6">
+                      <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                        Vidéos recommandées
+                      </h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {selectedExercise.recommended_videos.map(
+                          (video, index) => (
+                            <div
+                              key={index}
+                              className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg"
+                            >
+                              <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                                <Video className="w-5 h-5 text-red-600" />
+                              </div>
+                              <div className="flex-1">
+                                <p className="font-medium text-gray-900">
+                                  Vidéo {index + 1}
+                                </p>
+                                <p className="text-sm text-gray-600">{video}</p>
+                              </div>
+                            </div>
+                          )
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                {/* Action Button */}
+                <div className="flex justify-center">
+                  <button
+                    onClick={() => handleStartExercise(selectedExercise)}
+                    disabled={selectedExercise.completed}
+                    className={`flex items-center gap-3 px-8 py-4 rounded-xl font-medium transition-all duration-200 ${
+                      selectedExercise.completed
+                        ? "bg-green-100 text-green-700 cursor-not-allowed"
+                        : "bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-600 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                    }`}
+                  >
+                    {selectedExercise.completed ? (
+                      <>
+                        <CheckCircle className="w-5 h-5" />
+                        Exercice terminé
+                      </>
+                    ) : (
+                      <>
+                        <Play className="w-5 h-5" />
+                        Commencer l'exercice
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="bg-white rounded-xl shadow-sm p-8 text-center">
+                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Target className="w-8 h-8 text-gray-400" />
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                  Sélectionnez un exercice
+                </h3>
+                <p className="text-gray-600">
+                  Choisissez un exercice dans la liste pour voir les détails et
+                  commencer
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

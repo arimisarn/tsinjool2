@@ -1,228 +1,277 @@
-# views.py (ajoutez à vos vues existantes)
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework import viewsets, status
+from rest_framework.decorators import api_view, permission_classes, action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework import status
 from django.shortcuts import get_object_or_404
-from .models import Assessment, CoachingPath
-from accounts.models import Profile
-from .questions import ASSESSMENT_QUESTIONS
-from .services.ai_service import TogetherAIService
-import json
+from django.utils import timezone
+from .models import Evaluation, CoachingPath, Step, Exercise, UserProgress
+from .serializers import (
+    EvaluationSerializer,
+    CoachingPathSerializer,
+    StepSerializer,
+    ExerciseSerializer,
+    UserProgressSerializer,
+)
+from .ai_service import AICoachingService
 
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def get_assessment_questions(request, coaching_type):
-    """Récupère les questions d'évaluation selon le type de coaching"""
-    
-    if coaching_type not in ASSESSMENT_QUESTIONS:
-        return Response(
-            {'error': 'Type de coaching invalide'}, 
-            status=status.HTTP_400_BAD_REQUEST
-        )
-    
-    # Vérifier que l'utilisateur a bien configuré son profil
-    try:
-        profile = Profile.objects.get(user=request.user)
-        if profile.coaching_type != coaching_type:
-            return Response(
-                {'error': 'Type de coaching non autorisé'}, 
-                status=status.HTTP_403_FORBIDDEN
-            )
-    except Profile.DoesNotExist:
-        return Response(
-            {'error': 'Profil non configuré'}, 
-            status=status.HTTP_400_BAD_REQUEST
-        )
-    
-    questions = ASSESSMENT_QUESTIONS[coaching_type]
-    
-    return Response({
-        'coaching_type': coaching_type,
-        'questions': questions,
-        'total_questions': len(questions)
-    })
 
-@api_view(['POST'])
-@permission_classes([IsAuthenticated])
-def submit_assessment(request):
-    """Soumet les réponses d'évaluation et génère le parcours IA"""
-    
-    coaching_type = request.data.get('coaching_type')
-    responses = request.data.get('responses')
-    
-    if not coaching_type or not responses:
-        return Response(
-            {'error': 'Données manquantes (coaching_type et responses requis)'}, 
-            status=status.HTTP_400_BAD_REQUEST
-        )
-    
-    # Validation du type de coaching
-    if coaching_type not in ASSESSMENT_QUESTIONS:
-        return Response(
-            {'error': 'Type de coaching invalide'}, 
-            status=status.HTTP_400_BAD_REQUEST
-        )
-    
-    # Vérifier le profil utilisateur
-    try:
-        profile = Profile.objects.get(user=request.user)
-        if profile.coaching_type != coaching_type:
+class EvaluationViewSet(viewsets.ModelViewSet):
+    serializer_class = EvaluationSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Evaluation.objects.filter(user=self.request.user)
+
+    def create(self, request):
+        """Créer une nouvelle évaluation"""
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            evaluation = serializer.save()
             return Response(
-                {'error': 'Type de coaching non autorisé'}, 
-                status=status.HTTP_403_FORBIDDEN
+                {"id": evaluation.id, "message": "Évaluation enregistrée avec succès"},
+                status=status.HTTP_201_CREATED,
             )
-    except Profile.DoesNotExist:
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def generate_coaching_path(request):
+    """Génère un parcours de coaching personnalisé avec l'IA"""
+
+    evaluation_id = request.data.get("evaluation_id")
+    if not evaluation_id:
         return Response(
-            {'error': 'Profil non configuré'}, 
-            status=status.HTTP_400_BAD_REQUEST
+            {"error": "evaluation_id requis"}, status=status.HTTP_400_BAD_REQUEST
         )
-    
+
     try:
-        # Sauvegarder l'évaluation
-        assessment, created = Assessment.objects.get_or_create(
-            user=request.user,
-            coaching_type=coaching_type,
-            defaults={'responses': responses}
+        # Récupérer l'évaluation
+        evaluation = get_object_or_404(Evaluation, id=evaluation_id, user=request.user)
+
+        # Vérifier si un parcours existe déjà
+        existing_path = CoachingPath.objects.filter(user=request.user).first()
+        if existing_path:
+            existing_path.delete()  # Supprimer l'ancien parcours
+
+        # Générer le nouveau parcours avec l'IA
+        evaluation_data = {
+            "coaching_type": evaluation.coaching_type,
+            "answers": evaluation.answers,
+        }
+
+        steps_data = AICoachingService.generate_coaching_path(evaluation_data)
+
+        # Créer le parcours en base de données
+        coaching_path = CoachingPath.objects.create(
+            user=request.user, evaluation=evaluation
         )
-        
-        if not created:
-            assessment.responses = responses
-            assessment.save()
-        
-        # Générer l'analyse IA
-        ai_service = TogetherAIService()
-        ai_analysis = ai_service.analyze_responses(
-            coaching_type=coaching_type,
-            responses=responses,
-            user_bio=profile.bio
+
+        # Créer les étapes et exercices
+        for step_data in steps_data:
+            step = Step.objects.create(
+                coaching_path=coaching_path,
+                title=step_data["title"],
+                description=step_data["description"],
+                order=step_data["order"],
+            )
+
+            for exercise_data in step_data["exercises"]:
+                Exercise.objects.create(
+                    step=step,
+                    title=exercise_data["title"],
+                    description=exercise_data["description"],
+                    duration=exercise_data["duration"],
+                    type=exercise_data["type"],
+                    instructions=exercise_data["instructions"],
+                    animation_character=exercise_data["animation_character"],
+                    recommended_videos=exercise_data["recommended_videos"],
+                )
+
+        # Créer ou mettre à jour les progrès utilisateur
+        user_progress, created = UserProgress.objects.get_or_create(user=request.user)
+
+        # Sérialiser et retourner le parcours
+        serializer = CoachingPathSerializer(coaching_path)
+
+        return Response(
+            {
+                "message": "Parcours généré avec succès",
+                "coaching_path": serializer.data,
+            },
+            status=status.HTTP_201_CREATED,
         )
-        
-        # Sauvegarder l'analyse
-        assessment.ai_analysis = json.dumps(ai_analysis)
-        assessment.save()
-        
-        # Créer ou mettre à jour le parcours de coaching
-        coaching_path, path_created = CoachingPath.objects.get_or_create(
-            assessment=assessment,
-            defaults={
-                'goals': ai_analysis.get('goals', []),
-                'recommendations': ai_analysis.get('recommendations', []),
-                'timeline': ai_analysis.get('timeline', [])
+
+    except Exception as e:
+        return Response(
+            {"error": f"Erreur lors de la génération du parcours: {str(e)}"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+
+
+class CoachingPathViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = CoachingPathSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return CoachingPath.objects.filter(user=self.request.user)
+
+    def retrieve(self, request, pk=None):
+        """Récupérer le parcours de coaching de l'utilisateur"""
+        try:
+            coaching_path = CoachingPath.objects.get(user=request.user)
+            serializer = self.get_serializer(coaching_path)
+            return Response(serializer.data)
+        except CoachingPath.DoesNotExist:
+            return Response(
+                {"error": "Aucun parcours de coaching trouvé"},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+
+class StepViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = StepSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Step.objects.filter(coaching_path__user=self.request.user)
+
+
+class ExerciseViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = ExerciseSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return Exercise.objects.filter(step__coaching_path__user=self.request.user)
+
+    @action(detail=True, methods=["post"])
+    def complete(self, request, pk=None):
+        """Marquer un exercice comme terminé"""
+        exercise = self.get_object()
+
+        if exercise.completed:
+            return Response(
+                {"message": "Exercice déjà terminé"}, status=status.HTTP_200_OK
+            )
+
+        # Marquer l'exercice comme terminé
+        exercise.mark_completed()
+
+        # Mettre à jour les progrès utilisateur
+        user_progress, created = UserProgress.objects.get_or_create(user=request.user)
+        user_progress.total_exercises_completed += 1
+        user_progress.total_time_spent += exercise.duration
+        user_progress.update_activity()
+
+        return Response(
+            {
+                "message": "Exercice terminé avec succès",
+                "points_earned": 10,
+                "total_points": request.user.userprofile.points,
+            },
+            status=status.HTTP_200_OK,
+        )
+
+    @action(detail=True, methods=["get"])
+    def recommendations(self, request, pk=None):
+        """Obtenir des recommandations de vidéos pour un exercice"""
+        exercise = self.get_object()
+
+        videos = AICoachingService.generate_video_recommendations(
+            exercise.type, exercise.step.coaching_path.evaluation.coaching_type
+        )
+
+        return Response({"recommended_videos": videos})
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def user_progress(request):
+    """Récupérer les statistiques de progression de l'utilisateur"""
+
+    try:
+        progress = UserProgress.objects.get(user=request.user)
+        serializer = UserProgressSerializer(progress)
+
+        # Ajouter des statistiques supplémentaires
+        coaching_path = CoachingPath.objects.filter(user=request.user).first()
+        additional_stats = {}
+
+        if coaching_path:
+            total_steps = coaching_path.steps.count()
+            completed_steps = coaching_path.steps.filter(completed=True).count()
+
+            additional_stats = {
+                "total_steps": total_steps,
+                "completed_steps": completed_steps,
+                "overall_progress": coaching_path.overall_progress,
+                "current_level": request.user.userprofile.level,
+                "total_points": request.user.userprofile.points,
+            }
+
+        return Response({**serializer.data, **additional_stats})
+
+    except UserProgress.DoesNotExist:
+        return Response(
+            {
+                "total_exercises_completed": 0,
+                "total_time_spent": 0,
+                "current_streak": 0,
+                "last_activity_date": None,
+                "total_steps": 0,
+                "completed_steps": 0,
+                "overall_progress": 0,
+                "current_level": request.user.userprofile.level,
+                "total_points": request.user.userprofile.points,
             }
         )
-        
-        if not path_created:
-            coaching_path.goals = ai_analysis.get('goals', [])
-            coaching_path.recommendations = ai_analysis.get('recommendations', [])
-            coaching_path.timeline = ai_analysis.get('timeline', [])
-            coaching_path.save()
-        
-        return Response({
-            'message': 'Évaluation complétée avec succès',
-            'assessment_id': assessment.id,
-            'coaching_path_id': coaching_path.id,
-            'analysis': ai_analysis.get('analysis', ''),
-            'redirect_to_dashboard': True
-        }, status=status.HTTP_201_CREATED)
-        
-    except Exception as e:
-        return Response(
-            {'error': f'Erreur lors du traitement: {str(e)}'}, 
-            status=status.HTTP_500_INTERNAL_SERVER_ERROR
-        )
 
-@api_view(['GET'])
+
+@api_view(["GET"])
 @permission_classes([IsAuthenticated])
-def get_coaching_path(request):
-    """Récupère le parcours de coaching de l'utilisateur"""
-    
+def dashboard_data(request):
+    """Récupérer toutes les données nécessaires pour le dashboard"""
+
     try:
-        # Récupérer le profil pour le type de coaching
-        profile = Profile.objects.get(user=request.user)
-        
-        # Récupérer l'évaluation
-        assessment = Assessment.objects.get(
-            user=request.user,
-            coaching_type=profile.coaching_type
-        )
-        
-        # Récupérer le parcours
-        coaching_path = CoachingPath.objects.get(assessment=assessment)
-        
-        # Parser l'analyse IA
-        ai_analysis = {}
-        if assessment.ai_analysis:
-            try:
-                ai_analysis = json.loads(assessment.ai_analysis)
-            except json.JSONDecodeError:
-                ai_analysis = {}
-        
-        return Response({
-            'coaching_type': profile.coaching_type,
-            'assessment': {
-                'id': assessment.id,
-                'completed_at': assessment.completed_at,
-                'responses': assessment.responses
+        # Profil utilisateur
+        profile = request.user.userprofile
+
+        # Parcours de coaching
+        coaching_path = CoachingPath.objects.filter(user=request.user).first()
+
+        # Progrès utilisateur
+        user_progress, created = UserProgress.objects.get_or_create(user=request.user)
+
+        response_data = {
+            "user_profile": {
+                "name": f"{request.user.first_name} {request.user.last_name}".strip()
+                or request.user.username,
+                "photo": profile.photo.url if profile.photo else None,
+                "coaching_type": profile.coaching_type,
+                "level": profile.level,
+                "points": profile.points,
+                "is_profile_complete": profile.is_profile_complete,
             },
-            'analysis': ai_analysis.get('analysis', ''),
-            'goals': coaching_path.goals,
-            'recommendations': coaching_path.recommendations,
-            'timeline': coaching_path.timeline,
-            'created_at': coaching_path.created_at,
-            'updated_at': coaching_path.updated_at
-        })
-        
-    except Profile.DoesNotExist:
-        return Response(
-            {'error': 'Profil non trouvé'}, 
-            status=status.HTTP_404_NOT_FOUND
-        )
-    except Assessment.DoesNotExist:
-        return Response(
-            {'error': 'Évaluation non trouvée'}, 
-            status=status.HTTP_404_NOT_FOUND
-        )
-    except CoachingPath.DoesNotExist:
-        return Response(
-            {'error': 'Parcours de coaching non trouvé'}, 
-            status=status.HTTP_404_NOT_FOUND
-        )
+            "coaching_path": None,
+            "progress": {
+                "total_exercises_completed": user_progress.total_exercises_completed,
+                "total_time_spent": user_progress.total_time_spent,
+                "current_streak": user_progress.current_streak,
+                "overall_progress": 0,
+            },
+        }
+
+        if coaching_path:
+            serializer = CoachingPathSerializer(coaching_path)
+            response_data["coaching_path"] = serializer.data
+            response_data["progress"][
+                "overall_progress"
+            ] = coaching_path.overall_progress
+
+        return Response(response_data)
+
     except Exception as e:
         return Response(
-            {'error': f'Erreur serveur: {str(e)}'}, 
-            status=status.HTTP_500_INTERNAL_SERVER_ERROR
-        )
-
-@api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def check_assessment_status(request):
-    """Vérifie si l'utilisateur a déjà complété son évaluation"""
-    
-    try:
-        profile = Profile.objects.get(user=request.user)
-        
-        try:
-            assessment = Assessment.objects.get(
-                user=request.user,
-                coaching_type=profile.coaching_type
-            )
-            
-            return Response({
-                'has_completed_assessment': True,
-                'assessment_id': assessment.id,
-                'completed_at': assessment.completed_at,
-                'coaching_type': profile.coaching_type
-            })
-            
-        except Assessment.DoesNotExist:
-            return Response({
-                'has_completed_assessment': False,
-                'coaching_type': profile.coaching_type
-            })
-            
-    except Profile.DoesNotExist:
-        return Response(
-            {'error': 'Profil non configuré'}, 
-            status=status.HTTP_400_BAD_REQUEST
+            {"error": f"Erreur lors du chargement des données: {str(e)}"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
