@@ -261,7 +261,7 @@ export default function Dashboard() {
       const evaluationId = location.state?.evaluationId;
 
       const response = await axios.post(
-        "https://tsinjool-backend.onrender.com/api/generate-paths/",
+        "https://tsinjool-backend.onrender.com/api/coaching/generate-path/",
         { evaluation_id: evaluationId },
         {
           headers: { Authorization: `Token ${token}` },

@@ -21,7 +21,7 @@ import ChatBot from "./pages/ChatBot";
 import AssistantVocal from "./pages/AssistantVocal";
 import CoachVisuel from "./pages/CoachVisuel";
 import Evaluation from "./pages/Evaluation";
-import ExercicePage from "./pages/Exercice";
+import ExercicePage from "./pages/ExercisePage";
 import StepDetail from "./pages/StepDetails";
 import Settings from "./pages/Settings";
 import Progress from "./pages/Progress";
@@ -110,7 +110,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
                 }
               />
               <Route
-                path="/exercice"
+                path="/exercise/:id"
                 element={
                   <RequireAuth>
                     <ExercicePage />
