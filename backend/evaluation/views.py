@@ -6,6 +6,7 @@ from rest_framework import status
 from .models import Evaluation
 from .serializers import EvaluationSerializer
 from django.conf import settings
+MISTRAL_API_KEY = os.environ.get("MISTRAL_API_KEY")
 
 class EvaluationView(APIView):
     permission_classes = [IsAuthenticated]
@@ -24,7 +25,7 @@ class EvaluationView(APIView):
                 print("🔍 coaching_type:", coaching_type)
                 print("🔍 answers:", answers)
                 print("🔍 type answers:", type(answers))
-                print("🔍 MISTRAL_API_KEY loaded:", bool(settings.MISTRAL_API_KEY))
+                print("🔍 MISTRAL_API_KEY loaded:", bool(MISTRAL_API_KEY))
 
                 ia_result = self.analyser_evaluation_ia_together(coaching_type, answers)
                 evaluation.resultat_ia = ia_result
@@ -51,15 +52,15 @@ class EvaluationView(APIView):
         print("📤 Prompt envoyé à l'IA :")
         print(prompt)
 
-        url = "https://api.together.ai/v1/generate"
+        url = "https://api.together.xyz/v1/completions"
         headers = {
-            "Authorization": f"Bearer {settings.MISTRAL_API_KEY}",
+            "Authorization": f"Bearer {MISTRAL_API_KEY}",
             "Content-Type": "application/json",
         }
         data = {
-            "model": "mistral-7b",
+            "model": "mistralai/Mixtral-8x7B-Instruct-v0.1",
             "prompt": prompt,
-            "max_tokens": 512,
+            "max_tokens": 200,
             "temperature": 0.7,
         }
 
