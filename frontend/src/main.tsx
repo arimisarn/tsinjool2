@@ -118,7 +118,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
                 }
               />
               <Route
-                path="/stepdetails"
+                path="/step/:id"
                 element={
                   <RequireAuth>
                     <StepDetail />
@@ -126,7 +126,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
                 }
               />
                  <Route
-                path="/seetings"
+                path="/setings"
                 element={
                   <RequireAuth>
                     <Settings />
