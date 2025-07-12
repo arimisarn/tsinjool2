@@ -204,7 +204,7 @@ export default function Evaluation() {
         completed_at: new Date().toISOString(),
       }
 
-      const response = await axios.post("https://tsinjool-backend.onrender.com/api/evaluation/", evaluationData, {
+      const response = await axios.post("https://tsinjool-backend.onrender.com/api/evaluations/", evaluationData, {
         headers: {
           Authorization: `Token ${token}`,
           "Content-Type": "application/json",
