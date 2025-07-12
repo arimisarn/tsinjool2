@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 type CoachingType = "life" | "career" | "health";
@@ -38,7 +39,6 @@ function EvaluationSlider({ questions, onSubmit, loading }: EvaluationSliderProp
   const [answers, setAnswers] = useState<string[]>(questions.map(() => ""));
   const [animating, setAnimating] = useState(false);
 
-  // Validation min 3 caractères
   const isValid = (answer: string) => answer.trim().length >= 3;
 
   const handleChange = (value: string) => {
@@ -75,23 +75,14 @@ function EvaluationSlider({ questions, onSubmit, loading }: EvaluationSliderProp
 
   return (
     <div className="max-w-md mx-auto p-8 bg-gradient-to-br from-purple-600 to-blue-700 rounded-3xl shadow-2xl text-white font-sans select-none">
-
-      {/* Progress bar */}
       <div className="w-full bg-purple-900 rounded-full h-2 mb-6 overflow-hidden">
         <div
           className="h-2 bg-blue-400 transition-all duration-300"
           style={{ width: `${progressPercent}%` }}
-          aria-valuenow={progressPercent}
-          aria-valuemin={0}
-          aria-valuemax={100}
-          role="progressbar"
         />
       </div>
 
-      {/* Question / slide */}
-      <div
-        className={`relative h-32 mb-8 overflow-hidden`}
-      >
+      <div className={`relative h-32 mb-8 overflow-hidden`}>
         {questions.map((q, i) => (
           <div
             key={i}
@@ -106,7 +97,6 @@ function EvaluationSlider({ questions, onSubmit, loading }: EvaluationSliderProp
         ))}
       </div>
 
-      {/* Input */}
       <input
         type="text"
         placeholder="Votre réponse ici..."
@@ -115,18 +105,15 @@ function EvaluationSlider({ questions, onSubmit, loading }: EvaluationSliderProp
         onChange={(e) => handleChange(e.target.value)}
         onKeyDown={(e) => { if (e.key === "Enter") handleNext(); }}
         disabled={loading || animating}
-        aria-label={`Réponse à la question ${currentStep + 1}`}
         autoFocus
       />
 
-      {/* Validation message */}
       {!isValid(answers[currentStep]) && (
         <p className="mt-1 text-xs text-red-300 italic">
           La réponse doit contenir au moins 3 caractères.
         </p>
       )}
 
-      {/* Boutons navigation */}
       <div className="flex justify-between mt-8">
         <button
           onClick={handlePrev}
@@ -158,32 +145,48 @@ interface EvaluationPageProps {
 
 export default function EvaluationPage({ coachingType }: EvaluationPageProps) {
   const questions = questionBank[coachingType];
-
   const [loading, setLoading] = useState(false);
-  const [resultat, setResultat] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   const handleSubmit = async (answers: string[]) => {
     setLoading(true);
     setError(null);
-    setResultat(null);
+
     try {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("Utilisateur non authentifié.");
 
+      const responses = questions.reduce((acc, question, i) => {
+        acc[`q${i + 1}`] = answers[i];
+        console.log(question);
+        return acc;
+      }, {} as Record<string, string>);
+     
       const response = await axios.post(
-        "https://tsinjool-backend.onrender.com/api/evaluation/",
-        { answers },
+        "https://tsinjool-backend.onrender.com/api/assessment/submit/",
         {
-          headers: { Authorization: `Token ${token}` },
+          coaching_type: coachingType,
+          responses,
+        },
+        {
+          headers: {
+            Authorization: `Token ${token}`,
+          },
         }
       );
-      setResultat(response.data.resultat_ia);
+
+      if (response.data.redirect_to_dashboard) {
+        navigate("/dashboard");
+      } else {
+        console.warn("Redirection non signalée, mais l’évaluation est enregistrée.");
+      }
     } catch (e: any) {
       setError(
         e.response?.data?.detail ||
-          e.message ||
-          "Erreur lors de l’envoi de l’évaluation."
+        e.response?.data?.error ||
+        e.message ||
+        "Erreur lors de l’envoi de l’évaluation."
       );
     } finally {
       setLoading(false);
@@ -192,9 +195,7 @@ export default function EvaluationPage({ coachingType }: EvaluationPageProps) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex flex-col items-center justify-center p-6">
-      {!resultat && (
-        <EvaluationSlider questions={questions} onSubmit={handleSubmit} loading={loading} />
-      )}
+      <EvaluationSlider questions={questions} onSubmit={handleSubmit} loading={loading} />
 
       {loading && (
         <p className="mt-6 text-blue-600 font-semibold animate-pulse">
@@ -206,24 +207,6 @@ export default function EvaluationPage({ coachingType }: EvaluationPageProps) {
         <p className="mt-6 text-red-600 font-semibold">
           {error}
         </p>
-      )}
-
-      {resultat && (
-        <div
-          className="max-w-3xl mt-8 p-6 bg-white rounded-3xl shadow-lg
-          border border-blue-200 text-gray-900 whitespace-pre-line font-sans"
-        >
-          <h2 className="text-2xl font-bold mb-4 text-center text-blue-700">
-            Plan IA personnalisé
-          </h2>
-          <pre>{resultat}</pre>
-          <button
-            onClick={() => setResultat(null)}
-            className="mt-6 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition"
-          >
-            Refaire l’évaluation
-          </button>
-        </div>
       )}
     </div>
   );
