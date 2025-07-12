@@ -254,7 +254,7 @@ export default function Dashboard() {
 
   const generateCoachingPath = async (evaluationId: number) => {
     console.log(evaluationId);
-
+    
     setGeneratingPath(true);
     try {
       const token = localStorage.getItem("token");
