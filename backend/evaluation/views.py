@@ -4,7 +4,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 from django.shortcuts import get_object_or_404
-from .models import Assessment, CoachingPath, Profile
+from .models import Assessment, CoachingPath
+from accounts.models import Profile
 from .questions import ASSESSMENT_QUESTIONS
 from .services.ai_service import TogetherAIService
 import json
