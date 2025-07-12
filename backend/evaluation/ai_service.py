@@ -23,7 +23,7 @@ class AICoachingService:
                     "Content-Type": "application/json",
                 },
                 json={
-                    "model": "meta-llama/Llama-2-70b-chat-hf",
+                    "model": "mistralai/Mixtral-8x7B-Instruct-v0.1",
                     "messages": [
                         {
                             "role": "system",
