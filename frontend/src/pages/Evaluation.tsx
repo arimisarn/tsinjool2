@@ -9,6 +9,8 @@ export default function Evaluation() {
 
   if (loading) return <p>Chargement...</p>;
   if (!profile?.coaching_type) return <p>Type de coaching non défini</p>;
+  console.log("PROFILE:", profile);
+
 
   return <EvaluationPage coachingType={profile.coaching_type} />;
 }
