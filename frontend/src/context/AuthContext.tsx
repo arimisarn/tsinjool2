@@ -22,26 +22,25 @@ const AuthContext = createContext<AuthContextType>({
 });
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [token, setToken] = useState<string | null>(
-    localStorage.getItem("token")
-  );
+  const [token, setToken] = useState<string | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
-  console.log(setToken);
 
   const fetchProfile = async () => {
-    if (!token) return;
+    const localToken = localStorage.getItem("token");
+    if (!localToken) {
+      setLoading(false);
+      return;
+    }
+
     try {
-      setLoading(true);
-      const res = await axios.get(
-        "https://tsinjool-backend.onrender.com/api/profile/",
-        {
-          headers: { Authorization: `Token ${token}` },
-        }
-      );
+      setToken(localToken); // <-- MAJ ici
+      const res = await axios.get("https://tsinjool-backend.onrender.com/api/profile/", {
+        headers: { Authorization: `Token ${localToken}` },
+      });
       setProfile(res.data);
     } catch (e) {
-      console.error("Erreur lors du chargement du profil :", e);
+      console.error("Erreur chargement profil :", e);
     } finally {
       setLoading(false);
     }
@@ -49,11 +48,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     fetchProfile();
-  }, [token]); //
+  }, []); // pas besoin de token ici, on le lit directement depuis localStorage
 
   return (
     <AuthContext.Provider
-      value={{ token, profile, loading, refreshProfile: fetchProfile }}
+      value={{
+        token,
+        profile,
+        loading,
+        refreshProfile: fetchProfile,
+      }}
     >
       {children}
     </AuthContext.Provider>
