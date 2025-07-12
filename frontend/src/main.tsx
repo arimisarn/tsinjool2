@@ -23,6 +23,8 @@ import CoachVisuel from "./pages/CoachVisuel";
 import Evaluation from "./pages/Evaluation";
 import ExercicePage from "./pages/Exercice";
 import StepDetail from "./pages/StepDetails";
+import Settings from "./pages/Settings";
+import Progress from "./pages/Progress";
 // import { AuthProvider } from "./context/AuthContext";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
@@ -120,6 +122,22 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
                 element={
                   <RequireAuth>
                     <StepDetail />
+                  </RequireAuth>
+                }
+              />
+                 <Route
+                path="/seetings"
+                element={
+                  <RequireAuth>
+                    <Settings />
+                  </RequireAuth>
+                }
+              />
+                 <Route
+                path="/progress"
+                element={
+                  <RequireAuth>
+                    <Progress />
                   </RequireAuth>
                 }
               />

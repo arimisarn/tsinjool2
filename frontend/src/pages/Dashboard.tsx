@@ -1,129 +1,301 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Brain, Trophy, Target, Clock, Star, ArrowRight, CheckCircle, Play, User, Settings } from "lucide-react"
-import { useNavigate, useLocation } from "react-router-dom"
-import axios from "axios"
-import { toast } from "sonner"
+import { useState, useEffect } from "react";
+import {
+  Brain,
+  Trophy,
+  Target,
+  Clock,
+  Star,
+  ArrowRight,
+  CheckCircle,
+  Play,
+  User,
+  Settings,
+} from "lucide-react";
+import { useNavigate, useLocation } from "react-router-dom";
+import axios from "axios";
+import { toast } from "sonner";
 
 interface Step {
-  id: number
-  title: string
-  description: string
-  exercises: Exercise[]
-  completed: boolean
-  progress: number
+  id: number;
+  title: string;
+  description: string;
+  exercises: Exercise[];
+  completed: boolean;
+  progress: number;
 }
 
 interface Exercise {
-  id: number
-  title: string
-  description: string
-  duration: number
-  type: string
-  completed: boolean
+  id: number;
+  title: string;
+  description: string;
+  duration: number;
+  type: string;
+  completed: boolean;
 }
 
 interface UserProfile {
-  name: string
-  photo?: string
-  coaching_type: string
-  level: number
-  points: number
+  name: string;
+  photo?: string;
+  coaching_type: string;
+  level: number;
+  points: number;
 }
 
+// Ajouter des données de test au début du fichier, après les imports
+const MOCK_STEPS: Step[] = [
+  {
+    id: 1,
+    title: "Découverte de soi",
+    description:
+      "Explorez vos valeurs, forces et aspirations personnelles pour mieux vous connaître",
+    completed: false,
+    progress: 33,
+    exercises: [
+      {
+        id: 1,
+        title: "Cartographie des valeurs",
+        description: "Identifiez vos valeurs fondamentales",
+        duration: 20,
+        type: "reflection",
+        completed: true,
+      },
+      {
+        id: 2,
+        title: "Méditation de gratitude",
+        description: "Cultivez la reconnaissance et la positivité",
+        duration: 15,
+        type: "meditation",
+        completed: false,
+      },
+      {
+        id: 3,
+        title: "Vision board personnel",
+        description: "Créez une représentation visuelle de vos objectifs",
+        duration: 25,
+        type: "practice",
+        completed: false,
+      },
+    ],
+  },
+  {
+    id: 2,
+    title: "Gestion des émotions",
+    description: "Apprenez à comprendre et gérer vos émotions au quotidien",
+    completed: false,
+    progress: 0,
+    exercises: [
+      {
+        id: 4,
+        title: "Journal émotionnel",
+        description: "Tenez un journal de vos émotions quotidiennes",
+        duration: 15,
+        type: "reflection",
+        completed: false,
+      },
+      {
+        id: 5,
+        title: "Respiration apaisante",
+        description: "Technique de respiration pour gérer le stress",
+        duration: 10,
+        type: "breathing",
+        completed: false,
+      },
+      {
+        id: 6,
+        title: "Ancrage positif",
+        description: "Créez un ancrage pour retrouver un état positif",
+        duration: 20,
+        type: "practice",
+        completed: false,
+      },
+    ],
+  },
+  {
+    id: 3,
+    title: "Relations interpersonnelles",
+    description:
+      "Améliorez vos relations avec les autres et votre communication",
+    completed: false,
+    progress: 0,
+    exercises: [
+      {
+        id: 7,
+        title: "Analyse relationnelle",
+        description: "Évaluez la qualité de vos relations importantes",
+        duration: 25,
+        type: "reflection",
+        completed: false,
+      },
+      {
+        id: 8,
+        title: "Écoute empathique",
+        description: "Pratiquez l'écoute active et l'empathie",
+        duration: 15,
+        type: "practice",
+        completed: false,
+      },
+      {
+        id: 9,
+        title: "Méditation bienveillance",
+        description: "Cultivez la bienveillance envers vous et les autres",
+        duration: 18,
+        type: "meditation",
+        completed: false,
+      },
+    ],
+  },
+  {
+    id: 4,
+    title: "Réalisation personnelle",
+    description: "Passez à l'action pour réaliser vos objectifs et aspirations",
+    completed: false,
+    progress: 0,
+    exercises: [
+      {
+        id: 10,
+        title: "Plan d'action personnel",
+        description: "Créez un plan concret pour vos objectifs",
+        duration: 30,
+        type: "practice",
+        completed: false,
+      },
+      {
+        id: 11,
+        title: "Visualisation de réussite",
+        description: "Visualisez votre réussite future",
+        duration: 20,
+        type: "visualization",
+        completed: false,
+      },
+      {
+        id: 12,
+        title: "Célébration des progrès",
+        description: "Reconnaissez et célébrez vos avancées",
+        duration: 15,
+        type: "reflection",
+        completed: false,
+      },
+    ],
+  },
+];
+
+const MOCK_USER_PROFILE: UserProfile = {
+  name: "Marie Dupont",
+  photo: undefined,
+  coaching_type: "life",
+  level: 2,
+  points: 150,
+};
+
 export default function Dashboard() {
-  const navigate = useNavigate()
-  const location = useLocation()
-  const [steps, setSteps] = useState<Step[]>([])
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [generatingPath, setGeneratingPath] = useState(false)
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [steps, setSteps] = useState<Step[]>([]);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [generatingPath, setGeneratingPath] = useState(false);
 
   useEffect(() => {
-    document.title = "Tsinjool - Tableau de bord"
-    loadDashboardData()
-  }, [])
+    document.title = "Tsinjool - Tableau de bord";
+    loadDashboardData();
+  }, []);
+  useEffect(() => {
+    if (location.state?.evaluationId) {
+      generateCoachingPath(location.state.evaluationId);
+    }
+  }, [location.state]);
 
+  // Dans la fonction loadDashboardData, remplacer le try/catch par :
   const loadDashboardData = async () => {
     try {
-      const token = localStorage.getItem("token")
+      const token = localStorage.getItem("token");
       if (!token) {
-        toast.error("Veuillez vous connecter.")
-        navigate("/login")
-        return
+        // Mode démo - utiliser les données de test
+        setUserProfile(MOCK_USER_PROFILE);
+        setSteps(MOCK_STEPS);
+        setLoading(false);
+        return;
       }
 
-      // Charger le profil utilisateur
-      const profileResponse = await axios.get("https://tsinjool-backend.onrender.com/api/profile/", {
-        headers: { Authorization: `Token ${token}` },
-      })
-      setUserProfile(profileResponse.data)
-
-      // Vérifier si un parcours existe déjà
+      // Essayer de charger depuis l'API
       try {
-        const pathResponse = await axios.get("https://tsinjool-backend.onrender.com/api/coaching-path/", {
-          headers: { Authorization: `Token ${token}` },
-        })
-        setSteps(pathResponse.data.steps || [])
-      } catch (pathError: any) {
-        if (pathError.response?.status === 404) {
-          // Aucun parcours trouvé, générer un nouveau
-          await generateCoachingPath()
-        } else {
-          throw pathError
-        }
+        const profileResponse = await axios.get(
+          "https://tsinjool-backend.onrender.com/api/profile/",
+          {
+            headers: { Authorization: `Token ${token}` },
+          }
+        );
+        setUserProfile(profileResponse.data);
+
+        const pathResponse = await axios.get(
+          "https://tsinjool-backend.onrender.com/api/coaching-path/",
+          {
+            headers: { Authorization: `Token ${token}` },
+          }
+        );
+        setSteps(pathResponse.data.steps || []);
+      } catch (apiError: any) {
+        console.log("API non disponible, utilisation des données de test");
+        // Si l'API n'est pas disponible, utiliser les données de test
+        setUserProfile(MOCK_USER_PROFILE);
+        setSteps(MOCK_STEPS);
       }
     } catch (error: any) {
-      console.error(error)
-      toast.error("Erreur lors du chargement des données.")
+      console.error(error);
+      // En cas d'erreur, utiliser les données de test
+      setUserProfile(MOCK_USER_PROFILE);
+      setSteps(MOCK_STEPS);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
-  const generateCoachingPath = async () => {
-    setGeneratingPath(true)
+  const generateCoachingPath = async (evaluationId: number) => {
+    console.log(evaluationId);
+
+    setGeneratingPath(true);
     try {
-      const token = localStorage.getItem("token")
-      const evaluationId = location.state?.evaluationId
+      const token = localStorage.getItem("token");
+      const evaluationId = location.state?.evaluationId;
 
       const response = await axios.post(
         "https://tsinjool-backend.onrender.com/api/generate-path/",
         { evaluation_id: evaluationId },
         {
           headers: { Authorization: `Token ${token}` },
-        },
-      )
+        }
+      );
 
-      setSteps(response.data.steps)
-      toast.success("Votre parcours personnalisé a été généré !")
+      setSteps(response.data.steps);
+      toast.success("Votre parcours personnalisé a été généré !");
     } catch (error: any) {
-      console.error(error)
-      toast.error("Erreur lors de la génération du parcours.")
+      console.error(error);
+      toast.error("Erreur lors de la génération du parcours.");
     } finally {
-      setGeneratingPath(false)
+      setGeneratingPath(false);
     }
-  }
+  };
 
   const getCoachingTypeLabel = (type: string) => {
     const labels = {
       life: "Coaching de vie",
       career: "Coaching de carrière",
       health: "Coaching santé",
-    }
-    return labels[type as keyof typeof labels] || type
-  }
+    };
+    return labels[type as keyof typeof labels] || type;
+  };
 
   const getStepIcon = (index: number) => {
-    const icons = [Target, Trophy, Star, CheckCircle]
-    const IconComponent = icons[index] || Target
-    return <IconComponent className="w-6 h-6" />
-  }
+    const icons = [Target, Trophy, Star, CheckCircle];
+    const IconComponent = icons[index] || Target;
+    return <IconComponent className="w-6 h-6" />;
+  };
 
   const handleStepClick = (step: Step) => {
-    navigate(`/step/${step.id}`, { state: { step } })
-  }
+    navigate(`/step/${step.id}`, { state: { step } });
+  };
 
   if (loading) {
     return (
@@ -132,10 +304,12 @@ export default function Dashboard() {
           <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-blue-600 rounded-full flex items-center justify-center mb-4 mx-auto animate-pulse">
             <Brain className="w-8 h-8 text-white" />
           </div>
-          <p className="text-gray-600">Chargement de votre tableau de bord...</p>
+          <p className="text-gray-600">
+            Chargement de votre tableau de bord...
+          </p>
         </div>
       </div>
-    )
+    );
   }
 
   if (generatingPath) {
@@ -145,11 +319,16 @@ export default function Dashboard() {
           <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-blue-600 rounded-full flex items-center justify-center mb-6 mx-auto animate-spin">
             <Brain className="w-10 h-10 text-white" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Génération de votre parcours personnalisé</h2>
-          <p className="text-gray-600">Notre IA analyse vos réponses pour créer un programme adapté à vos besoins...</p>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+            Génération de votre parcours personnalisé
+          </h2>
+          <p className="text-gray-600">
+            Notre IA analyse vos réponses pour créer un programme adapté à vos
+            besoins...
+          </p>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -170,8 +349,12 @@ export default function Dashboard() {
 
             <div className="flex items-center gap-4">
               <div className="text-right">
-                <p className="text-sm text-gray-600">Niveau {userProfile?.level || 1}</p>
-                <p className="text-lg font-bold text-purple-600">{userProfile?.points || 0} pts</p>
+                <p className="text-sm text-gray-600">
+                  Niveau {userProfile?.level || 1}
+                </p>
+                <p className="text-lg font-bold text-purple-600">
+                  {userProfile?.points || 0} pts
+                </p>
               </div>
 
               <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden">
@@ -201,9 +384,12 @@ export default function Dashboard() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Welcome Section */}
         <div className="mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-2">Bonjour {userProfile?.name || "Coach"} ! 👋</h2>
+          <h2 className="text-3xl font-bold text-gray-900 mb-2">
+            Bonjour {userProfile?.name || "Coach"} ! 👋
+          </h2>
           <p className="text-gray-600">
-            Voici votre parcours personnalisé de {getCoachingTypeLabel(userProfile?.coaching_type || "")}
+            Voici votre parcours personnalisé de{" "}
+            {getCoachingTypeLabel(userProfile?.coaching_type || "")}
           </p>
         </div>
 
@@ -231,7 +417,11 @@ export default function Dashboard() {
               <div>
                 <p className="text-sm text-gray-600">Exercices réalisés</p>
                 <p className="text-2xl font-bold text-gray-900">
-                  {steps.reduce((acc, step) => acc + step.exercises.filter((e) => e.completed).length, 0)}
+                  {steps.reduce(
+                    (acc, step) =>
+                      acc + step.exercises.filter((e) => e.completed).length,
+                    0
+                  )}
                 </p>
               </div>
             </div>
@@ -247,8 +437,13 @@ export default function Dashboard() {
                 <p className="text-2xl font-bold text-gray-900">
                   {steps.reduce(
                     (acc, step) =>
-                      acc + step.exercises.reduce((exerciseAcc, exercise) => exerciseAcc + exercise.duration, 0),
-                    0,
+                      acc +
+                      step.exercises.reduce(
+                        (exerciseAcc, exercise) =>
+                          exerciseAcc + exercise.duration,
+                        0
+                      ),
+                    0
                   )}{" "}
                   min
                 </p>
@@ -259,7 +454,9 @@ export default function Dashboard() {
 
         {/* Coaching Steps */}
         <div className="mb-8">
-          <h3 className="text-2xl font-bold text-gray-900 mb-6">Votre parcours de coaching</h3>
+          <h3 className="text-2xl font-bold text-gray-900 mb-6">
+            Votre parcours de coaching
+          </h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {steps.map((step, index) => (
@@ -272,23 +469,33 @@ export default function Dashboard() {
                   <div className="flex items-center gap-3">
                     <div
                       className={`w-12 h-12 rounded-lg flex items-center justify-center ${
-                        step.completed ? "bg-green-100 text-green-600" : "bg-purple-100 text-purple-600"
+                        step.completed
+                          ? "bg-green-100 text-green-600"
+                          : "bg-purple-100 text-purple-600"
                       }`}
                     >
-                      {step.completed ? <CheckCircle className="w-6 h-6" /> : getStepIcon(index)}
+                      {step.completed ? (
+                        <CheckCircle className="w-6 h-6" />
+                      ) : (
+                        getStepIcon(index)
+                      )}
                     </div>
                     <div>
                       <h4 className="text-lg font-semibold text-gray-900 group-hover:text-purple-600 transition-colors">
                         Étape {index + 1}: {step.title}
                       </h4>
-                      <p className="text-sm text-gray-600">{step.exercises.length} exercices</p>
+                      <p className="text-sm text-gray-600">
+                        {step.exercises.length} exercices
+                      </p>
                     </div>
                   </div>
 
                   <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-purple-600 transition-colors" />
                 </div>
 
-                <p className="text-gray-600 mb-4 line-clamp-2">{step.description}</p>
+                <p className="text-gray-600 mb-4 line-clamp-2">
+                  {step.description}
+                </p>
 
                 {/* Progress Bar */}
                 <div className="mb-3">
@@ -308,14 +515,20 @@ export default function Dashboard() {
 
                 {/* Exercise Preview */}
                 <div className="flex gap-2">
-                  {step.exercises.slice(0, 3).map((exercise) => (
+                  {step.exercises.slice(0, 3).map((exercise, exerciseIndex) => (
                     <div
-                      key={exercise.id}
+                      key={`${step.id}-${exerciseIndex}`}
                       className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-medium ${
-                        exercise.completed ? "bg-green-100 text-green-600" : "bg-gray-100 text-gray-600"
+                        exercise.completed
+                          ? "bg-green-100 text-green-600"
+                          : "bg-gray-100 text-gray-600"
                       }`}
                     >
-                      {exercise.completed ? <CheckCircle className="w-4 h-4" /> : <Play className="w-3 h-3" />}
+                      {exercise.completed ? (
+                        <CheckCircle className="w-4 h-4" />
+                      ) : (
+                        <Play className="w-3 h-3" />
+                      )}
                     </div>
                   ))}
                 </div>
@@ -326,17 +539,32 @@ export default function Dashboard() {
 
         {/* Quick Actions */}
         <div className="bg-white rounded-xl p-6 shadow-sm">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Actions rapides</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+            Actions rapides
+          </h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <button
               onClick={() => {
-                const nextStep = steps.find((s) => !s.completed)
-                if (nextStep) handleStepClick(nextStep)
+                const nextStep = steps.find((s) => !s.completed);
+                if (nextStep) {
+                  navigate(`/step/${nextStep.id}`, {
+                    state: { step: nextStep },
+                  });
+                } else {
+                  toast.success(
+                    "Félicitations ! Vous avez terminé tout votre parcours !"
+                  );
+                }
               }}
-              className="flex items-center gap-3 p-4 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors"
+              disabled={steps.length === 0}
+              className="flex items-center gap-3 p-4 bg-purple-50 hover:bg-purple-100 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Play className="w-5 h-5 text-purple-600" />
-              <span className="font-medium text-purple-900">Continuer le parcours</span>
+              <span className="font-medium text-purple-900">
+                {steps.filter((s) => s.completed).length === steps.length
+                  ? "Parcours terminé !"
+                  : "Continuer le parcours"}
+              </span>
             </button>
 
             <button
@@ -344,7 +572,9 @@ export default function Dashboard() {
               className="flex items-center gap-3 p-4 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors"
             >
               <Trophy className="w-5 h-5 text-blue-600" />
-              <span className="font-medium text-blue-900">Voir mes progrès</span>
+              <span className="font-medium text-blue-900">
+                Voir mes progrès
+              </span>
             </button>
 
             <button
@@ -352,11 +582,13 @@ export default function Dashboard() {
               className="flex items-center gap-3 p-4 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors"
             >
               <Settings className="w-5 h-5 text-gray-600" />
-              <span className="font-medium text-gray-900">Modifier le profil</span>
+              <span className="font-medium text-gray-900">
+                Modifier le profil
+              </span>
             </button>
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }
