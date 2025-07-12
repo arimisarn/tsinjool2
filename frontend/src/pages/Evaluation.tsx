@@ -95,7 +95,7 @@ export default function Evaluation() {
       if (!token) throw new Error("Utilisateur non authentifié");
 
       const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}/assessment/submit/`,
+        `https://tsinjool-backend.onrender.com/api/assessment/submit/`,
         {
           coaching_type: assessmentData?.coaching_type,
           responses,
