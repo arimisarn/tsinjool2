@@ -11,9 +11,14 @@ import {
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "sonner";
+import { useAuth } from "@/context/AuthContext"; // adapte le chemin si besoin
+
+
 
 export default function ProfileSetup() {
   const navigate = useNavigate();
+
+  const { refreshProfile } = useAuth();
 
   const [bio, setBio] = useState("");
   const [coachingType, setCoachingType] = useState("");
@@ -99,11 +104,14 @@ export default function ProfileSetup() {
         }
       );
       console.log(response);
-
+      await refreshProfile()
       toast.success("Profil mis à jour avec succès !");
-      navigate("/evaluation", {
-        state: { coachingType },
-      });
+      navigate("/evaluation");
+      // navigate("/evaluation", {
+      //   state: { coachingType },
+
+      // });
+      // window.location.reload(); // simple mais radical
     } catch (error: any) {
       console.error(error?.response?.data || error.message);
       toast.error(
