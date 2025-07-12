@@ -22,16 +22,24 @@ const AuthContext = createContext<AuthContextType>({
 });
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [token] = useState(localStorage.getItem("token"));
+  // const [token] = useState(localStorage.getItem("token"));
+  const [token, setToken] = useState<string | null>(
+    localStorage.getItem("token")
+  );
+  console.log(setToken);
+
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
 
   const fetchProfile = async () => {
     if (!token) return;
     try {
-      const res = await axios.get("https://tsinjool-backend.onrender.com/api/profile/", {
-        headers: { Authorization: `Token ${token}` },
-      });
+      const res = await axios.get(
+        "https://tsinjool-backend.onrender.com/api/profile/",
+        {
+          headers: { Authorization: `Token ${token}` },
+        }
+      );
       setProfile(res.data);
     } catch (e) {
       console.error("Erreur profil:", e);
@@ -45,7 +53,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ token, profile, loading, refreshProfile: fetchProfile }}>
+    <AuthContext.Provider
+      value={{ token, profile, loading, refreshProfile: fetchProfile }}
+    >
       {children}
     </AuthContext.Provider>
   );

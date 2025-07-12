@@ -13,8 +13,6 @@ import axios from "axios";
 import { toast } from "sonner";
 import { useAuth } from "@/context/AuthContext"; // adapte le chemin si besoin
 
-
-
 export default function ProfileSetup() {
   const navigate = useNavigate();
 
@@ -93,7 +91,7 @@ export default function ProfileSetup() {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("Token manquant.");
 
-      const response = await axios.put(
+      await axios.put(
         "https://tsinjool-backend.onrender.com/api/profile/",
         formData,
         {
@@ -103,15 +101,10 @@ export default function ProfileSetup() {
           },
         }
       );
-      console.log(response);
-      await refreshProfile()
-      toast.success("Profil mis à jour avec succès !");
-      navigate("/evaluation");
-      // navigate("/evaluation", {
-      //   state: { coachingType },
 
-      // });
-      // window.location.reload(); // simple mais radical
+      toast.success("Profil mis à jour avec succès !");
+      await refreshProfile(); // recharge le profil depuis le backend
+      navigate("/evaluation"); // redirige ensuite
     } catch (error: any) {
       console.error(error?.response?.data || error.message);
       toast.error(
