@@ -22,6 +22,7 @@ import AssistantVocal from "./pages/AssistantVocal";
 import CoachVisuel from "./pages/CoachVisuel";
 import Evaluation from "./pages/Evaluation";
 import ExercicePage from "./pages/Exercice";
+import StepDetail from "./pages/StepDetails";
 // import { AuthProvider } from "./context/AuthContext";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
@@ -107,10 +108,18 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
                 }
               />
               <Route
-                path="/dashboard/etape/:etapeId/exercice/:exerciceId"
+                path="/exercice"
                 element={
                   <RequireAuth>
                     <ExercicePage />
+                  </RequireAuth>
+                }
+              />
+              <Route
+                path="/stepdetails"
+                element={
+                  <RequireAuth>
+                    <StepDetail />
                   </RequireAuth>
                 }
               />

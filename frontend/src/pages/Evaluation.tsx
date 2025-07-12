@@ -153,7 +153,7 @@ export default function Evaluation() {
     const token = localStorage.getItem("token")
     if (!token) {
       toast.error("Veuillez vous connecter.")
-      navigate("/login")
+      navigate("/dashboard")
       return
     }
 
