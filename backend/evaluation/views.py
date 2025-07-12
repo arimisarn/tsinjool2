@@ -6,6 +6,7 @@ from rest_framework import status
 from .models import Evaluation
 from .serializers import EvaluationSerializer
 from django.conf import settings
+import os
 MISTRAL_API_KEY = os.environ.get("MISTRAL_API_KEY")
 
 class EvaluationView(APIView):
