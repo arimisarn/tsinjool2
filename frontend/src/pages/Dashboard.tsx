@@ -104,7 +104,11 @@ export default function Dashboard() {
     try {
       const token = localStorage.getItem("token");
       const evaluationId = location.state?.evaluationId;
-
+      if (!evaluationId) {
+        toast.error("Évaluation non trouvée. Veuillez recommencer.");
+        navigate("/evaluation"); // ou la route qui mène à l’évaluation
+        return;
+      }
       const response = await axios.post(
         "https://tsinjool-backend.onrender.com/api/generate-path/",
         { evaluation_id: evaluationId },
@@ -113,10 +117,12 @@ export default function Dashboard() {
         }
       );
 
-      setSteps(response.data.steps);
+      // setSteps(response.data.steps);
+      setSteps(response.data.coaching_path.steps);
       toast.success("Votre parcours personnalisé a été généré !");
     } catch (error: any) {
       console.error(error);
+
       toast.error("Erreur lors de la génération du parcours.");
     } finally {
       setGeneratingPath(false);

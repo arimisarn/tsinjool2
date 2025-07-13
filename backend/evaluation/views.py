@@ -1,3 +1,4 @@
+import json
 from rest_framework import viewsets, status
 from rest_framework.decorators import api_view, permission_classes, action
 from rest_framework.permissions import IsAuthenticated
@@ -46,24 +47,23 @@ def generate_coaching_path(request):
         )
 
     try:
-        # Récupérer l'évaluation
+        # Récupérer l'évaluation de l'utilisateur
         evaluation = get_object_or_404(Evaluation, id=evaluation_id, user=request.user)
 
-        # Vérifier si un parcours existe déjà
+        # Supprimer un ancien parcours existant s'il y en a un
         existing_path = CoachingPath.objects.filter(user=request.user).first()
         if existing_path:
-            existing_path.delete()  # Supprimer l'ancien parcours
+            existing_path.delete()
 
-        # Générer le nouveau parcours avec l'IA
+        # Appel IA : génération du parcours
         evaluation_data = {
             "coaching_type": evaluation.coaching_type,
             "answers": evaluation.answers,
         }
-
         steps_data = AICoachingService.generate_coaching_path(evaluation_data)
         print("DEBUG - Données générées par l'IA :", steps_data)
 
-        # Créer le parcours en base de données
+        # Créer un nouveau CoachingPath
         coaching_path = CoachingPath.objects.create(
             user=request.user, evaluation=evaluation
         )
@@ -78,16 +78,52 @@ def generate_coaching_path(request):
             )
 
             for exercise_data in step_data["exercises"]:
+                # Nettoyer instructions
+                instructions = exercise_data.get("instructions", [])
+                if isinstance(instructions, str):
+                    try:
+                        instructions = json.loads(instructions)
+                    except Exception:
+                        instructions = ["Instructions indisponibles"]
+
+                # Nettoyer recommended_videos
+                recommended_videos = exercise_data.get("recommended_videos", [])
+                if isinstance(recommended_videos, str):
+                    try:
+                        recommended_videos = json.loads(recommended_videos)
+                    except Exception:
+                        recommended_videos = []
+
                 Exercise.objects.create(
                     step=step,
                     title=exercise_data["title"],
                     description=exercise_data["description"],
                     duration=exercise_data["duration"],
                     type=exercise_data["type"],
-                    instructions=exercise_data["instructions"],
-                    animation_character=exercise_data["animation_character"],
-                    recommended_videos=exercise_data["recommended_videos"],
+                    instructions=instructions,
+                    animation_character=exercise_data.get("animation_character", "🤖"),
+                    recommended_videos=recommended_videos,
                 )
+
+        # Créer ou mettre à jour la progression utilisateur
+        UserProgress.objects.get_or_create(user=request.user)
+
+        # Sérialiser et retourner le parcours
+        serializer = CoachingPathSerializer(coaching_path)
+        return Response(
+            {
+                "message": "Parcours généré avec succès",
+                "coaching_path": serializer.data,
+            },
+            status=status.HTTP_201_CREATED,
+        )
+
+    except Exception as e:
+        print("ERREUR lors de la génération du parcours IA :", str(e))
+        return Response(
+            {"error": f"Erreur lors de la génération du parcours : {str(e)}"},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
 
         # Créer ou mettre à jour les progrès utilisateur
         user_progress, created = UserProgress.objects.get_or_create(user=request.user)
@@ -108,6 +144,8 @@ def generate_coaching_path(request):
             {"error": f"Erreur lors de la génération du parcours: {str(e)}"},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
+
+
 
 
 # class CoachingPathViewSet(viewsets.ReadOnlyModelViewSet):
