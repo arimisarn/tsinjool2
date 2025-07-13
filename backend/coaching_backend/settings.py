@@ -172,3 +172,5 @@ TOGETHER_API_KEY = os.getenv("TOGETHER_API_KEY")
 OPENAI_API_KEY = config('OPENAI_API_KEY')
 MISTRAL_API_KEY = os.environ.get("MISTRAL_API_KEY")
 
+MEDIA_URL = '/profile_photos/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/profile_photos/')
