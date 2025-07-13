@@ -102,6 +102,65 @@ class AICoachingService:
             return cls._get_default_coaching_path(evaluation_data["coaching_type"])
 
     @classmethod
+#     def _build_coaching_prompt(cls, evaluation_data: Dict[str, Any]) -> str:
+#         """Construit le prompt pour l'IA"""
+
+#         coaching_type = evaluation_data["coaching_type"]
+#         answers = evaluation_data["answers"]
+
+#         answers_text = "\n".join(
+#             [f"Question {q_id}: {answer}" for q_id, answer in answers.items()]
+#         )
+
+#         coaching_labels = {
+#             "life": "coaching de vie",
+#             "career": "coaching de carrière",
+#             "health": "coaching santé",
+#         }
+
+#         coaching_label = coaching_labels.get(coaching_type, coaching_type)
+
+#         return f"""
+# Basé sur les réponses suivantes d'un client en {coaching_label}, crée un parcours de coaching personnalisé avec exactement 4 étapes progressives, réponds uniquement avec du JSON **strictement valide**, sans texte ni commentaire en dehors du JSON.
+
+# Réponses du client:
+# {answers_text}
+
+# Crée un parcours structuré avec:
+# - 4 étapes progressives et logiques
+# - Chaque étape doit avoir un titre clair et une description
+# - Chaque étape doit contenir exactement 3 exercices pratiques
+# - Chaque exercice doit avoir:
+#   * Un titre engageant
+#   * Une description claire (2-3 phrases)
+#   * Une durée en minutes (entre 5 et 30 minutes)
+#   * Un type parmi: meditation, reflection, practice, breathing, visualization
+#   * 3-5 instructions étape par étape
+#   * Un emoji de personnage pour l'animation
+#   * 2-3 recommandations de vidéos/ressources
+
+# Réponds uniquement en JSON valide avec cette structure exacte:
+# {{
+#   "steps": [
+#     {{
+#       "title": "Titre de l'étape",
+#       "description": "Description de l'étape",
+#       "exercises": [
+#         {{
+#           "title": "Titre de l'exercice",
+#           "description": "Description de l'exercice",
+#           "duration": 15,
+#           "type": "meditation",
+#           "instructions": ["Instruction 1", "Instruction 2", "Instruction 3"],
+#           "animation_character": "🧘‍♀️",
+#           "recommended_videos": ["Vidéo 1", "Vidéo 2"]
+#         }}
+#       ]
+#     }}
+#   ]
+# }}
+# """
+
     def _build_coaching_prompt(cls, evaluation_data: Dict[str, Any]) -> str:
         """Construit le prompt pour l'IA"""
 
@@ -121,45 +180,51 @@ class AICoachingService:
         coaching_label = coaching_labels.get(coaching_type, coaching_type)
 
         return f"""
-Basé sur les réponses suivantes d'un client en {coaching_label}, crée un parcours de coaching personnalisé avec exactement 4 étapes progressives.
+    Tu es un coach professionnel expérimenté. Crée un parcours de coaching personnalisé en {coaching_label}, basé sur les réponses suivantes du client :
 
-Réponses du client:
-{answers_text}
+    {answers_text}
 
-Crée un parcours structuré avec:
-- 4 étapes progressives et logiques
-- Chaque étape doit avoir un titre clair et une description
-- Chaque étape doit contenir exactement 3 exercices pratiques
-- Chaque exercice doit avoir:
-  * Un titre engageant
-  * Une description claire (2-3 phrases)
-  * Une durée en minutes (entre 5 et 30 minutes)
-  * Un type parmi: meditation, reflection, practice, breathing, visualization
-  * 3-5 instructions étape par étape
-  * Un emoji de personnage pour l'animation
-  * 2-3 recommandations de vidéos/ressources
+    Génère :
+    - 4 étapes progressives et logiques
+    - Chaque étape a :
+    - un titre
+    - une description
+    - exactement 3 exercices
 
-Réponds uniquement en JSON valide avec cette structure exacte:
-{{
-  "steps": [
+    Chaque exercice contient :
+    - un titre engageant
+    - une description (2-3 phrases)
+    - une durée (entre 5 et 30 minutes)
+    - un type parmi : meditation, reflection, practice, breathing, visualization
+    - 3 à 5 instructions claires
+    - un emoji de personnage pour l'animation
+    - 2 à 3 vidéos ou ressources recommandées
+
+    ⚠️ Réponds UNIQUEMENT avec un JSON **strictement valide**, **sans texte explicatif** ni commentaire, en respectant **exactement** cette structure :
+
     {{
-      "title": "Titre de l'étape",
-      "description": "Description de l'étape",
-      "exercises": [
+    "steps": [
         {{
-          "title": "Titre de l'exercice",
-          "description": "Description de l'exercice",
-          "duration": 15,
-          "type": "meditation",
-          "instructions": ["Instruction 1", "Instruction 2", "Instruction 3"],
-          "animation_character": "🧘‍♀️",
-          "recommended_videos": ["Vidéo 1", "Vidéo 2"]
-        }}
-      ]
+        "title": "Titre de l'étape",
+        "description": "Description de l'étape",
+        "exercises": [
+            {{
+            "title": "Titre de l'exercice",
+            "description": "Description de l'exercice",
+            "duration": 15,
+            "type": "meditation",
+            "instructions": ["Instruction 1", "Instruction 2", "Instruction 3"],
+            "animation_character": "🧘‍♀️",
+            "recommended_videos": ["Vidéo 1", "Vidéo 2"]
+            }},
+            ...
+        ]
+        }},
+        ...
+    ]
     }}
-  ]
-}}
 """
+
 
     @classmethod
     def _parse_coaching_response(cls, response: str, coaching_type: str) -> List[Dict]:
