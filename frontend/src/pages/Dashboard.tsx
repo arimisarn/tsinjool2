@@ -211,7 +211,7 @@ export default function Dashboard() {
               <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden">
                 {userProfile?.photo ? (
                   <img
-                    src={userProfile.photo || "/placeholder.svg"}
+                    src={userProfile.photo}
                     alt="Profile"
                     className="w-full h-full object-cover"
                   />
