@@ -54,52 +54,52 @@ class AICoachingService:
 
 
 
-@classmethod
-def generate_coaching_path(cls, evaluation_data: Dict[str, Any]) -> List[Dict]:
-    """Génère un parcours de coaching personnalisé avec Together.ai"""
+    @classmethod
+    def generate_coaching_path(cls, evaluation_data: Dict[str, Any]) -> List[Dict]:
+        """Génère un parcours de coaching personnalisé avec Together.ai"""
 
-    prompt = cls._build_coaching_prompt(evaluation_data)
+        prompt = cls._build_coaching_prompt(evaluation_data)
 
-    try:
-        response = requests.post(
-            cls.BASE_URL,
-            headers={
-                "Authorization": f"Bearer {settings.MISTRAL_API_KEY}",
-                "Content-Type": "application/json",
-            },
-            json={
-                "model": "mistralai/Mixtral-8x7B-Instruct-v0.1",
-                "messages": [
-                    {
-                        "role": "system",
-                        "content": "Tu es un coach professionnel expérimenté. Tu crées des parcours de coaching personnalisés basés sur les évaluations des clients.",
-                    },
-                    {"role": "user", "content": prompt},
-                ],
-                "temperature": 0.7,
-                "max_tokens": 1024,  # 512 peut être un peu court si 4 étapes + 3 exos
-            },
-        )
-
-        if response.status_code == 200:
-            ai_response = response.json()
-            content = ai_response["choices"][0]["message"]["content"]
-
-            # ✅ Afficher la réponse brute de l'IA dans les logs
-            print("🧠 Réponse brute de l’IA (non parsée) :\n", content)
-
-            return cls._parse_coaching_response(
-                content, evaluation_data["coaching_type"]
+        try:
+            response = requests.post(
+                cls.BASE_URL,
+                headers={
+                    "Authorization": f"Bearer {settings.MISTRAL_API_KEY}",
+                    "Content-Type": "application/json",
+                },
+                json={
+                    "model": "mistralai/Mixtral-8x7B-Instruct-v0.1",
+                    "messages": [
+                        {
+                            "role": "system",
+                            "content": "Tu es un coach professionnel expérimenté. Tu crées des parcours de coaching personnalisés basés sur les évaluations des clients.",
+                        },
+                        {"role": "user", "content": prompt},
+                    ],
+                    "temperature": 0.7,
+                    "max_tokens": 1024,  # 512 peut être un peu court si 4 étapes + 3 exos
+                },
             )
-        else:
-            print(
-                f"❌ Erreur API Together.ai: {response.status_code} - {response.text}"
-            )
+
+            if response.status_code == 200:
+                ai_response = response.json()
+                content = ai_response["choices"][0]["message"]["content"]
+
+                # ✅ Afficher la réponse brute de l'IA dans les logs
+                print("🧠 Réponse brute de l’IA (non parsée) :\n", content)
+
+                return cls._parse_coaching_response(
+                    content, evaluation_data["coaching_type"]
+                )
+            else:
+                print(
+                    f"❌ Erreur API Together.ai: {response.status_code} - {response.text}"
+                )
+                return cls._get_default_coaching_path(evaluation_data["coaching_type"])
+
+        except Exception as e:
+            print(f"❌ Erreur lors de l'appel à Together.ai: {str(e)}")
             return cls._get_default_coaching_path(evaluation_data["coaching_type"])
-
-    except Exception as e:
-        print(f"❌ Erreur lors de l'appel à Together.ai: {str(e)}")
-        return cls._get_default_coaching_path(evaluation_data["coaching_type"])
 
     @classmethod
     def _build_coaching_prompt(cls, evaluation_data: Dict[str, Any]) -> str:
