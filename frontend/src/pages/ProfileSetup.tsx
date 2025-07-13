@@ -97,7 +97,7 @@ export default function ProfileSetup() {
         {
           headers: {
             Authorization: `Token ${token}`,
-            "Content-Type": "multipart/form-data",
+            // "Content-Type": "multipart/form-data",
           },
         }
       );

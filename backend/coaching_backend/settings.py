@@ -180,12 +180,10 @@ MISTRAL_API_KEY = os.environ.get("MISTRAL_API_KEY")
 
 DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 
-MEDIA_URL = "/media/"
+CLOUDINARY_STORAGE = {
+    "CLOUD_NAME": os.getenv("CLOUDINARY_CLOUD_NAME"),
+    "API_KEY": os.getenv("CLOUDINARY_API_KEY"),
+    "API_SECRET": os.getenv("CLOUDINARY_API_SECRET"),
+}
 
-
-cloudinary.config(
-    cloud_name=config('CLOUDINARY_CLOUD_NAME'),
-    api_key=config('CLOUDINARY_API_KEY'),
-    api_secret=config('CLOUDINARY_API_SECRET'),
-    secure=True,
-)
+MEDIA_URL = '/media/'
