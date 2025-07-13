@@ -61,6 +61,7 @@ def generate_coaching_path(request):
         }
 
         steps_data = AICoachingService.generate_coaching_path(evaluation_data)
+        print("DEBUG - Données générées par l'IA :", steps_data)
 
         # Créer le parcours en base de données
         coaching_path = CoachingPath.objects.create(
@@ -109,6 +110,27 @@ def generate_coaching_path(request):
         )
 
 
+# class CoachingPathViewSet(viewsets.ReadOnlyModelViewSet):
+#     serializer_class = CoachingPathSerializer
+#     permission_classes = [IsAuthenticated]
+
+#     def get_queryset(self):
+#         return CoachingPath.objects.filter(user=self.request.user)
+
+#     def retrieve(self, request, pk=None):
+#         """Récupérer le parcours de coaching de l'utilisateur"""
+#         try:
+#             coaching_path = CoachingPath.objects.get(user=request.user)
+#             serializer = self.get_serializer(coaching_path)
+#             return Response(serializer.data)
+#         except CoachingPath.DoesNotExist:
+#             return Response(
+#                 {"error": "Aucun parcours de coaching trouvé"},
+#                 status=status.HTTP_404_NOT_FOUND,
+#             )
+
+
+
 class CoachingPathViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = CoachingPathSerializer
     permission_classes = [IsAuthenticated]
@@ -116,8 +138,9 @@ class CoachingPathViewSet(viewsets.ReadOnlyModelViewSet):
     def get_queryset(self):
         return CoachingPath.objects.filter(user=self.request.user)
 
-    def retrieve(self, request, pk=None):
-        """Récupérer le parcours de coaching de l'utilisateur"""
+    @action(detail=False, methods=["get"])
+    def my(self, request):
+        """Récupère le parcours du user connecté"""
         try:
             coaching_path = CoachingPath.objects.get(user=request.user)
             serializer = self.get_serializer(coaching_path)
