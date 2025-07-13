@@ -226,59 +226,109 @@ class AICoachingService:
 """
 
 
+    # @classmethod
+    # def _parse_coaching_response(cls, response: str, coaching_type: str) -> List[Dict]:
+    #     """Parse la réponse de l'IA et retourne les étapes"""
+
+    #     try:
+    #         # Extraire le JSON de la réponse
+    #         json_start = response.find("{")
+    #         json_end = response.rfind("}") + 1
+
+    #         if json_start == -1 or json_end == 0:
+    #             raise ValueError("Aucun JSON trouvé dans la réponse")
+
+    #         json_str = response[json_start:json_end]
+    #         parsed = json.loads(json_str)
+
+    #         if "steps" not in parsed or not isinstance(parsed["steps"], list):
+    #             raise ValueError("Structure de réponse invalide")
+
+    #         # Valider et nettoyer les données
+    #         steps = []
+    #         for i, step_data in enumerate(parsed["steps"][:4]):  # Limiter à 4 étapes
+    #             step = {
+    #                 "title": step_data.get("title", f"Étape {i+1}"),
+    #                 "description": step_data.get(
+    #                     "description", "Description non disponible"
+    #                 ),
+    #                 "order": i + 1,
+    #                 "exercises": [],
+    #             }
+
+    #             # Traiter les exercices
+    #             exercises_data = step_data.get("exercises", [])
+    #             for j, exercise_data in enumerate(
+    #                 exercises_data[:3]
+    #             ):  # Limiter à 3 exercices
+    #                 exercise = {
+    #                     "title": exercise_data.get("title", f"Exercice {j+1}"),
+    #                     "description": exercise_data.get(
+    #                         "description", "Description non disponible"
+    #                     ),
+    #                     "duration": min(
+    #                         max(exercise_data.get("duration", 15), 5), 30
+    #                     ),  # Entre 5 et 30 min
+    #                     "type": exercise_data.get("type", "practice"),
+    #                     "instructions": exercise_data.get(
+    #                         "instructions", ["Suivez les instructions à l'écran"]
+    #                     ),
+    #                     "animation_character": exercise_data.get(
+    #                         "animation_character", "🤖"
+    #                     ),
+    #                     "recommended_videos": exercise_data.get(
+    #                         "recommended_videos", []
+    #                     ),
+    #                 }
+    #                 step["exercises"].append(exercise)
+
+    #             steps.append(step)
+
+    #         return steps
+
+    #     except Exception as e:
+    #         print(f"Erreur lors du parsing: {str(e)}")
+    #         return cls._get_default_coaching_path(coaching_type)
     @classmethod
     def _parse_coaching_response(cls, response: str, coaching_type: str) -> List[Dict]:
         """Parse la réponse de l'IA et retourne les étapes"""
 
         try:
-            # Extraire le JSON de la réponse
-            json_start = response.find("{")
-            json_end = response.rfind("}") + 1
+            # Extraire un JSON valide (avec un fallback si des caractères suivent)
+            json_match = re.search(r"\{.*\}", response, re.DOTALL)
+            if not json_match:
+                raise ValueError("Aucun objet JSON détecté dans la réponse")
 
-            if json_start == -1 or json_end == 0:
-                raise ValueError("Aucun JSON trouvé dans la réponse")
+            json_str = json_match.group()
 
-            json_str = response[json_start:json_end]
-            parsed = json.loads(json_str)
+            try:
+                parsed = json.loads(json_str)
+            except json.JSONDecodeError as json_err:
+                print(f"Erreur JSON invalide : {json_err}")
+                raise ValueError("Impossible de parser la réponse IA")
 
             if "steps" not in parsed or not isinstance(parsed["steps"], list):
-                raise ValueError("Structure de réponse invalide")
+                raise ValueError("Structure de réponse invalide : clé 'steps' manquante ou incorrecte")
 
-            # Valider et nettoyer les données
+            # Nettoyage et validation des étapes
             steps = []
-            for i, step_data in enumerate(parsed["steps"][:4]):  # Limiter à 4 étapes
+            for i, step_data in enumerate(parsed["steps"][:4]):  # Max 4 étapes
                 step = {
                     "title": step_data.get("title", f"Étape {i+1}"),
-                    "description": step_data.get(
-                        "description", "Description non disponible"
-                    ),
+                    "description": step_data.get("description", "Description non disponible"),
                     "order": i + 1,
                     "exercises": [],
                 }
 
-                # Traiter les exercices
-                exercises_data = step_data.get("exercises", [])
-                for j, exercise_data in enumerate(
-                    exercises_data[:3]
-                ):  # Limiter à 3 exercices
+                for j, exercise_data in enumerate(step_data.get("exercises", [])[:3]):
                     exercise = {
                         "title": exercise_data.get("title", f"Exercice {j+1}"),
-                        "description": exercise_data.get(
-                            "description", "Description non disponible"
-                        ),
-                        "duration": min(
-                            max(exercise_data.get("duration", 15), 5), 30
-                        ),  # Entre 5 et 30 min
+                        "description": exercise_data.get("description", "Description non disponible"),
+                        "duration": min(max(exercise_data.get("duration", 15), 5), 30),
                         "type": exercise_data.get("type", "practice"),
-                        "instructions": exercise_data.get(
-                            "instructions", ["Suivez les instructions à l'écran"]
-                        ),
-                        "animation_character": exercise_data.get(
-                            "animation_character", "🤖"
-                        ),
-                        "recommended_videos": exercise_data.get(
-                            "recommended_videos", []
-                        ),
+                        "instructions": exercise_data.get("instructions", ["Suivez les instructions à l'écran"]),
+                        "animation_character": exercise_data.get("animation_character", "🤖"),
+                        "recommended_videos": exercise_data.get("recommended_videos", []),
                     }
                     step["exercises"].append(exercise)
 
@@ -287,7 +337,7 @@ class AICoachingService:
             return steps
 
         except Exception as e:
-            print(f"Erreur lors du parsing: {str(e)}")
+            print(f"[⚠️] Erreur lors du parsing de la réponse IA : {str(e)}")
             return cls._get_default_coaching_path(coaching_type)
 
     @classmethod
