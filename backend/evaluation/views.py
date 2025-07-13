@@ -38,24 +38,17 @@ class EvaluationViewSet(viewsets.ModelViewSet):
 @api_view(["POST"])
 @permission_classes([IsAuthenticated])
 def generate_coaching_path(request):
-    """Génère un parcours de coaching personnalisé avec l'IA"""
-
     evaluation_id = request.data.get("evaluation_id")
     if not evaluation_id:
-        return Response(
-            {"error": "evaluation_id requis"}, status=status.HTTP_400_BAD_REQUEST
-        )
+        return Response({"error": "evaluation_id requis"}, status=status.HTTP_400_BAD_REQUEST)
 
     try:
-        # Récupérer l'évaluation de l'utilisateur
         evaluation = get_object_or_404(Evaluation, id=evaluation_id, user=request.user)
 
-        # Supprimer un ancien parcours existant s'il y en a un
         existing_path = CoachingPath.objects.filter(user=request.user).first()
         if existing_path:
             existing_path.delete()
 
-        # Appel IA : génération du parcours
         evaluation_data = {
             "coaching_type": evaluation.coaching_type,
             "answers": evaluation.answers,
@@ -63,12 +56,12 @@ def generate_coaching_path(request):
         steps_data = AICoachingService.generate_coaching_path(evaluation_data)
         print("DEBUG - Données générées par l'IA :", steps_data)
 
-        # Créer un nouveau CoachingPath
         coaching_path = CoachingPath.objects.create(
-            user=request.user, evaluation=evaluation,is_active=True  # ← ajoute cette ligne !
+            user=request.user,
+            evaluation=evaluation,
+            is_active=True,
         )
 
-        # Créer les étapes et exercices
         for step_data in steps_data:
             step = Step.objects.create(
                 coaching_path=coaching_path,
@@ -78,7 +71,6 @@ def generate_coaching_path(request):
             )
 
             for exercise_data in step_data["exercises"]:
-                # Nettoyer instructions
                 instructions = exercise_data.get("instructions", [])
                 if isinstance(instructions, str):
                     try:
@@ -86,7 +78,6 @@ def generate_coaching_path(request):
                     except Exception:
                         instructions = ["Instructions indisponibles"]
 
-                # Nettoyer recommended_videos
                 recommended_videos = exercise_data.get("recommended_videos", [])
                 if isinstance(recommended_videos, str):
                     try:
@@ -105,10 +96,8 @@ def generate_coaching_path(request):
                     recommended_videos=recommended_videos,
                 )
 
-        # Créer ou mettre à jour la progression utilisateur
         UserProgress.objects.get_or_create(user=request.user)
 
-        # Sérialiser et retourner le parcours
         serializer = CoachingPathSerializer(coaching_path)
         return Response(
             {
@@ -124,28 +113,6 @@ def generate_coaching_path(request):
             {"error": f"Erreur lors de la génération du parcours : {str(e)}"},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
-
-        # Créer ou mettre à jour les progrès utilisateur
-        user_progress, created = UserProgress.objects.get_or_create(user=request.user)
-
-        # Sérialiser et retourner le parcours
-        serializer = CoachingPathSerializer(coaching_path)
-
-        return Response(
-            {
-                "message": "Parcours généré avec succès",
-                "coaching_path": serializer.data,
-            },
-            status=status.HTTP_201_CREATED,
-        )
-
-    except Exception as e:
-        return Response(
-            {"error": f"Erreur lors de la génération du parcours: {str(e)}"},
-            status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        )
-
-
 
 
 # class CoachingPathViewSet(viewsets.ReadOnlyModelViewSet):

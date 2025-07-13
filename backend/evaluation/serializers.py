@@ -30,6 +30,12 @@ class ExerciseSerializer(serializers.ModelSerializer):
         )
         read_only_fields = ("completed", "completed_at")
 
+class ExerciseCompletionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Exercise
+        fields = ("id", "completed")
+        read_only_fields = ("id",)
+
 
 class StepSerializer(serializers.ModelSerializer):
     exercises = ExerciseSerializer(many=True, read_only=True)
