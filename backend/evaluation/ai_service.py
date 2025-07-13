@@ -19,7 +19,7 @@ class AICoachingService:
             response = requests.post(
                 cls.BASE_URL,
                 headers={
-                    "Authorization": f"Bearer {settings.TOGETHER_API_KEY}",
+                    "Authorization": f"Bearer {settings.MISTRAL_API_KEY}",
                     "Content-Type": "application/json",
                 },
                 json={
