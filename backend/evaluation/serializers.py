@@ -54,7 +54,7 @@ class CoachingPathSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CoachingPath
-        fields = ("id", "generated_at", "is_active", "overall_progress", "steps")
+        fields = ("id", "created_at", "is_active", "overall_progress", "steps")
 
 
 class UserProgressSerializer(serializers.ModelSerializer):
