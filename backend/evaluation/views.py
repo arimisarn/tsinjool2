@@ -65,7 +65,7 @@ def generate_coaching_path(request):
 
         # Créer un nouveau CoachingPath
         coaching_path = CoachingPath.objects.create(
-            user=request.user, evaluation=evaluation
+            user=request.user, evaluation=evaluation,is_active=True  # ← ajoute cette ligne !
         )
 
         # Créer les étapes et exercices
