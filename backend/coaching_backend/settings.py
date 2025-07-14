@@ -16,11 +16,11 @@ import os
 import re
 import cloudinary
 
-print("==== CLOUDINARY DEBUG ====")
-print("CLOUDINARY_CLOUD_NAME =", os.getenv("CLOUDINARY_CLOUD_NAME"))
-print("CLOUDINARY_API_KEY =", os.getenv("CLOUDINARY_API_KEY"))
-print("CLOUDINARY_API_SECRET =", os.getenv("CLOUDINARY_API_SECRET"))
-print("==== FIN DEBUG ====")
+# print("==== CLOUDINARY DEBUG ====")
+# print("CLOUDINARY_CLOUD_NAME =", os.getenv("CLOUDINARY_CLOUD_NAME"))
+# print("CLOUDINARY_API_KEY =", os.getenv("CLOUDINARY_API_KEY"))
+# print("CLOUDINARY_API_SECRET =", os.getenv("CLOUDINARY_API_SECRET"))
+# print("==== FIN DEBUG ====")
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -187,17 +187,28 @@ MISTRAL_API_KEY = os.environ.get("MISTRAL_API_KEY")
 # Configuration du backend de stockage Cloudinary
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
-CLOUDINARY_STORAGE = {
-    "CLOUD_NAME": os.getenv("CLOUDINARY_CLOUD_NAME"),
-    "API_KEY": os.getenv("CLOUDINARY_API_KEY"),
-    "API_SECRET": os.getenv("CLOUDINARY_API_SECRET"),
-}
+# CLOUDINARY_STORAGE = {
+#     "CLOUD_NAME": os.getenv("CLOUDINARY_CLOUD_NAME"),
+#     "API_KEY": os.getenv("CLOUDINARY_API_KEY"),
+#     "API_SECRET": os.getenv("CLOUDINARY_API_SECRET"),
+# }
 
-# Configuration explicite de cloudinary (indispensable)
+# # Configuration explicite de cloudinary (indispensable)
+# cloudinary.config(
+#     cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
+#     api_key=os.getenv("CLOUDINARY_API_KEY"),
+#     api_secret=os.getenv("CLOUDINARY_API_SECRET"),
+#     secure=True
+# )
+CLOUDINARY_STORAGE = {
+    "CLOUD_NAME": "tsinjool-media",
+    "API_KEY": "663352537675618",  # remplace par ta vraie clé
+    "API_SECRET": "8VVSBf_AIIrqcDnSrTvkMxwL14s",  # remplace par ton vrai secret
+}
 cloudinary.config(
-    cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
-    api_key=os.getenv("CLOUDINARY_API_KEY"),
-    api_secret=os.getenv("CLOUDINARY_API_SECRET"),
+    cloud_name="tsinjool-media",
+    api_key="663352537675618",
+    api_secret="8VVSBf_AIIrqcDnSrTvkMxwL14s",
     secure=True
 )
 
