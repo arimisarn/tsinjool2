@@ -107,13 +107,12 @@ export default function ProfileSetup() {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("Token manquant.");
 
-      // 🔄 Upload photo sur Supabase (si présente)
+      // Upload photo sur Supabase si présente
       if (photo) {
         const fileName = `${Date.now()}_${photo.name}`;
         const { data, error } = await supabase.storage
           .from("avatar")
           .upload(fileName, photo);
-        console.log(data);
 
         if (error) {
           toast.error("Erreur lors de l’upload de la photo.");
@@ -140,10 +139,10 @@ export default function ProfileSetup() {
         {
           headers: {
             Authorization: `Token ${token}`,
+            "Content-Type": "multipart/form-data",
           },
         }
       );
-      console.log(response);
 
       toast.success("Profil mis à jour avec succès !");
       navigate("/evaluation", { state: { coachingType } });
@@ -154,6 +153,7 @@ export default function ProfileSetup() {
         errData?.detail ||
           errData?.coaching_type?.[0] ||
           errData?.photo?.[0] ||
+          error.message ||
           "Erreur lors de l’enregistrement du profil."
       );
     } finally {
@@ -219,6 +219,7 @@ export default function ProfileSetup() {
                       accept="image/*"
                       onChange={handlePhotoChange}
                       className="hidden"
+                      disabled={loading}
                     />
                   </label>
                 </div>
@@ -241,6 +242,7 @@ export default function ProfileSetup() {
                   className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all duration-200 outline-none resize-none"
                   rows={4}
                   maxLength={500}
+                  disabled={loading}
                 />
                 <p className="text-xs text-gray-400 mt-1">{bio.length} / 500</p>
               </div>
@@ -263,6 +265,7 @@ export default function ProfileSetup() {
                           setCoachingType(e.target.value as CoachingType)
                         }
                         className="sr-only"
+                        disabled={loading}
                       />
                       <label
                         htmlFor={option.value}
