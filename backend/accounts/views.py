@@ -49,7 +49,16 @@ class ProfileUpdateView(generics.RetrieveUpdateAPIView):
         print(">>> PUT reçu")
         print("Données (request.data) :", request.data)
         print("Fichiers (request.FILES) :", request.FILES)
-        return self.update(request, *args, **kwargs)
+        # return self.update(request, *args, **kwargs)
+
+        try:
+            return self.update(request, *args, **kwargs)
+        except Exception as e:
+            import traceback
+            print(">>> ERREUR :")
+            traceback.print_exc()
+            return Response({"detail": "Erreur serveur : " + str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 
 class LoginView(APIView):
