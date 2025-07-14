@@ -6,16 +6,18 @@ from .models import CustomUser
 from rest_framework import generics, permissions
 from django.contrib.auth import get_user_model, authenticate
 from rest_framework.permissions import AllowAny
-from .serializers import ProfileSerializer  # import local correctfrom .models import Profile
+from .serializers import (
+    ProfileSerializer,
+)  # import local correctfrom .models import Profile
 from .models import Profile
 from rest_framework.views import APIView
-from .models import Profile          # import local correct
+from .models import Profile  # import local correct
 from rest_framework import status
 from django.core.mail import send_mail
 
 
-
 User = get_user_model()
+
 
 class RegisterView(generics.CreateAPIView):
     serializer_class = RegisterSerializer
@@ -29,13 +31,16 @@ class RegisterView(generics.CreateAPIView):
         # Générer token même si is_active=False
         token, _ = Token.objects.get_or_create(user=user)
 
-        return Response({
-            "message": "Inscription réussie. Un code de confirmation a été envoyé à votre email.",
-            "email": user.email,
-            "nom_utilisateur": user.nom_utilisateur,
-            "token": token.key,  # <- TOKEN ici
-        }, status=201)
-        
+        return Response(
+            {
+                "message": "Inscription réussie. Un code de confirmation a été envoyé à votre email.",
+                "email": user.email,
+                "nom_utilisateur": user.nom_utilisateur,
+                "token": token.key,  # <- TOKEN ici
+            },
+            status=201,
+        )
+
 
 class ProfileUpdateView(generics.RetrieveUpdateAPIView):
     serializer_class = ProfileSerializer
@@ -45,32 +50,49 @@ class ProfileUpdateView(generics.RetrieveUpdateAPIView):
         profile, created = Profile.objects.get_or_create(user=self.request.user)
         return profile
 
+    def get_serializer(self, *args, **kwargs):
+        """Ajoute le request dans le contexte pour construire des URLs absolues dans le serializer."""
+        kwargs["context"] = self.get_serializer_context()
+        return super().get_serializer(*args, **kwargs)
+
+    def get_serializer_context(self):
+        return {
+            "request": self.request
+        }  # ← important pour que .build_absolute_uri fonctionne
+
     def put(self, request, *args, **kwargs):
         print(">>> PUT reçu")
         print("Données (request.data) :", request.data)
         print("Fichiers (request.FILES) :", request.FILES)
-        # return self.update(request, *args, **kwargs)
 
         try:
             return self.update(request, *args, **kwargs)
         except Exception as e:
             import traceback
-            print(">>> ERREUR :")
-            traceback.print_exc()
-            return Response({"detail": "Erreur serveur : " + str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+            traceback.print_exc()
+            return Response(
+                {"detail": "Erreur serveur : " + str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
 
 
 class LoginView(APIView):
     def post(self, request):
-        username = request.data.get('nom_utilisateur')  # 👈 On attend ce champ
-        password = request.data.get('password')
+        username = request.data.get("nom_utilisateur")  # 👈 On attend ce champ
+        password = request.data.get("password")
 
-        user = authenticate(request, username=username, password=password)  # 👈 Utilise "username"
+        user = authenticate(
+            request, username=username, password=password
+        )  # 👈 Utilise "username"
         if user:
             token, created = Token.objects.get_or_create(user=user)
-            return Response({'token': token.key})
-        return Response({'detail': 'Nom d\'utilisateur ou mot de passe incorrect.'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"token": token.key})
+        return Response(
+            {"detail": "Nom d'utilisateur ou mot de passe incorrect."},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
 
 # class TestEmailView(APIView):
 #     def get(self, request):
@@ -84,40 +106,48 @@ class LoginView(APIView):
 #         return Response({"message": "Email envoyé !"})
 
 
-
 class ConfirmEmailView(APIView):
     permission_classes = [AllowAny]
-    
+
     def post(self, request):
         email = request.data.get("email")
         code = request.data.get("code")
-        
+
         if not email or not code:
-            return Response({"error": "Email et code sont requis."}, status=status.HTTP_400_BAD_REQUEST)
-        
+            return Response(
+                {"error": "Email et code sont requis."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         try:
             user = User.objects.get(email=email)
         except User.DoesNotExist:
-            return Response({"error": "Utilisateur introuvable."}, status=status.HTTP_404_NOT_FOUND)
-        
+            return Response(
+                {"error": "Utilisateur introuvable."}, status=status.HTTP_404_NOT_FOUND
+            )
+
         if user.is_active:
             return Response({"message": "Compte déjà activé."})
-        
+
         if user.confirmation_code == code:
             user.is_active = True
             user.confirmation_code = None
             user.save()
-            
+
             # 👇 AJOUT : Générer le token automatiquement après confirmation
             token, created = Token.objects.get_or_create(user=user)
-            
-            return Response({
-                "message": "Email confirmé avec succès.",
-                "token": token.key,  # 👈 Token pour connexion automatique
-                "user": {
-                    "email": user.email,
-                    "nom_utilisateur": user.nom_utilisateur,
+
+            return Response(
+                {
+                    "message": "Email confirmé avec succès.",
+                    "token": token.key,  # 👈 Token pour connexion automatique
+                    "user": {
+                        "email": user.email,
+                        "nom_utilisateur": user.nom_utilisateur,
+                    },
                 }
-            })
+            )
         else:
-            return Response({"error": "Code incorrect."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"error": "Code incorrect."}, status=status.HTTP_400_BAD_REQUEST
+            )

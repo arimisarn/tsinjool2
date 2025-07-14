@@ -33,23 +33,11 @@ const MainHeader: React.FC = () => {
           }
         );
 
-        const photoPath = res.data.photo;
+        const photoPath = res.data.photo_url; // <-- changer ici
         console.log("Photo reçue :", photoPath);
 
-        if (photoPath) {
-          if (
-            photoPath.startsWith("http") &&
-            !photoPath.includes("/image/upload/")
-          ) {
-            // Correction d'URL pour contourner OpaqueResponseBlocking
-            const segments = photoPath.split("/").slice(-2); // e.g. ["profiles", "filename.jpg"]
-            const fixedUrl = `https://res.cloudinary.com/tsinjool-media/image/upload/${segments.join(
-              "/"
-            )}`;
-            setProfilePhoto(fixedUrl);
-          } else {
-            setProfilePhoto(photoPath);
-          }
+        if (photoPath && photoPath.startsWith("http")) {
+          setProfilePhoto(photoPath);
         }
       } catch (error) {
         console.error(

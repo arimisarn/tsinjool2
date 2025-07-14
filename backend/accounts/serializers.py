@@ -79,10 +79,12 @@ class ProfileSerializer(serializers.ModelSerializer):
         }
 
     def get_photo_url(self, obj):
-        if obj.photo:
-            return f"https://res.cloudinary.com/tsinjool-media/image/upload/{obj.photo.name}"
+        if obj.photo and hasattr(obj.photo, "url"):
+            request = self.context.get("request")
+            if request:
+                return request.build_absolute_uri(obj.photo.url)
+            return obj.photo.url  # fallback
         return None
-
     def validate_photo(self, value):
         if value in [None, ""]:
             return None
