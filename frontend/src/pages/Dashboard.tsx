@@ -239,6 +239,13 @@ export default function Dashboard() {
           <h2 className="text-3xl font-bold text-gray-900 mb-2">
             Bonjour {userProfile?.name || "Coach"} ! 👋
           </h2>
+
+          {userProfile?.bio && (
+            <p className="mb-2 italic text-gray-700 max-w-xl">
+              {userProfile.bio}
+            </p>
+          )}
+
           <p className="text-gray-600">
             Voici votre parcours personnalisé de{" "}
             {getCoachingTypeLabel(userProfile?.coaching_type || "")}

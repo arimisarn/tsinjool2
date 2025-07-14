@@ -1,7 +1,13 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { ArrowLeft, Camera, User, Mail, Save, Edit3 } from "lucide-react"
+import {
+  ArrowLeft,
+  Camera,
+  User,
+  Save,
+  Edit3,
+} from "lucide-react"
 import { useNavigate } from "react-router-dom"
 import axios from "axios"
 import { toast } from "sonner"
@@ -26,6 +32,9 @@ export default function Profile() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [editing, setEditing] = useState(false)
+  const [photoFile, setPhotoFile] = useState<File | null>(null)
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null)
+
   const [formData, setFormData] = useState({
     first_name: "",
     last_name: "",
@@ -42,35 +51,12 @@ export default function Profile() {
     try {
       const token = localStorage.getItem("token")
       if (!token) {
-        // Mode démo
-        const mockProfile: UserProfile = {
-          user_info: {
-            username: "marie.dupont",
-            email: "marie.dupont@example.com",
-            first_name: "Marie",
-            last_name: "Dupont",
-          },
-          bio: "Passionnée par le développement personnel et la recherche d'équilibre dans la vie. J'aime la méditation, la lecture et les voyages.",
-          photo: undefined,
-          coaching_type: "life",
-          level: 2,
-          points: 150,
-        }
-        setProfile(mockProfile)
-        setFormData({
-          first_name: mockProfile.user_info.first_name,
-          last_name: mockProfile.user_info.last_name,
-          bio: mockProfile.bio,
-          coaching_type: mockProfile.coaching_type,
-        })
-        setLoading(false)
+        toast.error("Non connecté")
         return
       }
-
       const response = await axios.get("https://tsinjool-backend.onrender.com/api/profile/", {
         headers: { Authorization: `Token ${token}` },
       })
-
       setProfile(response.data)
       setFormData({
         first_name: response.data.user_info.first_name,
@@ -90,26 +76,40 @@ export default function Profile() {
     setSaving(true)
     try {
       const token = localStorage.getItem("token")
-      if (!token) {
-        // Mode démo
-        toast.success("Profil mis à jour ! (Mode démo)")
-        setEditing(false)
-        setSaving(false)
-        return
-      }
+      if (!token) return
 
-      await axios.put("https://tsinjool-backend.onrender.com/api/profile/", formData, {
-        headers: { Authorization: `Token ${token}` },
+      const data = new FormData()
+      data.append("first_name", formData.first_name)
+      data.append("last_name", formData.last_name)
+      data.append("bio", formData.bio)
+      data.append("coaching_type", formData.coaching_type)
+      if (photoFile) data.append("photo", photoFile)
+
+      await axios.put("https://tsinjool-backend.onrender.com/api/profile/", data, {
+        headers: {
+          Authorization: `Token ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
       })
 
       toast.success("Profil mis à jour avec succès !")
       setEditing(false)
+      setPhotoFile(null)
+      setPhotoPreview(null)
       loadProfile()
-    } catch (error: any) {
+    } catch (error) {
       console.error(error)
-      toast.error("Erreur lors de la mise à jour du profil.")
+      toast.error("Erreur lors de la mise à jour.")
     } finally {
       setSaving(false)
+    }
+  }
+
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      setPhotoFile(file)
+      setPhotoPreview(URL.createObjectURL(file))
     }
   }
 
@@ -133,29 +133,16 @@ export default function Profile() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-blue-600 rounded-full flex items-center justify-center mb-4 mx-auto animate-pulse">
-            <User className="w-8 h-8 text-white" />
-          </div>
-          <p className="text-gray-600">Chargement du profil...</p>
-        </div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50">
+        <p className="text-gray-600">Chargement...</p>
       </div>
     )
   }
 
   if (!profile) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-gray-600">Profil non trouvé.</p>
-          <button
-            onClick={() => navigate("/dashboard")}
-            className="mt-4 px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-          >
-            Retour au tableau de bord
-          </button>
-        </div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50">
+        <p className="text-gray-600">Profil introuvable.</p>
       </div>
     )
   }
@@ -164,214 +151,152 @@ export default function Profile() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
       {/* Header */}
       <div className="bg-white shadow-sm border-b">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between py-4">
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => navigate("/dashboard")}
-                className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
-              >
-                <ArrowLeft className="w-5 h-5" />
-              </button>
-              <div>
-                <h1 className="text-xl font-bold text-gray-900">Mon Profil</h1>
-                <p className="text-sm text-gray-600">Gérez vos informations personnelles</p>
-              </div>
-            </div>
-
+        <div className="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
+          <div className="flex items-center gap-4">
             <button
-              onClick={() => setEditing(!editing)}
-              className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+              onClick={() => navigate("/dashboard")}
+              className="text-gray-600 hover:text-gray-900 p-2 rounded-lg hover:bg-gray-100"
             >
-              <Edit3 className="w-4 h-4" />
-              {editing ? "Annuler" : "Modifier"}
+              <ArrowLeft className="w-5 h-5" />
             </button>
+            <div>
+              <h1 className="text-xl font-bold text-gray-900">Mon Profil</h1>
+              <p className="text-sm text-gray-600">Vos infos personnelles</p>
+            </div>
           </div>
+          <button
+            onClick={() => setEditing(!editing)}
+            className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+          >
+            <Edit3 className="w-4 h-4" />
+            {editing ? "Annuler" : "Modifier"}
+          </button>
         </div>
       </div>
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white rounded-xl shadow-sm overflow-hidden">
-          {/* Profile Header */}
-          <div className="bg-gradient-to-r from-purple-500 to-blue-600 px-8 py-12 text-white">
-            <div className="flex items-center gap-6">
-              <div className="relative">
-                <div className="w-24 h-24 bg-white/20 rounded-full flex items-center justify-center overflow-hidden">
-                  {profile.photo ? (
-                    <img
-                      src={profile.photo || "/placeholder.svg"}
-                      alt="Profile"
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <User className="w-12 h-12 text-white" />
-                  )}
-                </div>
-                {editing && (
-                  <button className="absolute -bottom-2 -right-2 w-8 h-8 bg-white text-purple-600 rounded-full flex items-center justify-center shadow-lg hover:bg-gray-50 transition-colors">
-                    <Camera className="w-4 h-4" />
-                  </button>
+      {/* Content */}
+      <div className="max-w-4xl mx-auto px-4 py-8">
+        <div className="bg-white rounded-xl shadow-sm p-8">
+          {/* Photo */}
+          <div className="flex items-center gap-6 mb-8">
+            <div className="relative">
+              <div className="w-24 h-24 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center">
+                {photoPreview ? (
+                  <img src={photoPreview} alt="preview" className="object-cover w-full h-full" />
+                ) : profile.photo ? (
+                  <img src={profile.photo} alt="profile" className="object-cover w-full h-full" />
+                ) : (
+                  <User className="text-gray-500 w-12 h-12" />
                 )}
               </div>
-
-              <div className="flex-1">
-                <h2 className="text-2xl font-bold mb-2">
-                  {profile.user_info.first_name} {profile.user_info.last_name}
-                </h2>
-                <p className="text-white/80 mb-3">@{profile.user_info.username}</p>
-
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center">
-                      <span className="text-sm font-bold">{profile.level}</span>
+              {editing && (
+                <>
+                  <label htmlFor="photoUpload">
+                    <div className="absolute -bottom-2 -right-2 bg-white border shadow w-8 h-8 rounded-full flex items-center justify-center cursor-pointer">
+                      <Camera className="w-4 h-4 text-purple-600" />
                     </div>
-                    <span className="text-sm">Niveau {profile.level}</span>
-                  </div>
-                  <div className="text-sm">
-                    <span className="font-semibold">{profile.points}</span> points
-                  </div>
-                </div>
-              </div>
+                  </label>
+                  <input
+                    id="photoUpload"
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handlePhotoChange}
+                  />
+                </>
+              )}
+            </div>
+            <div>
+              <h2 className="text-2xl font-bold">
+                {profile.user_info.first_name} {profile.user_info.last_name}
+              </h2>
+              <p className="text-gray-500">@{profile.user_info.username}</p>
+              <span className={`inline-block mt-1 px-3 py-1 text-sm rounded-full ${getCoachingTypeColor(profile.coaching_type)}`}>
+                {getCoachingTypeLabel(profile.coaching_type)}
+              </span>
             </div>
           </div>
 
-          {/* Profile Content */}
-          <div className="p-8">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {/* Informations personnelles */}
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-6">Informations personnelles</h3>
-
-                <div className="space-y-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      <Mail className="w-4 h-4 inline mr-2" />
-                      Email
-                    </label>
-                    <div className="p-3 bg-gray-50 rounded-lg text-gray-600">{profile.user_info.email}</div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Prénom</label>
-                      {editing ? (
-                        <input
-                          type="text"
-                          value={formData.first_name}
-                          onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
-                          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                        />
-                      ) : (
-                        <div className="p-3 bg-gray-50 rounded-lg text-gray-600">
-                          {profile.user_info.first_name || "Non renseigné"}
-                        </div>
-                      )}
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Nom</label>
-                      {editing ? (
-                        <input
-                          type="text"
-                          value={formData.last_name}
-                          onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
-                          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                        />
-                      ) : (
-                        <div className="p-3 bg-gray-50 rounded-lg text-gray-600">
-                          {profile.user_info.last_name || "Non renseigné"}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Type de coaching</label>
-                    {editing ? (
-                      <select
-                        value={formData.coaching_type}
-                        onChange={(e) => setFormData({ ...formData, coaching_type: e.target.value })}
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                      >
-                        <option value="life">Coaching de vie</option>
-                        <option value="career">Coaching de carrière</option>
-                        <option value="health">Coaching santé</option>
-                      </select>
-                    ) : (
-                      <div className="flex items-center gap-2">
-                        <span
-                          className={`px-3 py-1 rounded-full text-sm font-medium ${getCoachingTypeColor(profile.coaching_type)}`}
-                        >
-                          {getCoachingTypeLabel(profile.coaching_type)}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              {/* Bio et statistiques */}
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-6">À propos</h3>
-
-                <div className="space-y-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Biographie</label>
-                    {editing ? (
-                      <textarea
-                        value={formData.bio}
-                        onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-                        rows={4}
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
-                        placeholder="Parlez-nous de vous..."
-                      />
-                    ) : (
-                      <div className="p-3 bg-gray-50 rounded-lg text-gray-600 min-h-[100px]">
-                        {profile.bio || "Aucune biographie renseignée."}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Statistiques */}
-                  <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-xl p-6">
-                    <h4 className="font-semibold text-gray-900 mb-4">Mes statistiques</h4>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="text-center">
-                        <div className="text-2xl font-bold text-purple-600">{profile.level}</div>
-                        <div className="text-sm text-gray-600">Niveau</div>
-                      </div>
-                      <div className="text-center">
-                        <div className="text-2xl font-bold text-blue-600">{profile.points}</div>
-                        <div className="text-sm text-gray-600">Points</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+          {/* Form */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Prénom</label>
+              {editing ? (
+                <input
+                  type="text"
+                  className="w-full p-3 border rounded-lg"
+                  value={formData.first_name}
+                  onChange={(e) => setFormData({ ...formData, first_name: e.target.value })}
+                />
+              ) : (
+                <p className="text-gray-700">{profile.user_info.first_name}</p>
+              )}
             </div>
 
-            {/* Actions */}
-            {editing && (
-              <div className="mt-8 pt-6 border-t border-gray-200">
-                <div className="flex justify-end gap-4">
-                  <button
-                    onClick={() => setEditing(false)}
-                    className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-                  >
-                    Annuler
-                  </button>
-                  <button
-                    onClick={handleSave}
-                    disabled={saving}
-                    className="flex items-center gap-2 px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50"
-                  >
-                    <Save className="w-4 h-4" />
-                    {saving ? "Enregistrement..." : "Enregistrer"}
-                  </button>
-                </div>
-              </div>
-            )}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Nom</label>
+              {editing ? (
+                <input
+                  type="text"
+                  className="w-full p-3 border rounded-lg"
+                  value={formData.last_name}
+                  onChange={(e) => setFormData({ ...formData, last_name: e.target.value })}
+                />
+              ) : (
+                <p className="text-gray-700">{profile.user_info.last_name}</p>
+              )}
+            </div>
+
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+              <p className="text-gray-700">{profile.user_info.email}</p>
+            </div>
+
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Bio</label>
+              {editing ? (
+                <textarea
+                  rows={4}
+                  className="w-full p-3 border rounded-lg resize-none"
+                  value={formData.bio}
+                  onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+                />
+              ) : (
+                <p className="text-gray-700 whitespace-pre-line">{profile.bio}</p>
+              )}
+            </div>
+
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Type de coaching</label>
+              {editing ? (
+                <select
+                  className="w-full p-3 border rounded-lg"
+                  value={formData.coaching_type}
+                  onChange={(e) => setFormData({ ...formData, coaching_type: e.target.value })}
+                >
+                  <option value="life">Coaching de vie</option>
+                  <option value="career">Coaching de carrière</option>
+                  <option value="health">Coaching santé</option>
+                </select>
+              ) : (
+                <p className="text-gray-700">{getCoachingTypeLabel(profile.coaching_type)}</p>
+              )}
+            </div>
           </div>
+
+          {/* Save */}
+          {editing && (
+            <div className="mt-6 flex justify-end">
+              <button
+                onClick={handleSave}
+                disabled={saving}
+                className="flex items-center gap-2 px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50"
+              >
+                <Save className="w-4 h-4" />
+                {saving ? "Enregistrement..." : "Enregistrer"}
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>
