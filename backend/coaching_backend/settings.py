@@ -178,7 +178,7 @@ TOGETHER_API_KEY = os.getenv("TOGETHER_API_KEY")
 OPENAI_API_KEY = config("OPENAI_API_KEY")
 MISTRAL_API_KEY = os.environ.get("MISTRAL_API_KEY")
 
-DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 CLOUDINARY_STORAGE = {
     "CLOUD_NAME": os.getenv("CLOUDINARY_CLOUD_NAME"),
@@ -187,3 +187,7 @@ CLOUDINARY_STORAGE = {
 }
 
 MEDIA_URL = '/media/'
+
+print("CLOUDINARY_CLOUD_NAME:", os.getenv("CLOUDINARY_CLOUD_NAME"))
+print("CLOUDINARY_API_KEY:", os.getenv("CLOUDINARY_API_KEY"))
+print("CLOUDINARY_API_SECRET:", os.getenv("CLOUDINARY_API_SECRET"))
