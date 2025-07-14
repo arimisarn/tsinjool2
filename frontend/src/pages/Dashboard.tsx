@@ -38,6 +38,7 @@ interface Exercise {
 interface UserProfile {
   name: string;
   photo?: string;
+  bio?: string;
   coaching_type: string;
   level: number;
   points: number;
