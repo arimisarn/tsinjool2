@@ -113,6 +113,7 @@ export default function ProfileSetup() {
         const { data, error } = await supabase.storage
           .from("avatar")
           .upload(fileName, photo);
+        console.log(data);
 
         if (error) {
           toast.error("Erreur lors de l’upload de la photo.");
@@ -143,6 +144,7 @@ export default function ProfileSetup() {
           },
         }
       );
+      console.log(response);
 
       toast.success("Profil mis à jour avec succès !");
       navigate("/evaluation", { state: { coachingType } });
