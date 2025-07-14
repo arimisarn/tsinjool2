@@ -24,30 +24,25 @@ const MainHeader: React.FC = () => {
     const loadProfilePhoto = async () => {
       const token = localStorage.getItem("token");
       if (!token) return;
+
       try {
         const res = await axios.get(
           "https://tsinjool-backend.onrender.com/api/profile/",
           {
-            headers: {
-              Authorization: `Token ${token}`,
-            },
+            headers: { Authorization: `Token ${token}` },
           }
         );
 
-        const photo = res.data.photo;
+        console.log("Photo reçue :", res.data.photo);
 
-        if (photo) {
-          const cloudinaryBaseURL =
-            "https://res.cloudinary.com/tsinjool-media/image/upload/";
-
-          // Si photo commence par http ou https, on considère que c'est une URL complète
-          if (photo.startsWith("http://") || photo.startsWith("https://")) {
-            setProfilePhoto(photo);
+        if (res.data.photo) {
+          const photoPath = res.data.photo;
+          if (photoPath.startsWith("http")) {
+            setProfilePhoto(photoPath);
           } else {
-            // Sinon, on concatène la base Cloudinary + le chemin relatif
-            // On enlève un éventuel '/' initial pour éviter une double //
-            const cleanPhoto = photo.startsWith("/") ? photo.slice(1) : photo;
-            setProfilePhoto(cloudinaryBaseURL + cleanPhoto);
+            const cloudinaryBaseURL =
+              "https://res.cloudinary.com/tsinjool-media/image/upload/";
+            setProfilePhoto(cloudinaryBaseURL + photoPath);
           }
         }
       } catch (error) {
