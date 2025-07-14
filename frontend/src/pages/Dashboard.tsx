@@ -10,7 +10,6 @@ import {
   ArrowRight,
   CheckCircle,
   Play,
-  User,
   Settings,
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -185,53 +184,6 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center py-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-blue-600 rounded-lg flex items-center justify-center">
-                <Brain className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-xl font-bold text-gray-900">Tsinjool</h1>
-                <p className="text-sm text-gray-600">Tableau de bord</p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-4">
-              <div className="text-right">
-                <p className="text-sm text-gray-600">
-                  Niveau {userProfile?.level || 1}
-                </p>
-                <p className="text-lg font-bold text-purple-600">
-                  {userProfile?.points || 0} pts
-                </p>
-              </div>
-
-              <div className="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden">
-                {userProfile?.photo ? (
-                  <img
-                    src={userProfile.photo}
-                    alt="Profile"
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <User className="w-6 h-6 text-gray-600" />
-                )}
-              </div>
-
-              <button
-                onClick={() => navigate("/settings")}
-                className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
-              >
-                <Settings className="w-5 h-5" />
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Welcome Section */}

@@ -1,46 +1,53 @@
-import { useEffect, useState } from "react"
-import { Calendar, Bell, Brain } from "lucide-react"
-import { useNavigate } from "react-router-dom"
-import axios from "axios"
-import pic from "../../assets/avatar.jpg"
-import DarkMode from "../theme/DarkMode"
+import { useEffect, useState } from "react";
+import { Calendar, Bell, Brain } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import pic from "../../assets/avatar.jpg";
+import DarkMode from "../theme/DarkMode";
 
 const MainHeader: React.FC = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
-  const daty: Date = new Date()
+  const daty: Date = new Date();
   const options: Intl.DateTimeFormatOptions = {
     weekday: "long",
     day: "numeric",
     month: "long",
     year: "numeric",
-  }
-  const formatDate: string = daty.toLocaleDateString("fr-FR", options)
-  const dateParts: string[] = formatDate.split(" ")
-  const ordreDate: string = `${dateParts[0]} ${dateParts[1]} ${dateParts[2]} ${dateParts[3]}`
+  };
+  const formatDate: string = daty.toLocaleDateString("fr-FR", options);
+  const dateParts: string[] = formatDate.split(" ");
+  const ordreDate: string = `${dateParts[0]} ${dateParts[1]} ${dateParts[2]} ${dateParts[3]}`;
 
-  const [profilePhoto, setProfilePhoto] = useState<string>(pic)
-
+  const [profilePhoto, setProfilePhoto] = useState<string>(pic);
   useEffect(() => {
     const loadProfilePhoto = async () => {
-      const token = localStorage.getItem("token")
-      if (!token) return
+      const token = localStorage.getItem("token");
+      if (!token) return;
       try {
-        const res = await axios.get("https://tsinjool-backend.onrender.com/api/profile/", {
-          headers: {
-            Authorization: `Token ${token}`,
-          },
-        })
+        const res = await axios.get(
+          "https://tsinjool-backend.onrender.com/api/profile/",
+          {
+            headers: {
+              Authorization: `Token ${token}`,
+            },
+          }
+        );
         if (res.data.photo) {
-          setProfilePhoto(res.data.photo)
+          const cloudinaryBaseURL =
+            "https://res.cloudinary.com/tsinjool-media/image/upload/";
+          setProfilePhoto(cloudinaryBaseURL + res.data.photo);
         }
       } catch (error) {
-        console.error("Erreur lors du chargement de la photo de profil :", error)
+        console.error(
+          "Erreur lors du chargement de la photo de profil :",
+          error
+        );
       }
-    }
+    };
 
-    loadProfilePhoto()
-  }, [])
+    loadProfilePhoto();
+  }, []);
 
   return (
     <div className="bg-white dark:bg-zinc-900 border-b border-gray-200 dark:border-zinc-700 px-6 py-4 transition-colors duration-300">
@@ -84,7 +91,7 @@ const MainHeader: React.FC = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default MainHeader
+export default MainHeader;
