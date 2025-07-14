@@ -46,18 +46,14 @@ class RegisterView(generics.CreateAPIView):
 class ProfileUpdateView(generics.RetrieveUpdateAPIView):
     serializer_class = ProfileSerializer
     permission_classes = [permissions.IsAuthenticated]
-    parser_classes = [MultiPartParser, FormParser]  # Pour gérer upload fichier
+    parser_classes = [MultiPartParser, FormParser]  # Gérer upload fichiers
 
     def get_object(self):
         profile, created = Profile.objects.get_or_create(user=self.request.user)
         return profile
 
-    def get_serializer(self, *args, **kwargs):
-        kwargs["context"] = self.get_serializer_context()
-        return super().get_serializer(*args, **kwargs)
-
     def get_serializer_context(self):
-        return {"request": self.request}  # Pour build_absolute_uri dans serializer
+        return {"request": self.request}
 
     def put(self, request, *args, **kwargs):
         print(">>> PUT reçu")

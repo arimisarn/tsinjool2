@@ -81,14 +81,11 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     def get_photo_url(self, obj):
         if obj.photo:
-            try:
-                return obj.photo.url  # <- c'est déjà une URL Cloudinary
-            except Exception:
-                return None
+            # uploadcare ImageField a l'attribut cdn_url pour l'URL publique
+            return obj.photo.cdn_url
         return None
 
-
-    def validate_photo(self, value):
-        if value in [None, ""]:
-            return None
-        return value
+    # def validate_photo(self, value):
+    #     if value in [None, ""]:
+    #         return None
+    #     return value

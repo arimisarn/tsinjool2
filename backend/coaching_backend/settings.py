@@ -14,7 +14,6 @@ from decouple import config
 from pathlib import Path
 import os
 import re
-import cloudinary
 
 # print("==== CLOUDINARY DEBUG ====")
 # print("CLOUDINARY_CLOUD_NAME =", os.getenv("CLOUDINARY_CLOUD_NAME"))
@@ -58,6 +57,7 @@ INSTALLED_APPS = [
     "evaluation",
     "cloudinary",
     "cloudinary_storage",
+    "uploadcare",
 ]
 
 MIDDLEWARE = [
@@ -184,38 +184,7 @@ TOGETHER_API_KEY = os.getenv("TOGETHER_API_KEY")
 OPENAI_API_KEY = config("OPENAI_API_KEY")
 MISTRAL_API_KEY = os.environ.get("MISTRAL_API_KEY")
 
-# Configuration du backend de stockage Cloudinary
-DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-
-
-# CLOUDINARY_STORAGE = {
-#     "CLOUD_NAME": os.getenv("CLOUDINARY_CLOUD_NAME"),
-#     "API_KEY": os.getenv("CLOUDINARY_API_KEY"),
-#     "API_SECRET": os.getenv("CLOUDINARY_API_SECRET"),
-# }
-
-# # Configuration explicite de cloudinary (indispensable)
-# cloudinary.config(
-#     cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
-#     api_key=os.getenv("CLOUDINARY_API_KEY"),
-#     api_secret=os.getenv("CLOUDINARY_API_SECRET"),
-#     secure=True
-# )
-CLOUDINARY_STORAGE = {
-    "CLOUD_NAME": "tsinjool-media",
-    "API_KEY": "663352537675618",  # remplace par ta vraie clé
-    "API_SECRET": "8VVSBf_AIIrqcDnSrTvkMxwL14s",  # remplace par ton vrai secret
+UPLOADCARE = {
+    "pub_key": "89a12bf1ef9774c48d2b",
+    "secret": "7ea5603e6d1d0a2302e2",
 }
-cloudinary.config(
-    cloud_name="tsinjool-media",
-    api_key="663352537675618",
-    api_secret="8VVSBf_AIIrqcDnSrTvkMxwL14s",
-    secure=True
-)
-
-# URL de base des médias (optionnelle, utile pour certaines intégrations)
-MEDIA_URL = f'https://res.cloudinary.com/{os.getenv("CLOUDINARY_CLOUD_NAME")}/'
-
-# print("CLOUDINARY_CLOUD_NAME:", os.getenv("CLOUDINARY_CLOUD_NAME"))
-# print("CLOUDINARY_API_KEY:", os.getenv("CLOUDINARY_API_KEY"))
-# print("CLOUDINARY_API_SECRET:", os.getenv("CLOUDINARY_API_SECRET"))

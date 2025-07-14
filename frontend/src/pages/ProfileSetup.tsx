@@ -12,19 +12,28 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "sonner";
 
+type CoachingType = "life" | "career" | "health";
+
 export default function ProfileSetup() {
   useEffect(() => {
     document.title = "Tsinjool - Configuration de profil";
   }, []);
+
   const navigate = useNavigate();
 
   const [bio, setBio] = useState("");
-  const [coachingType, setCoachingType] = useState("");
+  const [coachingType, setCoachingType] = useState<CoachingType | "">("");
   const [photo, setPhoto] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const coachingOptions = [
+  const coachingOptions: {
+    value: CoachingType;
+    label: string;
+    description: string;
+    icon: React.ReactNode;
+    gradient: string;
+  }[] = [
     {
       value: "life",
       label: "Coaching de vie",
@@ -55,21 +64,24 @@ export default function ProfileSetup() {
       toast.error("Veuillez vous connecter.");
       navigate("/login");
     }
-  }, []);
+  }, [navigate]);
 
-  // Libère l’URL du preview pour éviter les fuites mémoire
+  // Met à jour le preview à chaque changement de photo
   useEffect(() => {
-    return () => {
-      if (preview) URL.revokeObjectURL(preview);
-    };
-  }, [preview]);
+    if (!photo) {
+      setPreview(null);
+      return;
+    }
+    const objectUrl = URL.createObjectURL(photo);
+    setPreview(objectUrl);
+
+    // Cleanup à chaque changement pour éviter fuite mémoire
+    return () => URL.revokeObjectURL(objectUrl);
+  }, [photo]);
 
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setPhoto(file);
-      setPreview(URL.createObjectURL(file));
-    }
+    const file = e.target.files?.[0] ?? null;
+    setPhoto(file);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -77,6 +89,11 @@ export default function ProfileSetup() {
 
     if (!coachingType) {
       toast.error("Veuillez sélectionner un type de coaching.");
+      return;
+    }
+
+    if (bio.length > 500) {
+      toast.error("La bio ne doit pas dépasser 500 caractères.");
       return;
     }
 
@@ -97,22 +114,22 @@ export default function ProfileSetup() {
         {
           headers: {
             Authorization: `Token ${token}`,
-            // "Content-Type": "multipart/form-data",
+            // Laisse axios gérer le content-type multipart/form-data
           },
         }
       );
       console.log(response);
 
       toast.success("Profil mis à jour avec succès !");
-      navigate("/evaluation", {
-        state: { coachingType },
-      });
+      navigate("/evaluation", { state: { coachingType } });
     } catch (error: any) {
-      console.error(error?.response?.data || error.message);
+      console.error(error);
+
+      const errData = error?.response?.data;
       toast.error(
-        error?.response?.data?.detail ||
-          error?.response?.data?.coaching_type?.[0] ||
-          error?.response?.data?.photo?.[0] ||
+        errData?.detail ||
+          errData?.coaching_type?.[0] ||
+          errData?.photo?.[0] ||
           "Erreur lors de l’enregistrement du profil."
       );
     } finally {
@@ -199,7 +216,9 @@ export default function ProfileSetup() {
                   placeholder="Vos objectifs, motivations..."
                   className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all duration-200 outline-none resize-none"
                   rows={4}
+                  maxLength={500}
                 />
+                <p className="text-xs text-gray-400 mt-1">{bio.length} / 500</p>
               </div>
 
               {/* TYPE DE COACHING */}
@@ -216,7 +235,9 @@ export default function ProfileSetup() {
                         name="coachingType"
                         value={option.value}
                         checked={coachingType === option.value}
-                        onChange={(e) => setCoachingType(e.target.value)}
+                        onChange={(e) =>
+                          setCoachingType(e.target.value as CoachingType)
+                        }
                         className="sr-only"
                       />
                       <label
@@ -255,6 +276,7 @@ export default function ProfileSetup() {
                   type="button"
                   onClick={() => navigate(-1)}
                   className="flex items-center gap-2 px-4 py-3 border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-100 transition duration-200"
+                  disabled={loading}
                 >
                   <ArrowLeft className="w-5 h-5" />
                   Retour

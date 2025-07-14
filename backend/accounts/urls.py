@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import include, path
 from .views import ConfirmEmailView, RegisterView, ProfileUpdateView
 from rest_framework.authtoken.views import ObtainAuthToken
 urlpatterns = [
@@ -6,4 +6,5 @@ urlpatterns = [
     path('login/', ObtainAuthToken.as_view(), name='api-login'),
     path('profile/', ProfileUpdateView.as_view(), name='profile'),
     path("confirm-email/", ConfirmEmailView.as_view(), name="verify-email"),
+        path("uploadcare/", include("uploadcare.urls")),
 ]

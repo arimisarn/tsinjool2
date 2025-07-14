@@ -4,8 +4,8 @@ from django.contrib.auth.models import (
     PermissionsMixin,
     BaseUserManager,
 )
-from cloudinary.models import CloudinaryField
 from django.conf import settings
+from pyuploadcare.dj.models import ImageField
 
 
 class CustomUserManager(BaseUserManager):
@@ -47,7 +47,6 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         return self.email
 
 
-
 class Profile(models.Model):
     COACHING_TYPES = [
         ("life", "Coaching de vie"),
@@ -60,7 +59,7 @@ class Profile(models.Model):
     )
     bio = models.TextField(blank=True)
     coaching_type = models.CharField(max_length=20, choices=COACHING_TYPES)
-    photo = CloudinaryField("image", blank=True, null=True)  # CloudinaryField
+    photo = ImageField(blank=True, null=True)  # Uploadcare ImageField
 
     def __str__(self):
         return f"Profil de {self.user.nom_utilisateur}"
