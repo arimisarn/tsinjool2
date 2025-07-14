@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "sonner";
 import { Brain, Mail, User, Quote } from "lucide-react";
-import pic from "../../assets/avatar.jpg";
+import pic from "../assets/avatar.jpg";
 
 type ProfileData = {
   bio: string;
