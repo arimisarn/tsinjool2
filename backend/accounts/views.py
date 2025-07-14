@@ -20,7 +20,7 @@ from .supabase_client import supabase
 from django.core.files.uploadedfile import UploadedFile
 from .supabase_client import supabase
 from rest_framework.decorators import api_view, permission_classes
-
+from storage3.exceptions import StorageApiError
 User = get_user_model()
 
 
@@ -50,7 +50,7 @@ class RegisterView(generics.CreateAPIView):
 class ProfileUpdateView(generics.RetrieveUpdateAPIView):
     serializer_class = ProfileSerializer
     permission_classes = [permissions.IsAuthenticated]
-    parser_classes = [MultiPartParser, FormParser]
+    parser_classes = [MultiPartParser, FormParser]  # pour gérer form-data
 
     def get_object(self):
         profile, _ = Profile.objects.get_or_create(user=self.request.user)
@@ -67,29 +67,43 @@ class ProfileUpdateView(generics.RetrieveUpdateAPIView):
 
         try:
             if photo_file:
-                file_name = f"avatar/{request.user.id}_{photo_file.name}"
+                # Générer un nom unique, par exemple avec timestamp
+                import time
 
-                upload_resp = supabase.storage.from_("avatar").upload(
-                    file_name,
-                    photo_file.read(),
-                    {"content-type": photo_file.content_type},
-                )
+                timestamp = int(time.time())
+                file_name = f"avatar/{request.user.id}_{timestamp}_{photo_file.name}"
 
-                if upload_resp.get("error"):
-                    return Response(
-                        {"detail": "Erreur lors de l’upload Supabase."}, status=400
+                # Upload du fichier vers Supabase
+                try:
+                    upload_resp = supabase.storage.from_("avatar").upload(
+                        file_name,
+                        photo_file.read(),
+                        {"content-type": photo_file.content_type},
                     )
+                except StorageApiError as e:
+                    # Si fichier existe déjà, gérer ici (exemple suppression avant upload)
+                    if "Duplicate" in str(e):
+                        # Supprimer le fichier existant (optionnel)
+                        supabase.storage.from_("avatar").remove([file_name])
+                        # Puis retenter upload
+                        upload_resp = supabase.storage.from_("avatar").upload(
+                            file_name,
+                            photo_file.read(),
+                            {"content-type": photo_file.content_type},
+                        )
+                    else:
+                        raise e
 
+                # Récupération de l’URL publique
                 public_url_resp = supabase.storage.from_("avatar").get_public_url(
                     file_name
                 )
-                photo_url = public_url_resp.get("publicURL") or public_url_resp.get(
-                    "data", {}
-                ).get("publicUrl")
+                photo_url = public_url_resp.public_url
 
                 if not photo_url:
                     return Response({"detail": "URL publique introuvable."}, status=500)
 
+            # Mise à jour du profil
             profile.bio = bio
             profile.coaching_type = coaching_type
             profile.photo_url = photo_url
@@ -99,6 +113,8 @@ class ProfileUpdateView(generics.RetrieveUpdateAPIView):
             return Response(serializer.data, status=200)
 
         except Exception as e:
+            import traceback
+
             traceback.print_exc()
             return Response({"detail": f"Erreur serveur : {str(e)}"}, status=500)
 
