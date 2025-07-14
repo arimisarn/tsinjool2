@@ -46,19 +46,14 @@ class RegisterView(generics.CreateAPIView):
 class ProfileUpdateView(generics.RetrieveUpdateAPIView):
     serializer_class = ProfileSerializer
     permission_classes = [permissions.IsAuthenticated]
-    parser_classes = [MultiPartParser, FormParser]  # Gérer upload fichiers
 
     def get_object(self):
         profile, created = Profile.objects.get_or_create(user=self.request.user)
         return profile
 
-    def get_serializer_context(self):
-        return {"request": self.request}
-
     def put(self, request, *args, **kwargs):
         print(">>> PUT reçu")
-        print("Données (request.data) :", request.data)
-        print("Fichiers (request.FILES) :", request.FILES)
+        print("Données reçues :", request.data)
         try:
             return self.update(request, *args, **kwargs)
         except Exception as e:
@@ -66,7 +61,7 @@ class ProfileUpdateView(generics.RetrieveUpdateAPIView):
 
             traceback.print_exc()
             return Response(
-                {"detail": "Erreur serveur : " + str(e)},
+                {"detail": f"Erreur serveur : {str(e)}"},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 

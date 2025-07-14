@@ -11,6 +11,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "sonner";
+import { supabase } from "@/lib/supabaseClient";
 
 type CoachingType = "life" | "career" | "health";
 
@@ -98,15 +99,40 @@ export default function ProfileSetup() {
     }
 
     setLoading(true);
-
     const formData = new FormData();
     formData.append("bio", bio);
     formData.append("coaching_type", coachingType);
-    if (photo) formData.append("photo", photo);
 
     try {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("Token manquant.");
+
+      // 🔄 Upload photo sur Supabase (si présente)
+      if (photo) {
+        const fileName = `${Date.now()}_${photo.name}`;
+        const { data, error } = await supabase.storage
+          .from("avatar")
+          .upload(fileName, photo);
+        console.log(data);
+
+        if (error) {
+          toast.error("Erreur lors de l’upload de la photo.");
+          console.error(error);
+          setLoading(false);
+          return;
+        }
+
+        // Récupération de l'URL publique
+        const { data: publicUrlData } = supabase.storage
+          .from("avatar")
+          .getPublicUrl(fileName);
+
+        if (!publicUrlData?.publicUrl) {
+          throw new Error("Impossible d’obtenir l’URL publique.");
+        }
+
+        formData.append("photo_url", publicUrlData.publicUrl);
+      }
 
       const response = await axios.put(
         "https://tsinjool-backend.onrender.com/api/profile/",
@@ -114,7 +140,6 @@ export default function ProfileSetup() {
         {
           headers: {
             Authorization: `Token ${token}`,
-            // Laisse axios gérer le content-type multipart/form-data
           },
         }
       );
@@ -124,7 +149,6 @@ export default function ProfileSetup() {
       navigate("/evaluation", { state: { coachingType } });
     } catch (error: any) {
       console.error(error);
-
       const errData = error?.response?.data;
       toast.error(
         errData?.detail ||

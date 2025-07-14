@@ -68,24 +68,11 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 # Serializer
 class ProfileSerializer(serializers.ModelSerializer):
-    photo_url = serializers.SerializerMethodField()
-
     class Meta:
         model = Profile
-        fields = ["bio", "coaching_type", "photo", "photo_url"]
+        fields = ["bio", "coaching_type", "photo_url"]
         extra_kwargs = {
-            "photo": {"required": False, "allow_null": True},
             "bio": {"required": False, "allow_blank": True},
             "coaching_type": {"required": True},
+            "photo_url": {"required": False, "allow_blank": True},
         }
-
-    def get_photo_url(self, obj):
-        if obj.photo:
-            # uploadcare ImageField a l'attribut cdn_url pour l'URL publique
-            return obj.photo.cdn_url
-        return None
-
-    # def validate_photo(self, value):
-    #     if value in [None, ""]:
-    #         return None
-    #     return value

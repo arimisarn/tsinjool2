@@ -15,12 +15,6 @@ from pathlib import Path
 import os
 import re
 
-# print("==== CLOUDINARY DEBUG ====")
-# print("CLOUDINARY_CLOUD_NAME =", os.getenv("CLOUDINARY_CLOUD_NAME"))
-# print("CLOUDINARY_API_KEY =", os.getenv("CLOUDINARY_API_KEY"))
-# print("CLOUDINARY_API_SECRET =", os.getenv("CLOUDINARY_API_SECRET"))
-# print("==== FIN DEBUG ====")
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -55,9 +49,6 @@ INSTALLED_APPS = [
     "accounts",
     "chat",
     "evaluation",
-    "cloudinary",
-    "cloudinary_storage",
-    "uploadcare",
 ]
 
 MIDDLEWARE = [
