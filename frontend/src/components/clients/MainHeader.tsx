@@ -33,10 +33,22 @@ const MainHeader: React.FC = () => {
             },
           }
         );
-        if (res.data.photo) {
+
+        const photo = res.data.photo;
+
+        if (photo) {
           const cloudinaryBaseURL =
             "https://res.cloudinary.com/tsinjool-media/image/upload/";
-          setProfilePhoto(cloudinaryBaseURL + res.data.photo);
+
+          // Si photo commence par http ou https, on considère que c'est une URL complète
+          if (photo.startsWith("http://") || photo.startsWith("https://")) {
+            setProfilePhoto(photo);
+          } else {
+            // Sinon, on concatène la base Cloudinary + le chemin relatif
+            // On enlève un éventuel '/' initial pour éviter une double //
+            const cleanPhoto = photo.startsWith("/") ? photo.slice(1) : photo;
+            setProfilePhoto(cloudinaryBaseURL + cleanPhoto);
+          }
         }
       } catch (error) {
         console.error(
