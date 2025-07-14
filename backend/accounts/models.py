@@ -46,10 +46,14 @@ class Profile(models.Model):
         ('health', 'Coaching santé'),
     ]
 
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='profile')
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='profile'
+    )
     bio = models.TextField(blank=True)
     coaching_type = models.CharField(max_length=20, choices=COACHING_TYPES)
-    photo = CloudinaryField('photo', blank=True, null=True)
+    photo = models.ImageField(upload_to='profiles/', blank=True, null=True)  # ⬅️ correction ici
 
     def __str__(self):
         return f"Profil de {self.user.nom_utilisateur}"

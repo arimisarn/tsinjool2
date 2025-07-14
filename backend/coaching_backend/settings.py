@@ -187,6 +187,7 @@ MISTRAL_API_KEY = os.environ.get("MISTRAL_API_KEY")
 # Configuration du backend de stockage Cloudinary
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
+
 # CLOUDINARY_STORAGE = {
 #     "CLOUD_NAME": os.getenv("CLOUDINARY_CLOUD_NAME"),
 #     "API_KEY": os.getenv("CLOUDINARY_API_KEY"),
