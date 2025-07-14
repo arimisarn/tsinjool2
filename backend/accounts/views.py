@@ -36,6 +36,7 @@ class RegisterView(generics.CreateAPIView):
             "token": token.key,  # <- TOKEN ici
         }, status=201)
         
+
 class ProfileUpdateView(generics.RetrieveUpdateAPIView):
     serializer_class = ProfileSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -43,6 +44,12 @@ class ProfileUpdateView(generics.RetrieveUpdateAPIView):
     def get_object(self):
         profile, created = Profile.objects.get_or_create(user=self.request.user)
         return profile
+
+    def put(self, request, *args, **kwargs):
+        print(">>> PUT reçu")
+        print("Données (request.data) :", request.data)
+        print("Fichiers (request.FILES) :", request.FILES)
+        return self.update(request, *args, **kwargs)
 
 
 class LoginView(APIView):

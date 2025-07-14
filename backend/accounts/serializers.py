@@ -82,3 +82,8 @@ class ProfileSerializer(serializers.ModelSerializer):
         if obj.photo and hasattr(obj.photo, "url"):
             return obj.photo.url
         return None
+    def validate_photo(self, value):
+        if value in [None, ""]:
+            return None
+        return value
+
