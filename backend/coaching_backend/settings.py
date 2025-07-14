@@ -175,7 +175,10 @@ TOGETHER_API_KEY = os.getenv("TOGETHER_API_KEY")
 OPENAI_API_KEY = config("OPENAI_API_KEY")
 MISTRAL_API_KEY = os.environ.get("MISTRAL_API_KEY")
 
-UPLOADCARE = {
-    "pub_key": "89a12bf1ef9774c48d2b",
-    "secret": "7ea5603e6d1d0a2302e2",
-}
+# UPLOADCARE = {
+#     "pub_key": "89a12bf1ef9774c48d2b",
+#     "secret": "7ea5603e6d1d0a2302e2",
+# }
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_SERVICE_ROLE_KEY = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
+

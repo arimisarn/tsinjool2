@@ -15,7 +15,10 @@ from .models import Profile  # import local correct
 from rest_framework import status
 from django.core.mail import send_mail
 from rest_framework.parsers import MultiPartParser, FormParser
-
+from .supabase_client import supabase
+from django.core.files.uploadedfile import UploadedFile
+from .supabase_client import supabase
+from rest_framework.decorators import api_view, permission_classes
 
 User = get_user_model()
 
@@ -46,24 +49,62 @@ class RegisterView(generics.CreateAPIView):
 class ProfileUpdateView(generics.RetrieveUpdateAPIView):
     serializer_class = ProfileSerializer
     permission_classes = [permissions.IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser]  # pour gérer form-data
 
     def get_object(self):
-        profile, created = Profile.objects.get_or_create(user=self.request.user)
+        profile, _ = Profile.objects.get_or_create(user=self.request.user)
         return profile
 
     def put(self, request, *args, **kwargs):
-        print(">>> PUT reçu")
-        print("Données reçues :", request.data)
+        profile = self.get_object()
+
+        bio = request.data.get("bio", profile.bio)
+        coaching_type = request.data.get("coaching_type", profile.coaching_type)
+        photo_file = request.FILES.get("photo")
+
+        photo_url = profile.photo_url
+
         try:
-            return self.update(request, *args, **kwargs)
+            if photo_file:
+                file_name = f"avatar/{request.user.id}_{photo_file.name}"
+
+                # Upload du fichier vers Supabase
+                upload_resp = supabase.storage.from_("avatar").upload(
+                    file_name,
+                    photo_file.read(),
+                    {"content-type": photo_file.content_type},
+                )
+
+                if upload_resp.get("error"):
+                    return Response(
+                        {"detail": "Erreur lors de l’upload Supabase."}, status=400
+                    )
+
+                # Récupération de l’URL publique
+                public_url_resp = supabase.storage.from_("avatar").get_public_url(
+                    file_name
+                )
+                photo_url = public_url_resp.get("publicURL") or public_url_resp.get(
+                    "data", {}
+                ).get("publicUrl")
+
+                if not photo_url:
+                    return Response({"detail": "URL publique introuvable."}, status=500)
+
+            # Mise à jour du profil
+            profile.bio = bio
+            profile.coaching_type = coaching_type
+            profile.photo_url = photo_url
+            profile.save()
+
+            serializer = self.get_serializer(profile)
+            return Response(serializer.data, status=200)
+
         except Exception as e:
             import traceback
 
             traceback.print_exc()
-            return Response(
-                {"detail": f"Erreur serveur : {str(e)}"},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            )
+            return Response({"detail": f"Erreur serveur : {str(e)}"}, status=500)
 
 
 class LoginView(APIView):
@@ -140,3 +181,13 @@ class ConfirmEmailView(APIView):
             return Response(
                 {"error": "Code incorrect."}, status=status.HTTP_400_BAD_REQUEST
             )
+
+
+@api_view(["GET"])
+@permission_classes([AllowAny])
+def test_supabase_view(request):
+    try:
+        result = supabase.storage.from_("avatar").list()
+        return Response({"success": True, "result": result})
+    except Exception as e:
+        return Response({"success": False, "error": str(e)})

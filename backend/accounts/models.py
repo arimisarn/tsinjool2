@@ -7,6 +7,7 @@ from django.contrib.auth.models import (
 from django.conf import settings
 from django.db import models
 
+
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, nom_utilisateur, password=None):
         if not email:
@@ -46,7 +47,6 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         return self.email
 
 
-
 class Profile(models.Model):
     COACHING_TYPES = [
         ("life", "Coaching de vie"),
@@ -55,13 +55,13 @@ class Profile(models.Model):
     ]
 
     user = models.OneToOneField(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name="profile"
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="profile"
     )
     bio = models.TextField(blank=True)
     coaching_type = models.CharField(max_length=20, choices=COACHING_TYPES)
-    photo_url = models.URLField(blank=True, null=True)  # ← Supabase photo URL ici
+    photo_url = models.URLField(
+        blank=True, null=True
+    )  # URL de la photo stockée dans Supabase
 
     def __str__(self):
         return f"Profil de {self.user.nom_utilisateur}"
