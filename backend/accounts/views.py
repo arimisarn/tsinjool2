@@ -75,7 +75,7 @@ class ProfileUpdateView(generics.RetrieveUpdateAPIView):
                     {"content-type": photo_file.content_type},
                 )
 
-                if upload_resp.get("error"):
+                if upload_resp.error:
                     return Response(
                         {"detail": "Erreur lors de l’upload Supabase."}, status=400
                     )
@@ -84,9 +84,7 @@ class ProfileUpdateView(generics.RetrieveUpdateAPIView):
                 public_url_resp = supabase.storage.from_("avatar").get_public_url(
                     file_name
                 )
-                photo_url = public_url_resp.get("publicURL") or public_url_resp.get(
-                    "data", {}
-                ).get("publicUrl")
+                photo_url = public_url_resp.public_url
 
                 if not photo_url:
                     return Response({"detail": "URL publique introuvable."}, status=500)
