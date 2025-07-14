@@ -16,6 +16,12 @@ import os
 import re
 import cloudinary
 
+print("==== CLOUDINARY DEBUG ====")
+print("CLOUDINARY_CLOUD_NAME =", os.getenv("CLOUDINARY_CLOUD_NAME"))
+print("CLOUDINARY_API_KEY =", os.getenv("CLOUDINARY_API_KEY"))
+print("CLOUDINARY_API_SECRET =", os.getenv("CLOUDINARY_API_SECRET"))
+print("==== FIN DEBUG ====")
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -178,6 +184,7 @@ TOGETHER_API_KEY = os.getenv("TOGETHER_API_KEY")
 OPENAI_API_KEY = config("OPENAI_API_KEY")
 MISTRAL_API_KEY = os.environ.get("MISTRAL_API_KEY")
 
+# Configuration du backend de stockage Cloudinary
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 
 CLOUDINARY_STORAGE = {
@@ -186,8 +193,17 @@ CLOUDINARY_STORAGE = {
     "API_SECRET": os.getenv("CLOUDINARY_API_SECRET"),
 }
 
-MEDIA_URL = '/media/'
+# Configuration explicite de cloudinary (indispensable)
+cloudinary.config(
+    cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
+    api_key=os.getenv("CLOUDINARY_API_KEY"),
+    api_secret=os.getenv("CLOUDINARY_API_SECRET"),
+    secure=True
+)
 
-print("CLOUDINARY_CLOUD_NAME:", os.getenv("CLOUDINARY_CLOUD_NAME"))
-print("CLOUDINARY_API_KEY:", os.getenv("CLOUDINARY_API_KEY"))
-print("CLOUDINARY_API_SECRET:", os.getenv("CLOUDINARY_API_SECRET"))
+# URL de base des médias (optionnelle, utile pour certaines intégrations)
+MEDIA_URL = f'https://res.cloudinary.com/{os.getenv("CLOUDINARY_CLOUD_NAME")}/'
+
+# print("CLOUDINARY_CLOUD_NAME:", os.getenv("CLOUDINARY_CLOUD_NAME"))
+# print("CLOUDINARY_API_KEY:", os.getenv("CLOUDINARY_API_KEY"))
+# print("CLOUDINARY_API_SECRET:", os.getenv("CLOUDINARY_API_SECRET"))
