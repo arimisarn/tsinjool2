@@ -1,7 +1,12 @@
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
+from django.contrib.auth.models import (
+    AbstractBaseUser,
+    PermissionsMixin,
+    BaseUserManager,
+)
 from cloudinary.models import CloudinaryField
 from django.conf import settings
+
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, email, nom_utilisateur, password=None):
@@ -23,15 +28,18 @@ class CustomUserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
+
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
     nom_utilisateur = models.CharField(max_length=150, unique=True)
     is_active = models.BooleanField(default=False)  # ← Désactivé par défaut
     is_staff = models.BooleanField(default=False)
-    confirmation_code = models.CharField(max_length=6, null=True, blank=True)  # ← Ajout ici
+    confirmation_code = models.CharField(
+        max_length=6, null=True, blank=True
+    )  # ← Ajout ici
 
-    USERNAME_FIELD = 'nom_utilisateur'
-    REQUIRED_FIELDS = ['email']
+    USERNAME_FIELD = "nom_utilisateur"
+    REQUIRED_FIELDS = ["email"]
 
     objects = CustomUserManager()
 
@@ -39,21 +47,20 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         return self.email
 
 
+
 class Profile(models.Model):
     COACHING_TYPES = [
-        ('life', 'Coaching de vie'),
-        ('career', 'Coaching de carrière'),
-        ('health', 'Coaching santé'),
+        ("life", "Coaching de vie"),
+        ("career", "Coaching de carrière"),
+        ("health", "Coaching santé"),
     ]
 
     user = models.OneToOneField(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name='profile'
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="profile"
     )
     bio = models.TextField(blank=True)
     coaching_type = models.CharField(max_length=20, choices=COACHING_TYPES)
-    photo = models.ImageField(upload_to='profiles/', blank=True, null=True)  # ⬅️ correction ici
+    photo = CloudinaryField("image", blank=True, null=True)  # CloudinaryField
 
     def __str__(self):
         return f"Profil de {self.user.nom_utilisateur}"

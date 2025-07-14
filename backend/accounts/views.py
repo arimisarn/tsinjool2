@@ -14,6 +14,7 @@ from rest_framework.views import APIView
 from .models import Profile  # import local correct
 from rest_framework import status
 from django.core.mail import send_mail
+from rest_framework.parsers import MultiPartParser, FormParser
 
 
 User = get_user_model()
@@ -45,26 +46,23 @@ class RegisterView(generics.CreateAPIView):
 class ProfileUpdateView(generics.RetrieveUpdateAPIView):
     serializer_class = ProfileSerializer
     permission_classes = [permissions.IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser]  # Pour gérer upload fichier
 
     def get_object(self):
         profile, created = Profile.objects.get_or_create(user=self.request.user)
         return profile
 
     def get_serializer(self, *args, **kwargs):
-        """Ajoute le request dans le contexte pour construire des URLs absolues dans le serializer."""
         kwargs["context"] = self.get_serializer_context()
         return super().get_serializer(*args, **kwargs)
 
     def get_serializer_context(self):
-        return {
-            "request": self.request
-        }  # ← important pour que .build_absolute_uri fonctionne
+        return {"request": self.request}  # Pour build_absolute_uri dans serializer
 
     def put(self, request, *args, **kwargs):
         print(">>> PUT reçu")
         print("Données (request.data) :", request.data)
         print("Fichiers (request.FILES) :", request.FILES)
-
         try:
             return self.update(request, *args, **kwargs)
         except Exception as e:

@@ -66,6 +66,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         return user
 
 
+# Serializer
 class ProfileSerializer(serializers.ModelSerializer):
     photo_url = serializers.SerializerMethodField()
 
@@ -79,14 +80,15 @@ class ProfileSerializer(serializers.ModelSerializer):
         }
 
     def get_photo_url(self, obj):
-        if obj.photo and hasattr(obj.photo, "url"):
-            request = self.context.get("request")
-            if request:
-                return request.build_absolute_uri(obj.photo.url)
-            return obj.photo.url  # fallback
+        if obj.photo:
+            try:
+                return obj.photo.url  # <- c'est déjà une URL Cloudinary
+            except Exception:
+                return None
         return None
+
+
     def validate_photo(self, value):
         if value in [None, ""]:
             return None
         return value
-
