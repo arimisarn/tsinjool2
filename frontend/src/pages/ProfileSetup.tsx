@@ -11,7 +11,6 @@ import {
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "sonner";
-import { supabase } from "@/lib/supabaseClient";
 
 type CoachingType = "life" | "career" | "health";
 
@@ -102,37 +101,11 @@ export default function ProfileSetup() {
     const formData = new FormData();
     formData.append("bio", bio);
     formData.append("coaching_type", coachingType);
+    if (photo) formData.append("photo", photo); // on envoie juste le fichier ici
 
     try {
       const token = localStorage.getItem("token");
       if (!token) throw new Error("Token manquant.");
-
-      // Upload photo sur Supabase si présente
-      if (photo) {
-        const fileName = `${Date.now()}_${photo.name}`;
-        const { data, error } = await supabase.storage
-          .from("avatar")
-          .upload(fileName, photo);
-        console.log(data);
-
-        if (error) {
-          toast.error("Erreur lors de l’upload de la photo.");
-          console.error(error);
-          setLoading(false);
-          return;
-        }
-
-        // Récupération de l'URL publique
-        const { data: publicUrlData } = supabase.storage
-          .from("avatar")
-          .getPublicUrl(fileName);
-
-        if (!publicUrlData?.publicUrl) {
-          throw new Error("Impossible d’obtenir l’URL publique.");
-        }
-
-        formData.append("photo_url", publicUrlData.publicUrl);
-      }
 
       const response = await axios.put(
         "https://tsinjool-backend.onrender.com/api/profile/",
@@ -155,7 +128,6 @@ export default function ProfileSetup() {
         errData?.detail ||
           errData?.coaching_type?.[0] ||
           errData?.photo?.[0] ||
-          error.message ||
           "Erreur lors de l’enregistrement du profil."
       );
     } finally {
@@ -221,7 +193,6 @@ export default function ProfileSetup() {
                       accept="image/*"
                       onChange={handlePhotoChange}
                       className="hidden"
-                      disabled={loading}
                     />
                   </label>
                 </div>
@@ -244,7 +215,6 @@ export default function ProfileSetup() {
                   className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all duration-200 outline-none resize-none"
                   rows={4}
                   maxLength={500}
-                  disabled={loading}
                 />
                 <p className="text-xs text-gray-400 mt-1">{bio.length} / 500</p>
               </div>
@@ -267,7 +237,6 @@ export default function ProfileSetup() {
                           setCoachingType(e.target.value as CoachingType)
                         }
                         className="sr-only"
-                        disabled={loading}
                       />
                       <label
                         htmlFor={option.value}

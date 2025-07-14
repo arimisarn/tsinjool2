@@ -1,146 +1,119 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState, type JSX } from "react";
+import { Brain, LoaderCircle, User, Briefcase, Heart } from "lucide-react";
 import axios from "axios";
 import { toast } from "sonner";
-import { Brain, Mail, User, Quote } from "lucide-react";
-import pic from "../assets/avatar.jpg";
+import { useNavigate } from "react-router-dom";
 
-type ProfileData = {
+type CoachingType = "life" | "career" | "health";
+
+interface UserProfileData {
   bio: string;
-  coaching_type: "life" | "career" | "health";
-  photo_url: string | null;
-};
+  coaching_type: CoachingType;
+  photo_url: string;
+  user: {
+    nom_utilisateur: string;
+    email: string;
+  };
+}
 
-type UserData = {
-  email: string;
-  nom_utilisateur: string;
-};
-
-const coachingLabels: Record<ProfileData["coaching_type"], string> = {
-  life: "Coaching de vie",
-  career: "Coaching de carrière",
-  health: "Coaching santé",
-};
-
-const badgeColors: Record<ProfileData["coaching_type"], string> = {
-  life: "bg-pink-100 text-pink-600",
-  career: "bg-blue-100 text-blue-600",
-  health: "bg-green-100 text-green-600",
-};
-
-export default function ProfilePage() {
-  const navigate = useNavigate();
-  const [profile, setProfile] = useState<ProfileData | null>(null);
-  const [user, setUser] = useState<UserData | null>(null);
+export default function UserProfile() {
+  const [profile, setProfile] = useState<UserProfileData | null>(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
+  const coachingTypeLabel: Record<CoachingType, string> = {
+    life: "Coaching de vie",
+    career: "Coaching de carrière",
+    health: "Coaching santé",
+  };
+
+  const coachingIcon: Record<CoachingType, JSX.Element> = {
+    life: <Heart className="w-5 h-5 text-pink-500" />,
+    career: <Briefcase className="w-5 h-5 text-indigo-500" />,
+    health: <User className="w-5 h-5 text-green-500" />,
+  };
 
   useEffect(() => {
-    document.title = "Mon profil - Tsinjool";
-    const fetchData = async () => {
+    const fetchProfile = async () => {
       const token = localStorage.getItem("token");
       if (!token) {
         toast.error("Veuillez vous connecter.");
-        return navigate("/login");
+        navigate("/login");
+        return;
       }
 
       try {
-        const [profileRes, userRes] = await Promise.all([
-          axios.get("https://tsinjool-backend.onrender.com/api/profile/", {
-            headers: { Authorization: `Token ${token}` },
-          }),
-          axios.get("https://tsinjool-backend.onrender.com/api/user/", {
-            headers: { Authorization: `Token ${token}` },
-          }),
-        ]);
-
-        setProfile(profileRes.data);
-        setUser(userRes.data);
-      } catch (err) {
+        const response = await axios.get(
+          "https://tsinjool-backend.onrender.com/api/profile/",
+          {
+            headers: {
+              Authorization: `Token ${token}`,
+            },
+          }
+        );
+        setProfile(response.data);
+      } catch (error: any) {
         toast.error("Erreur lors du chargement du profil.");
-        console.error(err);
+        console.error(error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchData();
-  }, []);
+    fetchProfile();
+  }, [navigate]);
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
-        <span className="text-gray-500">Chargement...</span>
+      <div className="flex items-center justify-center h-screen">
+        <LoaderCircle className="animate-spin w-10 h-10 text-blue-500" />
       </div>
     );
   }
 
-  if (!profile || !user) {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <span className="text-red-500">Profil non disponible.</span>
-      </div>
-    );
-  }
+  if (!profile) return null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white flex items-center justify-center p-6">
-      <div className="max-w-3xl w-full bg-white rounded-3xl shadow-2xl p-8 space-y-8">
-        {/* En-tête */}
-        <div className="flex items-center gap-4">
-          <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-blue-600 rounded-xl flex items-center justify-center">
-            <Brain className="w-8 h-8 text-white" />
+    <div className="min-h-screen bg-gradient-to-br from-slate-100 to-blue-50 flex items-center justify-center px-4">
+      <div className="max-w-xl w-full bg-white rounded-2xl shadow-xl p-8 space-y-6 text-center">
+        <div className="flex items-center justify-center gap-3">
+          <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-600 rounded-lg flex items-center justify-center">
+            <Brain className="w-6 h-6 text-white" />
           </div>
+          <h1 className="text-2xl font-bold text-gray-900">Mon profil</h1>
+        </div>
+
+        <div className="flex flex-col items-center space-y-3">
+          <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-white shadow-md">
+            <img
+              src={profile.photo_url || "/default-avatar.png"}
+              alt="Avatar"
+              className="w-full h-full object-cover"
+            />
+          </div>
+          <h2 className="text-xl font-semibold text-gray-800">
+            {profile.user.nom_utilisateur}
+          </h2>
+          <p className="text-sm text-gray-500">{profile.user.email}</p>
+        </div>
+
+        <div className="text-left space-y-3">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Mon Profil</h1>
-            <p className="text-sm text-gray-500">Tsinjool Coaching IA</p>
+            <label className="text-sm font-semibold text-gray-600">Bio :</label>
+            <p className="mt-1 text-gray-800">
+              {profile.bio || "Aucune bio renseignée."}
+            </p>
           </div>
-        </div>
 
-        {/* Infos */}
-        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-8">
-          <img
-            src={profile.photo_url || pic}
-            alt="Photo de profil"
-            className="w-32 h-32 rounded-full object-cover border-4 border-white shadow-md"
-          />
-
-          <div className="flex-1 space-y-4">
-            <div className="flex items-center gap-2 text-gray-700">
-              <User className="w-5 h-5" />
-              <span className="font-semibold">{user.nom_utilisateur}</span>
-            </div>
-
-            <div className="flex items-center gap-2 text-gray-700">
-              <Mail className="w-5 h-5" />
-              <span className="text-sm">{user.email}</span>
-            </div>
-
-            <div className="flex items-center gap-2 text-gray-700">
-              <Quote className="w-5 h-5" />
-              <span className="text-sm">
-                {profile.bio || "Pas encore de bio."}
-              </span>
-            </div>
-
-            <div>
-              <span
-                className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${
-                  badgeColors[profile.coaching_type]
-                }`}
-              >
-                {coachingLabels[profile.coaching_type]}
-              </span>
+          <div>
+            <label className="text-sm font-semibold text-gray-600">
+              Type de coaching :
+            </label>
+            <div className="mt-1 flex items-center gap-2 text-gray-800 font-medium">
+              {coachingIcon[profile.coaching_type]}
+              {coachingTypeLabel[profile.coaching_type]}
             </div>
           </div>
-        </div>
-
-        <div className="text-center pt-4">
-          <button
-            onClick={() => navigate("/profile-setup")}
-            className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-md transition-all"
-          >
-            Modifier le profil
-          </button>
         </div>
       </div>
     </div>

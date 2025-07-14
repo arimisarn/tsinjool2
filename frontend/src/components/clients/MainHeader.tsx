@@ -20,6 +20,7 @@ const MainHeader: React.FC = () => {
   const ordreDate: string = `${dateParts[0]} ${dateParts[1]} ${dateParts[2]} ${dateParts[3]}`;
 
   const [profilePhoto, setProfilePhoto] = useState<string>(pic);
+
   useEffect(() => {
     const loadProfilePhoto = async () => {
       const token = localStorage.getItem("token");
@@ -33,11 +34,16 @@ const MainHeader: React.FC = () => {
           }
         );
 
-        const photoPath = res.data.photo_url; // <-- changer ici
-        console.log("Photo reçue :", photoPath);
+        const photoUrl = res.data?.photo_url;
+        console.log("Photo reçue :", photoUrl);
 
-        if (photoPath && photoPath.startsWith("http")) {
-          setProfilePhoto(photoPath);
+        // Vérifie si l'URL est valide
+        if (
+          photoUrl &&
+          typeof photoUrl === "string" &&
+          photoUrl.startsWith("http")
+        ) {
+          setProfilePhoto(photoUrl);
         }
       } catch (error) {
         console.error(
@@ -59,11 +65,11 @@ const MainHeader: React.FC = () => {
             <Brain className="w-6 h-6 text-white" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white transition-colors duration-300">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
               Tsinjool
             </h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400 transition-colors duration-300">
-              Votre coach personnel intelligenteee
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              Votre coach personnel intelligent
             </p>
           </div>
         </div>
@@ -83,8 +89,8 @@ const MainHeader: React.FC = () => {
               <Bell className="w-5 h-5 hover:text-blue-500 dark:hover:text-blue-400 cursor-pointer transition" />
               <img
                 src={profilePhoto}
-                className="w-8 h-8 rounded-full border-2 border-gray-400 dark:border-white cursor-pointer transition-all"
                 alt="Profil utilisateur"
+                className="w-8 h-8 rounded-full border-2 border-gray-400 dark:border-white cursor-pointer transition-all"
                 onClick={() => navigate("/profile")}
               />
             </div>
