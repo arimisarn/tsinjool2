@@ -14,7 +14,7 @@ from .serializers import (
     UserProgressSerializer,
 )
 from .ai_service import AICoachingService
-
+from rest_framework.views import APIView
 
 class EvaluationViewSet(viewsets.ModelViewSet):
     serializer_class = EvaluationSerializer
@@ -40,7 +40,9 @@ class EvaluationViewSet(viewsets.ModelViewSet):
 def generate_coaching_path(request):
     evaluation_id = request.data.get("evaluation_id")
     if not evaluation_id:
-        return Response({"error": "evaluation_id requis"}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            {"error": "evaluation_id requis"}, status=status.HTTP_400_BAD_REQUEST
+        )
 
     try:
         evaluation = get_object_or_404(Evaluation, id=evaluation_id, user=request.user)
@@ -135,7 +137,6 @@ def generate_coaching_path(request):
 #             )
 
 
-
 class CoachingPathViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = CoachingPathSerializer
     permission_classes = [IsAuthenticated]
@@ -155,6 +156,25 @@ class CoachingPathViewSet(viewsets.ReadOnlyModelViewSet):
                 {"error": "Aucun parcours de coaching trouvé"},
                 status=status.HTTP_404_NOT_FOUND,
             )
+
+
+class CoachingPathRetrieveView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        profile = request.user.profile  # ou Profile.objects.get(user=request.user)
+        if not profile or not profile.coaching_type:
+            return Response({"detail": "Type de coaching non défini."}, status=400)
+
+        # Exemple de données IA fictives
+        data = {
+            "coaching_type": profile.coaching_type,
+            "steps": [
+                {"title": "Étape 1", "description": "Introduction"},
+                {"title": "Étape 2", "description": "Objectifs"},
+            ],
+        }
+        return Response(data)
 
 
 class StepViewSet(viewsets.ReadOnlyModelViewSet):
