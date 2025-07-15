@@ -181,7 +181,7 @@ export default function UserProfile() {
         <div className="absolute bottom-20 right-10 w-4 h-4 bg-purple-200 rounded-full opacity-20 animate-bounce"></div>
       </div>
 
-      <div className="max-w-4xl mx-auto">
+      <div className="">
         {/* Header */}
         {/* <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-3 mb-4">
