@@ -59,9 +59,11 @@ class Profile(models.Model):
     )
     bio = models.TextField(blank=True)
     coaching_type = models.CharField(max_length=20, choices=COACHING_TYPES)
-    photo_url = models.URLField(
-        blank=True, null=True
-    )  # URL de la photo stockée dans Supabase
+    photo_url = models.URLField(blank=True, null=True)
+
+    # ✅ nouveaux champs
+    level = models.IntegerField(default=1)
+    points = models.IntegerField(default=0)
 
     def __str__(self):
         return f"Profil de {self.user.nom_utilisateur}"

@@ -38,8 +38,8 @@ pydub==0.25.1
 PyJWT==2.10.1
 python-dateutil==2.9.0.post0
 python-decouple==3.8
+python-dotenv==1.1.1
 pytz==2025.2
-pyuploadcare==6.2.0
 realtime==2.5.3
 requests==2.32.4
 s3transfer==0.13.0

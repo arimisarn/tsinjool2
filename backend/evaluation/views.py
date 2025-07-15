@@ -183,20 +183,25 @@ class ExerciseViewSet(viewsets.ReadOnlyModelViewSet):
                 {"message": "Exercice déjà terminé"}, status=status.HTTP_200_OK
             )
 
-        # Marquer l'exercice comme terminé
+        # ✅ Marquer comme terminé (cela met aussi à jour les points et le niveau)
         exercise.mark_completed()
 
-        # Mettre à jour les progrès utilisateur
+        # ✅ Mettre à jour les progrès utilisateur
         user_progress, created = UserProgress.objects.get_or_create(user=request.user)
         user_progress.total_exercises_completed += 1
         user_progress.total_time_spent += exercise.duration
         user_progress.update_activity()
 
+        try:
+            total_points = request.user.profile.points
+        except Exception:
+            total_points = 0  # fallback si le profil n'existe pas
+
         return Response(
             {
                 "message": "Exercice terminé avec succès",
                 "points_earned": 10,
-                "total_points": request.user.userprofile.points,
+                "total_points": total_points,
             },
             status=status.HTTP_200_OK,
         )

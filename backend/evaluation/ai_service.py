@@ -123,6 +123,7 @@ Chaque exercice contient :
     }}
   ]
 }}
+Génère jusqu'à la fin
 """
 
     @classmethod

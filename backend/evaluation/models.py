@@ -1,4 +1,5 @@
 from django.db import models
+
 # from django.contrib.auth.models import User
 from django.conf import settings
 
@@ -18,8 +19,10 @@ class Evaluation(models.Model):
 
 class CoachingPath(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    evaluation = models.OneToOneField(Evaluation, on_delete=models.CASCADE, null=True, blank=True)
-    created_at= models.DateTimeField(auto_now_add=True)
+    evaluation = models.OneToOneField(
+        Evaluation, on_delete=models.CASCADE, null=True, blank=True
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
 
     def __str__(self):
@@ -90,7 +93,6 @@ class Exercise(models.Model):
 
     def __str__(self):
         return f"{self.title} - {self.step.title}"
-
     def mark_completed(self):
         """Marque l'exercice comme terminé et met à jour les points"""
         if not self.completed:
@@ -98,18 +100,23 @@ class Exercise(models.Model):
             self.completed_at = timezone.now()
             self.save()
 
-            # Ajouter des points à l'utilisateur
-            profile = self.step.coaching_path.user.userprofile
-            profile.points += 10
+            try:
+                profile = (
+                    self.step.coaching_path.user.profile
+                )  # <-- .profile et non .userprofile
+                profile.points += 10
 
-            # Vérifier si l'utilisateur monte de niveau
-            if profile.points >= profile.level * 100:
-                profile.level += 1
+                if profile.points >= profile.level * 100:
+                    profile.level += 1
 
-            profile.save()
+                profile.save()
+            except Exception as e:
+                print("❌ Erreur mise à jour points :", e)
 
-            # Mettre à jour le statut de l'étape
             self.step.update_completion_status()
+
+
+
 
 
 class UserProgress(models.Model):
