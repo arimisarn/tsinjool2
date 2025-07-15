@@ -294,7 +294,7 @@ export default function Dashboard() {
                     </div>
                     <div>
                       <h4 className="text-lg font-semibold text-gray-900 group-hover:text-purple-600 transition-colors">
-                        Étape {index + 1}: {step.title}
+                       {step.title}
                       </h4>
                       <p className="text-sm text-gray-600">
                         {step.exercises.length} exercices
