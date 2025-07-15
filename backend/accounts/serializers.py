@@ -67,17 +67,22 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 
 # Serializer
+
+
 class ProfileSerializer(serializers.ModelSerializer):
+    user = serializers.SerializerMethodField()
+
     class Meta:
         model = Profile
-        fields = ["bio", "coaching_type", "photo_url","user"]
+        fields = ["bio", "coaching_type", "photo_url", "user"]
         extra_kwargs = {
             "bio": {"required": False, "allow_blank": True},
             "coaching_type": {"required": True},
             "photo_url": {"required": False, "allow_blank": True},
         }
-        def get_user(self, obj):
-            return {
-                "nom_utilisateur": obj.user.nom_utilisateur,
-                "email": obj.user.email,
-            }
+
+    def get_user(self, obj):
+        return {
+            "nom_utilisateur": obj.user.nom_utilisateur,
+            "email": obj.user.email,
+        }
