@@ -187,24 +187,6 @@ export default function Dashboard() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Welcome Section */}
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-2">
-            Bonjour {userProfile?.name || "Coach"} ! 👋
-          </h2>
-
-          {userProfile?.bio && (
-            <p className="mb-2 italic text-gray-700 max-w-xl">
-              {userProfile.bio}
-            </p>
-          )}
-
-          <p className="text-gray-600">
-            Voici votre parcours personnalisé de{" "}
-            {getCoachingTypeLabel(userProfile?.coaching_type || "")}
-          </p>
-        </div>
-
         {/* Progress Overview */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div className="bg-white rounded-xl p-6 shadow-sm">
@@ -294,7 +276,7 @@ export default function Dashboard() {
                     </div>
                     <div>
                       <h4 className="text-lg font-semibold text-gray-900 group-hover:text-purple-600 transition-colors">
-                       {step.title}
+                        {step.title}
                       </h4>
                       <p className="text-sm text-gray-600">
                         {step.exercises.length} exercices
