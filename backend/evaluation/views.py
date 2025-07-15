@@ -15,7 +15,8 @@ from .serializers import (
 )
 from .ai_service import AICoachingService
 from rest_framework.views import APIView
-
+from .ai_service import AICoachingService, get_youtube_url_from_title
+from django.conf import settings
 
 class EvaluationViewSet(viewsets.ModelViewSet):
     serializer_class = EvaluationSerializer
@@ -56,8 +57,21 @@ def generate_coaching_path(request):
             "coaching_type": evaluation.coaching_type,
             "answers": evaluation.answers,
         }
+
+        # Générer le parcours avec IA
         steps_data = AICoachingService.generate_coaching_path(evaluation_data)
         print("DEBUG - Données générées par l'IA :", steps_data)
+
+        # Recherche des URLs YouTube pour chaque vidéo recommandée
+        youtube_api_key = settings.YOUTUBE_API_KEY
+        for step_data in steps_data:
+            for exercise_data in step_data.get("exercises", []):
+                new_urls = []
+                for video_title in exercise_data.get("recommended_videos", []):
+                    url = get_youtube_url_from_title(video_title, youtube_api_key)
+                    if url:
+                        new_urls.append(url)
+                exercise_data["recommended_videos"] = new_urls
 
         coaching_path = CoachingPath.objects.create(
             user=request.user,

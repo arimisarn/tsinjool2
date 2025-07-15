@@ -7,6 +7,7 @@ import {
   CheckCircle,
   Clock,
   Target,
+  Video,
   BookOpen,
   Lightbulb,
 } from "lucide-react";
@@ -328,19 +329,25 @@ export default function StepDetail() {
                       </h3>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {selectedExercise.recommended_videos.map(
-                          (video, index) => (
-                            <div className="aspect-w-16 aspect-h-9 w-full">
-                              <iframe
-                                width="100%"
-                                height="250"
-                                src={video.replace("watch?v=", "embed/")}
-                                title={`Vidéo ${index + 1}`}
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                allowFullScreen
-                                className="rounded-lg shadow"
-                              ></iframe>
-                            </div>
-                          )
+                          (url, index) => {
+                            const videoId = new URL(url).searchParams.get("v");
+                            return (
+                              <div
+                                key={index}
+                                className="aspect-video rounded-xl overflow-hidden shadow"
+                              >
+                                <iframe
+                                  width="100%"
+                                  height="100%"
+                                  src={`https://www.youtube.com/embed/${videoId}`}
+                                  title={`Vidéo ${index + 1}`}
+                                  frameBorder="0"
+                                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                  allowFullScreen
+                                ></iframe>
+                              </div>
+                            );
+                          }
                         )}
                       </div>
                     </div>
