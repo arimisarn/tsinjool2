@@ -6,5 +6,6 @@ class CoachingConfig(AppConfig):
     name = "evaluation"
 
 
+# accounts/apps.py
 def ready(self):
-    import evalution.signals  # si ton signal est dans l’app `accounts`
+    import evaluation.signals

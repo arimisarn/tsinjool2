@@ -2,7 +2,7 @@ import requests
 import json
 from django.conf import settings
 from typing import Dict, List, Any
-
+import re
 
 class AICoachingService:
     """Service pour l'intégration avec Together.ai"""
