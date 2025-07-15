@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { Calendar, Bell } from "lucide-react";
+import { Calendar, Bell, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import pic from "../../assets/avatar.jpg";
 import DarkMode from "../theme/DarkMode";
-import logo from "../../assets/logoRond.png"
+import logo from "../../assets/logoRond.png";
 
 const MainHeader: React.FC = () => {
   const navigate = useNavigate();
@@ -17,10 +17,16 @@ const MainHeader: React.FC = () => {
     year: "numeric",
   };
   const formatDate: string = daty.toLocaleDateString("fr-FR", options);
-  const dateParts: string[] = formatDate.split(" ");
-  const ordreDate: string = `${dateParts[0]} ${dateParts[1]} ${dateParts[2]} ${dateParts[3]}`;
+  const ordreDate: string = formatDate.replace(/^\w/, (c) => c.toUpperCase());
 
   const [profilePhoto, setProfilePhoto] = useState<string>(pic);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [notifications, setNotifications] = useState<string[]>([
+    "Bienvenue dans votre espace coaching !",
+    "Un nouveau parcours a été généré.",
+    "N'oubliez pas votre exercice du jour !",
+  ]);
+  console.log(setNotifications);
 
   useEffect(() => {
     const loadProfilePhoto = async () => {
@@ -36,9 +42,6 @@ const MainHeader: React.FC = () => {
         );
 
         const photoUrl = res.data?.photo_url;
-        console.log("Photo reçue :", photoUrl);
-
-        // Vérifie si l'URL est valide
         if (
           photoUrl &&
           typeof photoUrl === "string" &&
@@ -47,10 +50,7 @@ const MainHeader: React.FC = () => {
           setProfilePhoto(photoUrl);
         }
       } catch (error) {
-        console.error(
-          "Erreur lors du chargement de la photo de profil :",
-          error
-        );
+        console.error("Erreur photo de profil :", error);
       }
     };
 
@@ -58,47 +58,75 @@ const MainHeader: React.FC = () => {
   }, []);
 
   return (
-    <div className="bg-white dark:bg-zinc-900 border-b border-gray-200 dark:border-zinc-700 px-6 py-4 transition-colors duration-300">
-      <div className="flex items-center justify-between">
+    <div className="bg-white dark:bg-zinc-900 border-b border-gray-200 dark:border-zinc-700 px-4 sm:px-6 py-4 relative z-50">
+      <div className="flex items-center justify-between flex-wrap gap-4">
         {/* Logo + Texte */}
         <div className="flex items-center gap-3">
-          {/* <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-blue-600 rounded-lg flex items-center justify-center">
-            <Brain className="w-6 h-6 text-white" />
-          </div> */}
-          <div className="flex items-center justify-center">
-            <img src={logo} alt="logo" className="w-10 h-10" />
-          </div>
+          <img src={logo} alt="logo" className="w-10 h-10" />
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
               Tsinjool
             </h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+            <p className="text-sm text-gray-500 dark:text-gray-400 hidden sm:block">
               Votre coach personnel intelligent
             </p>
           </div>
         </div>
 
         {/* Actions */}
-        <div className="flex items-center gap-4">
-          <div className="bg-orange-500 text-white px-4 py-2 rounded-lg text-sm font-medium shadow hover:opacity-90 transition">
-            Démo 0/7 jours
+        <div className="flex items-center gap-3 sm:gap-5 text-sm sm:text-base">
+          <DarkMode />
+
+          <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
+            <Calendar className="w-4 h-4" />
+            <span className="hidden sm:inline">{ordreDate}</span>
           </div>
 
-          <div className="flex items-center gap-4">
-            <DarkMode />
+          {/* Bell + badge */}
+          <div className="relative">
+            <Bell
+              className="w-5 h-5 cursor-pointer hover:text-blue-500 dark:hover:text-blue-400 transition"
+              onClick={() => setShowNotifications(!showNotifications)}
+            />
+            {notifications.length > 0 && (
+              <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                {notifications.length}
+              </div>
+            )}
 
-            <div className="flex items-center gap-2 text-gray-700 dark:text-gray-300">
-              <Calendar className="w-4 h-4" />
-              <span className="text-sm">{ordreDate}</span>
-              <Bell className="w-5 h-5 hover:text-blue-500 dark:hover:text-blue-400 cursor-pointer transition" />
-              <img
-                src={profilePhoto}
-                alt="Profil utilisateur"
-                className="w-8 h-8 rounded-full border-2 border-gray-400 dark:border-white cursor-pointer transition-all"
-                onClick={() => navigate("/profile")}
-              />
-            </div>
+            {/* Dropdown notifications */}
+            {showNotifications && (
+              <div className="absolute right-0 mt-3 w-64 bg-white dark:bg-zinc-800 shadow-xl border border-gray-200 dark:border-zinc-600 rounded-lg p-4 z-50">
+                <div className="flex justify-between items-center mb-3">
+                  <h3 className="font-semibold text-gray-800 dark:text-white">
+                    Notifications
+                  </h3>
+                  <X
+                    className="w-4 h-4 text-gray-500 hover:text-red-500 cursor-pointer"
+                    onClick={() => setShowNotifications(false)}
+                  />
+                </div>
+                <ul className="space-y-2 max-h-60 overflow-y-auto custom-scrollbar">
+                  {notifications.map((notif, idx) => (
+                    <li
+                      key={idx}
+                      className="text-sm text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-zinc-700 px-3 py-2 rounded-lg shadow-sm"
+                    >
+                      {notif}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
+
+          {/* Avatar */}
+          <img
+            src={profilePhoto}
+            alt="Profil utilisateur"
+            className="w-8 h-8 rounded-full border-2 border-gray-400 dark:border-white cursor-pointer"
+            onClick={() => navigate("/profile")}
+          />
         </div>
       </div>
     </div>
