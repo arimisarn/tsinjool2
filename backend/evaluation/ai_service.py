@@ -93,7 +93,7 @@ Chaque exercice contient :
 - un type parmi : meditation, reflection, practice, breathing, visualization
 - 3 instructions claires
 - un emoji de personnage pour l'animation
-- 2 URLs complètes de vidéos YouTube existantes recommandées concernant le  {coaching_label} (commençant par https://www.youtube.com/watch?v=)
+- 1 URL complètes de vidéos YouTube existantes recommandées concernant le  {coaching_label}
 
 ⚠️ Réponds uniquement avec un JSON **strictement valide**. AUCUN texte explicatif, commentaire ou retour à la ligne non échappé n'est autorisé. Toutes les chaînes doivent être correctement échappées si nécessaire.
 Voici le format JSON attendu :
@@ -116,7 +116,6 @@ Voici le format JSON attendu :
           "animation_character": "🧘‍♀️",
           "recommended_videos": [
             "https://www.youtube.com/watch?v=xxxxxxx",
-            "https://www.youtube.com/watch?v=yyyyyyy"
           ]
         }}
       ]
