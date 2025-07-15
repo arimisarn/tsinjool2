@@ -20,7 +20,7 @@ export default function ProfileSetup() {
   const [step, setStep] = useState<"welcome" | "transition" | "form">(
     "welcome"
   );
-  const [username, setUsername] = useState<string>("utilisateur");
+  const [username, setUsername] = useState();
 
   const [bio, setBio] = useState("");
   const [coachingType, setCoachingType] = useState<CoachingType | "">("");
@@ -68,11 +68,8 @@ export default function ProfileSetup() {
         headers: { Authorization: `Token ${token}` },
       })
       .then((res) => {
-        setUsername(res.data.user?.nom_utilisateur || "utilisateur");
+        setUsername(res.data.user?.nom_utilisateur);
       })
-      .catch(() => {
-        setUsername("utilisateur");
-      });
 
     const timeout1 = setTimeout(() => setStep("transition"), 5000);
     const timeout2 = setTimeout(() => setStep("form"), 8000);
