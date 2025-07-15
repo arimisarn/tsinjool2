@@ -12,6 +12,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
+import gif from "../assets/Animation - 1752082570613.gif";
 
 type CoachingType = "life" | "career" | "health";
 
@@ -69,7 +70,7 @@ export default function ProfileSetup() {
       })
       .then((res) => {
         setUsername(res.data.user?.nom_utilisateur);
-      })
+      });
 
     const timeout1 = setTimeout(() => setStep("transition"), 5000);
     const timeout2 = setTimeout(() => setStep("form"), 8000);
@@ -158,11 +159,7 @@ export default function ProfileSetup() {
             transition={{ duration: 1 }}
             className="flex flex-col items-center text-center space-y-6"
           >
-            <img
-              src="https://media.giphy.com/media/xUPGcgtKxm3z4VlzHa/giphy.gif"
-              alt="Welcome"
-              className="w-40 h-40 object-contain"
-            />
+            <img src={gif} alt="Welcome" className="w-40 h-40 object-contain" />
             {step === "welcome" ? (
               <>
                 <h1 className="text-3xl font-bold text-gray-800">
