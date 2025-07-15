@@ -98,37 +98,38 @@ export default function ExercisePage() {
     setIsCompleted(false);
   };
 
-  const handleExerciseComplete = async () => {
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current); // ⛔️ Arrête le timer
-    }
+const handleExerciseComplete = async () => {
+  if (intervalRef.current) {
+    clearInterval(intervalRef.current) // ⛔️ Arrête le timer
+  }
 
-    setIsRunning(false);
-    setTimeLeft(0); // 🕒 Force 00:00
-    setIsCompleted(true);
-    setShowCelebration(true);
+  setIsRunning(false)
+  setTimeLeft(0) // 🕒 Force 00:00
+  setIsCompleted(true)
+  setShowCelebration(true)
 
-    try {
-      const token = localStorage.getItem("token");
-      await axios.post(
-        `https://tsinjool-backend.onrender.com/api/exercises/${exerciseId}/complete/`,
-        {},
-        {
-          headers: { Authorization: `Token ${token}` },
-        }
-      );
+  try {
+    const token = localStorage.getItem("token")
+    await axios.post(
+      `https://tsinjool-backend.onrender.com/api/exercises/${exercise?.id}/complete/`,
+      {},
+      {
+        headers: { Authorization: `Token ${token}` },
+      },
+    )
 
-      toast.success("Félicitations ! Exercice terminé avec succès !");
-    } catch (error: any) {
-      console.error(error);
-      toast.error("Erreur lors de l'enregistrement de la progression.");
-    }
+    toast.success("Félicitations ! Exercice terminé avec succès !")
+  } catch (error: any) {
+    console.error(error)
+    toast.error("Erreur lors de l'enregistrement de la progression.")
+  }
 
-    // 🎉 Masquer la célébration après 3 secondes
-    setTimeout(() => {
-      setShowCelebration(false);
-    }, 3000);
-  };
+  // 🎉 Masquer la célébration après 3 secondes
+  setTimeout(() => {
+    setShowCelebration(false)
+  }, 3000)
+}
+
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
