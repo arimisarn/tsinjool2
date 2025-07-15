@@ -77,11 +77,12 @@ export default function Dashboard() {
       // Vérifier si un parcours existe déjà
       try {
         const pathResponse = await axios.get(
-          "https://tsinjool-backend.onrender.com/api/coaching-paths/my",
+          "https://tsinjool-backend.onrender.com/api/coaching-paths/my/",
           {
             headers: { Authorization: `Token ${token}` },
           }
         );
+
         setSteps(pathResponse.data.steps || []);
       } catch (pathError: any) {
         if (pathError.response?.status === 404) {

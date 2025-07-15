@@ -13,9 +13,4 @@ urlpatterns = [
     path("generate-path/", views.generate_coaching_path, name="generate-path"),
     path("progress/", views.user_progress, name="user-progress"),
     path("dashboard/", views.dashboard_data, name="dashboard-data"),
-    path(
-        "coaching-paths/my/",
-        views.CoachingPathRetrieveView,
-        name="coaching-path-my",
-    ),
 ]

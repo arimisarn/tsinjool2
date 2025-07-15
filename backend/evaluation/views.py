@@ -16,6 +16,7 @@ from .serializers import (
 from .ai_service import AICoachingService
 from rest_framework.views import APIView
 
+
 class EvaluationViewSet(viewsets.ModelViewSet):
     serializer_class = EvaluationSerializer
     permission_classes = [IsAuthenticated]
@@ -115,26 +116,6 @@ def generate_coaching_path(request):
             {"error": f"Erreur lors de la génération du parcours : {str(e)}"},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
-
-
-# class CoachingPathViewSet(viewsets.ReadOnlyModelViewSet):
-#     serializer_class = CoachingPathSerializer
-#     permission_classes = [IsAuthenticated]
-
-#     def get_queryset(self):
-#         return CoachingPath.objects.filter(user=self.request.user)
-
-#     def retrieve(self, request, pk=None):
-#         """Récupérer le parcours de coaching de l'utilisateur"""
-#         try:
-#             coaching_path = CoachingPath.objects.get(user=request.user)
-#             serializer = self.get_serializer(coaching_path)
-#             return Response(serializer.data)
-#         except CoachingPath.DoesNotExist:
-#             return Response(
-#                 {"error": "Aucun parcours de coaching trouvé"},
-#                 status=status.HTTP_404_NOT_FOUND,
-#             )
 
 
 class CoachingPathViewSet(viewsets.ReadOnlyModelViewSet):
