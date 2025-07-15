@@ -50,7 +50,7 @@ export default function UserProfile() {
   };
 
   const coachingGradient: Record<CoachingType, string> = {
-    life: "from-pink-500 to-rose-500",
+    life: "from-pink-500 to-blue-500",
     career: "from-indigo-500 to-purple-500",
     health: "from-green-500 to-emerald-500",
   };
@@ -153,7 +153,7 @@ export default function UserProfile() {
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-indigo-900 flex items-center justify-center">
         <div className="flex flex-col items-center space-y-6">
           <div className="relative">
-            <div className="w-20 h-20 rounded-full bg-gradient-to-r from-purple-500 to-blue-500 flex items-center justify-center shadow-2xl">
+            <div className="w-20 h-20 rounded-full bg-gradient-to-r from-purple-500 to-purple-500 flex items-center justify-center shadow-2xl">
               <Brain className="w-10 h-10 text-white" />
             </div>
             <div className="absolute inset-0 rounded-full border-4 border-purple-300 animate-ping"></div>
@@ -185,7 +185,9 @@ export default function UserProfile() {
       <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl border border-white/20 overflow-hidden">
         {/* Cover Background */}
         <div
-          className={`h-32 bg-gradient-to-br from-purple-500 to-blue-600 relative`}
+          className={`h-32 bg-gradient-to-r ${
+            coachingGradient[profile.coaching_type]
+          } relative`}
         >
           <div className="absolute inset-0 bg-black/10"></div>
           <div className="absolute top-4 right-4">
