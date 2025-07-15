@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Calendar, Bell, Brain } from "lucide-react";
+import { Calendar, Bell } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import pic from "../../assets/avatar.jpg";
