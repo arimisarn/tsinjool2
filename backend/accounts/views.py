@@ -20,7 +20,8 @@ from .supabase_client import supabase
 from django.core.files.uploadedfile import UploadedFile
 from .supabase_client import supabase
 from rest_framework.decorators import api_view, permission_classes
-from storage3.exceptions import StorageApiError
+
+# from storage3.exceptions import StorageApiError
 from .supabase_client import supabase
 import time
 import traceback
@@ -87,7 +88,7 @@ class ProfileUpdateView(generics.RetrieveUpdateAPIView):
                         photo_file.read(),
                         {"content-type": photo_file.content_type},
                     )
-                except StorageApiError as e:
+                except Exception as e:
                     if "Duplicate" in str(e):
                         supabase.storage.from_("avatar").remove([file_name])
                         upload_resp = supabase.storage.from_("avatar").upload(
@@ -98,11 +99,11 @@ class ProfileUpdateView(generics.RetrieveUpdateAPIView):
                     else:
                         raise e
 
-                # Récupération de l’URL publique
+                # ✅ Corrigé ici :
                 public_url_resp = supabase.storage.from_("avatar").get_public_url(
                     file_name
                 )
-                photo_url = public_url_resp.public_url
+                photo_url = public_url_resp  # C’est une str déjà
 
                 if not photo_url:
                     return Response({"detail": "URL publique introuvable."}, status=500)
