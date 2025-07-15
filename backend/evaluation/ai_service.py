@@ -189,11 +189,11 @@ class AICoachingService:
     - Chaque étape a :
     - un titre
     - une description
-    - exactement 3 exercices
+    - exactement 2 exercices
 
     Chaque exercice contient :
     - un titre engageant
-    - une description (2-3 phrases)
+    - une description (2 phrases)
     - une durée (entre 5 et 30 minutes)
     - un type parmi : meditation, reflection, practice, breathing, visualization
     - 3 à 5 instructions claires
