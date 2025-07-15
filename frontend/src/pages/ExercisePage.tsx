@@ -99,6 +99,12 @@ export default function ExercisePage() {
   };
 
   const handleExerciseComplete = async () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current); // ⛔️ Arrête le timer
+    }
+
+    setIsRunning(false);
+    setTimeLeft(0); // 🕒 Force 00:00
     setIsCompleted(true);
     setShowCelebration(true);
 
@@ -118,7 +124,7 @@ export default function ExercisePage() {
       toast.error("Erreur lors de l'enregistrement de la progression.");
     }
 
-    // Masquer la célébration après 3 secondes
+    // 🎉 Masquer la célébration après 3 secondes
     setTimeout(() => {
       setShowCelebration(false);
     }, 3000);
