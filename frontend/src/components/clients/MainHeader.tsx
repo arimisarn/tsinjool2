@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import pic from "../../assets/avatar.jpg";
 import DarkMode from "../theme/DarkMode";
+import logo from "../../assets/logoRond.png"
 
 const MainHeader: React.FC = () => {
   const navigate = useNavigate();
@@ -61,8 +62,11 @@ const MainHeader: React.FC = () => {
       <div className="flex items-center justify-between">
         {/* Logo + Texte */}
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-blue-600 rounded-lg flex items-center justify-center">
+          {/* <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-blue-600 rounded-lg flex items-center justify-center">
             <Brain className="w-6 h-6 text-white" />
+          </div> */}
+          <div className="flex items-center justify-center">
+            <img src={logo} alt="logo" className="w-10 h-10" />
           </div>
           <div>
             <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
