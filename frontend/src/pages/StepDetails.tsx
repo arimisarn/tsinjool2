@@ -331,14 +331,13 @@ export default function StepDetail() {
                           (video, index) => (
                             <div className="aspect-w-16 aspect-h-9 w-full">
                               <iframe
-                                key={index}
-                                src={`https://www.youtube.com/embed/${new URL(
-                                  video
-                                ).searchParams.get("v")}`}
-                                title={`Vidéo recommandée ${index + 1}`}
+                                width="100%"
+                                height="250"
+                                src={video.replace("watch?v=", "embed/")}
+                                title={`Vidéo ${index + 1}`}
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                 allowFullScreen
-                                className="rounded-lg shadow-md w-full h-full"
+                                className="rounded-lg shadow"
                               ></iframe>
                             </div>
                           )
