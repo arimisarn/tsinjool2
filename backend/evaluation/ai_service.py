@@ -122,7 +122,7 @@ Voici le format JSON attendu :
     }}
   ]
 }}
-Génère jusqu'à la fin
+Génère jusqu'à la fin et faites que votre réponse ne depasse pas de 2048 caractères mais toutes valides
 """
 
     @classmethod
