@@ -81,9 +81,7 @@ Tu es un coach professionnel expérimenté. Crée un parcours de coaching person
 
 {answers_text}
 
-Génère :
-- 4 étapes progressives et logiques
-- Chaque étape a :
+Génère exactement 4 étapes progressives (ni plus, ni moins). Chaque étape doit avoir :
 - un titre
 - une description
 - exactement 2 exercices
