@@ -77,38 +77,35 @@ class AICoachingService:
         coaching_label = coaching_labels.get(coaching_type, coaching_type)
 
         return f"""
- Tu es un coach professionnel expérimenté.
-
-Crée un parcours de coaching personnalisé en "{coaching_label}", basé sur les réponses suivantes du client :
+Tu es un coach professionnel expérimenté. Crée un parcours de coaching personnalisé en {coaching_label}, basé sur les réponses suivantes du client :
 
 {answers_text}
 
-Consignes :
-
-- Génére exactement 4 étapes progressives et logiques.
-- Chaque étape contient :
-  - un "title"
-  - une "description"
-  - exactement 2 "exercises"
+Génère :
+- 4 étapes progressives et logiques
+- Chaque étape a :
+- un titre
+- une description
+- exactement 2 exercices
 
 Chaque exercice contient :
-- "title" : un titre engageant
-- "description" : 1 phrase claire
-- "duration" : entre 5 et 30 (entier)
-- "type" : un parmi ["meditation", "reflection", "practice", "breathing", "visualization"]
-- "instructions" : 3 instructions claires (liste)
-- "animation_character" : un emoji personnage (ex: 🧘‍♀️, 🤔)
-- "recommended_videos" : liste de 2 titres de vidéos utiles
+- un titre engageant
+- une description (1 phrase)
+- une durée (entre 5 et 30 minutes)
+- un type parmi : meditation, reflection, practice, breathing, visualization
+- 3 instructions claires
+- un emoji de personnage pour l'animation
+- 2 vidéos ou ressources recommandées
 
-⚠️ Réponds uniquement avec un **JSON strictement valide**, **sans aucun texte hors JSON**, et en respectant **exactement** cette structure :
+⚠️ Réponds UNIQUEMENT avec un JSON **strictement valide**, **sans texte explicatif** ni commentaire, en respectant **exactement** cette structure :
 
-{
+{{
   "steps": [
-    {
+    {{
       "title": "Titre de l'étape",
       "description": "Description de l'étape",
       "exercises": [
-        {
+        {{
           "title": "Titre de l'exercice",
           "description": "Courte description",
           "duration": 15,
@@ -123,28 +120,11 @@ Chaque exercice contient :
             "Titre vidéo 1",
             "Titre vidéo 2"
           ]
-        },
-        {
-          "title": "Titre de l'exercice 2",
-          "description": "Courte description",
-          "duration": 10,
-          "type": "reflection",
-          "instructions": [
-            "Instruction 1",
-            "Instruction 2",
-            "Instruction 3"
-          ],
-          "animation_character": "🤔",
-          "recommended_videos": [
-            "Titre vidéo 1",
-            "Titre vidéo 2"
-          ]
-        }
+        }}
       ]
-    }
+    }}
   ]
-}
-
+}}
 """
 
     @classmethod
