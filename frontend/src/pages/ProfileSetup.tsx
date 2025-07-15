@@ -68,7 +68,7 @@ export default function ProfileSetup() {
         headers: { Authorization: `Token ${token}` },
       })
       .then((res) => {
-        setUsername(res.data.user?.username || "utilisateur");
+        setUsername(res.data.user?.nom_utilisateur || "utilisateur");
       })
       .catch(() => {
         setUsername("utilisateur");
