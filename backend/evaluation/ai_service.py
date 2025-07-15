@@ -77,7 +77,7 @@ class AICoachingService:
                         {"role": "user", "content": prompt},
                     ],
                     "temperature": 0.7,
-                    "max_tokens": 4096,  # 512 peut être un peu court si 4 étapes + 3 exos
+                    "max_tokens": 2048,
                 },
             )
 
