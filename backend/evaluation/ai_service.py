@@ -99,11 +99,11 @@ Chaque exercice contient :
 
 {
   "steps": [
-    {
+ {   {
       "title": "Titre de l'étape",
       "description": "Description de l'étape",
       "exercises": [
-        {
+        {{
           "title": "Titre de l'exercice",
           "description": "Courte description",
           "duration": 15,
@@ -118,9 +118,9 @@ Chaque exercice contient :
             "https://www.youtube.com/watch?v=abc123",
             "https://www.youtube.com/watch?v=def456"
           ]
-        }
+        }}
       ]
-    }
+    }}
   ]
 }
 
