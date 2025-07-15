@@ -27,6 +27,9 @@ interface UserProfileData {
 }
 
 export default function UserProfile() {
+  useEffect(() => {
+    document.title = "Tsinjool - Profil";
+  }, []);
   const [profile, setProfile] = useState<UserProfileData | null>(null);
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
@@ -180,7 +183,7 @@ export default function UserProfile() {
 
       <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-8">
+        {/* <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-3 mb-4">
             <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center shadow-lg">
               <Brain className="w-6 h-6 text-white" />
@@ -192,7 +195,7 @@ export default function UserProfile() {
           <p className="text-gray-600">
             Gérez vos informations personnelles et professionnelles
           </p>
-        </div>
+        </div> */}
 
         {/* Main Profile Card */}
         <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl border border-white/20 overflow-hidden">
