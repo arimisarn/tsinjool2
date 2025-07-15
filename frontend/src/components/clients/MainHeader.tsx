@@ -85,7 +85,7 @@ const MainHeader: React.FC = () => {
           {/* Bell + badge */}
           <div className="relative">
             <Bell
-              className="w-5 h-5 cursor-pointer hover:text-blue-500 dark:hover:text-blue-400 transition"
+              className="w-10 h-10 cursor-pointer hover:text-blue-500 dark:hover:text-blue-400 transition"
               onClick={() => setShowNotifications(!showNotifications)}
             />
             {notifications.length > 0 && (
