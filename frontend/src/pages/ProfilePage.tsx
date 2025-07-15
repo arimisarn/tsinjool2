@@ -57,27 +57,41 @@ export default function UserProfile() {
 
   useEffect(() => {
     const fetchProfile = async () => {
-      // Simulation d'un profil pour la démo
-      setTimeout(() => {
-        const mockProfile: UserProfileData = {
-          bio: "Coach certifié passionné par le développement personnel et l'accompagnement vers l'excellence. J'aide mes clients à révéler leur potentiel et à atteindre leurs objectifs les plus ambitieux.",
-          coaching_type: "life",
-          photo_url:
-            "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face",
-          user: {
-            nom_utilisateur: "Alexandre Dubois",
-            email: "alexandre.dubois@email.com",
-          },
-        };
-        setProfile(mockProfile);
+      const token = localStorage.getItem("token");
+      if (!token) {
+        // toast.error("Veuillez vous connecter.");
+        // navigate("/login");
+        return;
+      }
+
+      try {
+        const response = await fetch(
+          "https://tsinjool-backend.onrender.com/api/profile/",
+          {
+            headers: {
+              Authorization: `Token ${token}`,
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch profile");
+        }
+
+        const data = await response.json();
+        setProfile(data);
         setEditForm({
-          nom_utilisateur: mockProfile.user.nom_utilisateur,
-          bio: mockProfile.bio,
-          coaching_type: mockProfile.coaching_type,
-          photo_url: mockProfile.photo_url,
+          nom_utilisateur: data.user.nom_utilisateur,
+          bio: data.bio,
+          coaching_type: data.coaching_type,
+          photo_url: data.photo_url,
         });
+      } catch (error) {
+        console.error("Erreur lors du chargement du profil:", error);
+        // toast.error("Erreur lors du chargement du profil.");
+      } finally {
         setLoading(false);
-      }, 1000);
+      }
     };
     fetchProfile();
   }, []);
@@ -86,20 +100,40 @@ export default function UserProfile() {
     setIsEditing(true);
   };
 
-  const handleSave = () => {
-    if (profile) {
-      setProfile({
-        ...profile,
-        bio: editForm.bio,
-        coaching_type: editForm.coaching_type,
-        photo_url: editForm.photo_url,
-        user: {
-          ...profile.user,
-          nom_utilisateur: editForm.nom_utilisateur,
-        },
-      });
+  const handleSave = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    try {
+      const response = await fetch(
+        "https://tsinjool-backend.onrender.com/api/profile/",
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Token ${token}`,
+          },
+          body: JSON.stringify({
+            bio: editForm.bio,
+            coaching_type: editForm.coaching_type,
+            photo_url: editForm.photo_url,
+            nom_utilisateur: editForm.nom_utilisateur,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to update profile");
+      }
+
+      const updatedProfile = await response.json();
+      setProfile(updatedProfile);
+      setIsEditing(false);
+      // toast.success("Profil mis à jour avec succès!");
+    } catch (error) {
+      console.error("Erreur lors de la mise à jour:", error);
+      // toast.error("Erreur lors de la mise à jour du profil.");
     }
-    setIsEditing(false);
   };
 
   const handleCancel = () => {
