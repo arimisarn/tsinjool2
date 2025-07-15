@@ -20,7 +20,7 @@ from .supabase_client import supabase
 from django.core.files.uploadedfile import UploadedFile
 from .supabase_client import supabase
 from rest_framework.decorators import api_view, permission_classes
-from supabase import StorageApiError  # assure-toi que ce soit importé si tu l’utilises
+from storage3.exceptions import StorageApiError
 from .supabase_client import supabase
 import time
 import traceback
