@@ -7,7 +7,6 @@ import {
   CheckCircle,
   Clock,
   Target,
-  Video,
   BookOpen,
   Lightbulb,
 } from "lucide-react";
