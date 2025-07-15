@@ -93,13 +93,13 @@ Chaque exercice contient :
 - un type parmi : meditation, reflection, practice, breathing, visualization
 - 3 instructions claires
 - un emoji de personnage pour l'animation
-- 2 **URLs complètes de vidéos YouTube recommandées** (commençant par https://www.youtube.com/watch?v=)
+- URLs complètes de vidéos YouTube recommandées** (commençant par https://www.youtube.com/watch?v=)
 
 ⚠️ Réponds UNIQUEMENT avec un JSON **strictement valide**, **sans texte explicatif** ni commentaire, en respectant **exactement** cette structure :
 
-{
+{{
   "steps": [
- {   {
+    {{
       "title": "Titre de l'étape",
       "description": "Description de l'étape",
       "exercises": [
@@ -115,15 +115,15 @@ Chaque exercice contient :
           ],
           "animation_character": "🧘‍♀️",
           "recommended_videos": [
-            "https://www.youtube.com/watch?v=abc123",
-            "https://www.youtube.com/watch?v=def456"
+            "url 1",
+            "url 2"
           ]
         }}
       ]
     }}
   ]
-}
-
+}}
+Génère jusqu'à la fin
 """
 
     @classmethod
