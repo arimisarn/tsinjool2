@@ -4,55 +4,11 @@ from django.conf import settings
 from typing import Dict, List, Any
 import re
 
+
 class AICoachingService:
     """Service pour l'intégration avec Together.ai"""
 
     BASE_URL = "https://api.together.xyz/v1/chat/completions"
-
-    # @classmethod
-    # def generate_coaching_path(cls, evaluation_data: Dict[str, Any]) -> List[Dict]:
-    #     """Génère un parcours de coaching personnalisé avec Together.ai"""
-
-    #     prompt = cls._build_coaching_prompt(evaluation_data)
-
-    #     try:
-    #         response = requests.post(
-    #             cls.BASE_URL,
-    #             headers={
-    #                 "Authorization": f"Bearer {settings.MISTRAL_API_KEY}",
-    #                 "Content-Type": "application/json",
-    #             },
-    #             json={
-    #                 "model": "mistralai/Mixtral-8x7B-Instruct-v0.1",
-    #                 "messages": [
-    #                     {
-    #                         "role": "system",
-    #                         "content": "Tu es un coach professionnel expérimenté. Tu crées des parcours de coaching personnalisés basés sur les évaluations des clients.",
-    #                     },
-    #                     {"role": "user", "content": prompt},
-    #                 ],
-    #                 "temperature": 0.7,
-    #                 "max_tokens":   512,
-    #             },
-    #         )
-
-    #         if response.status_code == 200:
-    #             ai_response = response.json()
-    #             content = ai_response["choices"][0]["message"]["content"]
-    #             return cls._parse_coaching_response(
-    #                 content, evaluation_data["coaching_type"]
-    #             )
-    #         else:
-    #             print(
-    #                 f"Erreur API Together.ai: {response.status_code} - {response.text}"
-    #             )
-    #             return cls._get_default_coaching_path(evaluation_data["coaching_type"])
-
-    #     except Exception as e:
-    #         print(f"Erreur lors de l'appel à Together.ai: {str(e)}")
-    #         return cls._get_default_coaching_path(evaluation_data["coaching_type"])
-
-
 
     @classmethod
     def generate_coaching_path(cls, evaluation_data: Dict[str, Any]) -> List[Dict]:
@@ -102,65 +58,6 @@ class AICoachingService:
             return cls._get_default_coaching_path(evaluation_data["coaching_type"])
 
     @classmethod
-#     def _build_coaching_prompt(cls, evaluation_data: Dict[str, Any]) -> str:
-#         """Construit le prompt pour l'IA"""
-
-#         coaching_type = evaluation_data["coaching_type"]
-#         answers = evaluation_data["answers"]
-
-#         answers_text = "\n".join(
-#             [f"Question {q_id}: {answer}" for q_id, answer in answers.items()]
-#         )
-
-#         coaching_labels = {
-#             "life": "coaching de vie",
-#             "career": "coaching de carrière",
-#             "health": "coaching santé",
-#         }
-
-#         coaching_label = coaching_labels.get(coaching_type, coaching_type)
-
-#         return f"""
-# Basé sur les réponses suivantes d'un client en {coaching_label}, crée un parcours de coaching personnalisé avec exactement 4 étapes progressives, réponds uniquement avec du JSON **strictement valide**, sans texte ni commentaire en dehors du JSON.
-
-# Réponses du client:
-# {answers_text}
-
-# Crée un parcours structuré avec:
-# - 4 étapes progressives et logiques
-# - Chaque étape doit avoir un titre clair et une description
-# - Chaque étape doit contenir exactement 3 exercices pratiques
-# - Chaque exercice doit avoir:
-#   * Un titre engageant
-#   * Une description claire (2-3 phrases)
-#   * Une durée en minutes (entre 5 et 30 minutes)
-#   * Un type parmi: meditation, reflection, practice, breathing, visualization
-#   * 3-5 instructions étape par étape
-#   * Un emoji de personnage pour l'animation
-#   * 2-3 recommandations de vidéos/ressources
-
-# Réponds uniquement en JSON valide avec cette structure exacte:
-# {{
-#   "steps": [
-#     {{
-#       "title": "Titre de l'étape",
-#       "description": "Description de l'étape",
-#       "exercises": [
-#         {{
-#           "title": "Titre de l'exercice",
-#           "description": "Description de l'exercice",
-#           "duration": 15,
-#           "type": "meditation",
-#           "instructions": ["Instruction 1", "Instruction 2", "Instruction 3"],
-#           "animation_character": "🧘‍♀️",
-#           "recommended_videos": ["Vidéo 1", "Vidéo 2"]
-#         }}
-#       ]
-#     }}
-#   ]
-# }}
-# """
-
     def _build_coaching_prompt(cls, evaluation_data: Dict[str, Any]) -> str:
         """Construit le prompt pour l'IA"""
 
@@ -193,12 +90,12 @@ class AICoachingService:
 
     Chaque exercice contient :
     - un titre engageant
-    - une description (2 phrases)
+    - une description (1 phrase)
     - une durée (entre 5 et 30 minutes)
     - un type parmi : meditation, reflection, practice, breathing, visualization
-    - 3 à 5 instructions claires
+    - 3 instructions claires
     - un emoji de personnage pour l'animation
-    - 2 à 3 vidéos ou ressources recommandées
+    - 2 vidéos ou ressources recommandées
 
     ⚠️ Réponds UNIQUEMENT avec un JSON **strictement valide**, **sans texte explicatif** ni commentaire, en respectant **exactement** cette structure :
 
@@ -225,70 +122,6 @@ class AICoachingService:
     }}
 """
 
-
-    # @classmethod
-    # def _parse_coaching_response(cls, response: str, coaching_type: str) -> List[Dict]:
-    #     """Parse la réponse de l'IA et retourne les étapes"""
-
-    #     try:
-    #         # Extraire le JSON de la réponse
-    #         json_start = response.find("{")
-    #         json_end = response.rfind("}") + 1
-
-    #         if json_start == -1 or json_end == 0:
-    #             raise ValueError("Aucun JSON trouvé dans la réponse")
-
-    #         json_str = response[json_start:json_end]
-    #         parsed = json.loads(json_str)
-
-    #         if "steps" not in parsed or not isinstance(parsed["steps"], list):
-    #             raise ValueError("Structure de réponse invalide")
-
-    #         # Valider et nettoyer les données
-    #         steps = []
-    #         for i, step_data in enumerate(parsed["steps"][:4]):  # Limiter à 4 étapes
-    #             step = {
-    #                 "title": step_data.get("title", f"Étape {i+1}"),
-    #                 "description": step_data.get(
-    #                     "description", "Description non disponible"
-    #                 ),
-    #                 "order": i + 1,
-    #                 "exercises": [],
-    #             }
-
-    #             # Traiter les exercices
-    #             exercises_data = step_data.get("exercises", [])
-    #             for j, exercise_data in enumerate(
-    #                 exercises_data[:3]
-    #             ):  # Limiter à 3 exercices
-    #                 exercise = {
-    #                     "title": exercise_data.get("title", f"Exercice {j+1}"),
-    #                     "description": exercise_data.get(
-    #                         "description", "Description non disponible"
-    #                     ),
-    #                     "duration": min(
-    #                         max(exercise_data.get("duration", 15), 5), 30
-    #                     ),  # Entre 5 et 30 min
-    #                     "type": exercise_data.get("type", "practice"),
-    #                     "instructions": exercise_data.get(
-    #                         "instructions", ["Suivez les instructions à l'écran"]
-    #                     ),
-    #                     "animation_character": exercise_data.get(
-    #                         "animation_character", "🤖"
-    #                     ),
-    #                     "recommended_videos": exercise_data.get(
-    #                         "recommended_videos", []
-    #                     ),
-    #                 }
-    #                 step["exercises"].append(exercise)
-
-    #             steps.append(step)
-
-    #         return steps
-
-    #     except Exception as e:
-    #         print(f"Erreur lors du parsing: {str(e)}")
-    #         return cls._get_default_coaching_path(coaching_type)
     @classmethod
     def _parse_coaching_response(cls, response: str, coaching_type: str) -> List[Dict]:
         """Parse la réponse de l'IA et retourne les étapes"""
@@ -308,14 +141,18 @@ class AICoachingService:
                 raise ValueError("Impossible de parser la réponse IA")
 
             if "steps" not in parsed or not isinstance(parsed["steps"], list):
-                raise ValueError("Structure de réponse invalide : clé 'steps' manquante ou incorrecte")
+                raise ValueError(
+                    "Structure de réponse invalide : clé 'steps' manquante ou incorrecte"
+                )
 
             # Nettoyage et validation des étapes
             steps = []
             for i, step_data in enumerate(parsed["steps"][:4]):  # Max 4 étapes
                 step = {
                     "title": step_data.get("title", f"Étape {i+1}"),
-                    "description": step_data.get("description", "Description non disponible"),
+                    "description": step_data.get(
+                        "description", "Description non disponible"
+                    ),
                     "order": i + 1,
                     "exercises": [],
                 }
@@ -323,12 +160,20 @@ class AICoachingService:
                 for j, exercise_data in enumerate(step_data.get("exercises", [])[:3]):
                     exercise = {
                         "title": exercise_data.get("title", f"Exercice {j+1}"),
-                        "description": exercise_data.get("description", "Description non disponible"),
+                        "description": exercise_data.get(
+                            "description", "Description non disponible"
+                        ),
                         "duration": min(max(exercise_data.get("duration", 15), 5), 30),
                         "type": exercise_data.get("type", "practice"),
-                        "instructions": exercise_data.get("instructions", ["Suivez les instructions à l'écran"]),
-                        "animation_character": exercise_data.get("animation_character", "🤖"),
-                        "recommended_videos": exercise_data.get("recommended_videos", []),
+                        "instructions": exercise_data.get(
+                            "instructions", ["Suivez les instructions à l'écran"]
+                        ),
+                        "animation_character": exercise_data.get(
+                            "animation_character", "🤖"
+                        ),
+                        "recommended_videos": exercise_data.get(
+                            "recommended_videos", []
+                        ),
                     }
                     step["exercises"].append(exercise)
 
