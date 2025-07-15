@@ -15,7 +15,7 @@ urlpatterns = [
     path("dashboard/", views.dashboard_data, name="dashboard-data"),
     path(
         "coaching-paths/my/",
-        views.CoachingPathRetrieveView.as_view(),
+        views.CoachingPathRetrieveView,
         name="coaching-path-my",
     ),
 ]
