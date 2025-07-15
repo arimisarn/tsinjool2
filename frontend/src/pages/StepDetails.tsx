@@ -7,7 +7,6 @@ import {
   CheckCircle,
   Clock,
   Target,
-  Video,
   BookOpen,
   Lightbulb,
 } from "lucide-react";
@@ -330,19 +329,17 @@ export default function StepDetail() {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {selectedExercise.recommended_videos.map(
                           (video, index) => (
-                            <div
-                              key={index}
-                              className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg"
-                            >
-                              <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
-                                <Video className="w-5 h-5 text-red-600" />
-                              </div>
-                              <div className="flex-1">
-                                <p className="font-medium text-gray-900">
-                                  Vidéo {index + 1}
-                                </p>
-                                <p className="text-sm text-gray-600">{video}</p>
-                              </div>
+                            <div className="aspect-w-16 aspect-h-9 w-full">
+                              <iframe
+                                key={index}
+                                src={`https://www.youtube.com/embed/${new URL(
+                                  video
+                                ).searchParams.get("v")}`}
+                                title={`Vidéo recommandée ${index + 1}`}
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                allowFullScreen
+                                className="rounded-lg shadow-md w-full h-full"
+                              ></iframe>
                             </div>
                           )
                         )}
