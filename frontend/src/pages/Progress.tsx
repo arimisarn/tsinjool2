@@ -220,7 +220,7 @@ export default function Progress() {
 
   // Le composant principal (statistiques + niveau + série + activité + accomplissements)
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 py-10">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
       {/* Statistiques */}
       <div className="max-w-7xl mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
