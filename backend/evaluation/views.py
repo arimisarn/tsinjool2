@@ -87,40 +87,36 @@ def generate_coaching_path(request):
             is_active=True,
         )
 
-        for step_data in steps_data:
-            step = Step.objects.create(
-                coaching_path=coaching_path,
-                title=step_data["title"],
-                description=step_data["description"],
-                order=step_data["order"],
+        for exercise_data in step_data["exercises"]:
+            instructions = exercise_data.get("instructions", [])
+            if isinstance(instructions, str):
+                try:
+                    instructions = json.loads(instructions)
+                except Exception:
+                    instructions = ["Instructions indisponibles"]
+
+            recommended_videos = exercise_data.get("recommended_videos", [])
+            if isinstance(recommended_videos, str):
+                try:
+                    recommended_videos = json.loads(recommended_videos)
+                except Exception:
+                    recommended_videos = []
+
+            # 🔥 Appelle ici la fonction qui génère l'image
+            image_url = get_image_from_pexels(exercise_data["title"])
+
+            Exercise.objects.create(
+                step=step,
+                title=exercise_data["title"],
+                description=exercise_data["description"],
+                duration=exercise_data["duration"],
+                type=exercise_data["type"],
+                instructions=instructions,
+                animation_character=exercise_data.get("animation_character", "🤖"),
+                recommended_videos=recommended_videos,
+                image_url=image_url,
             )
 
-            for exercise_data in step_data["exercises"]:
-                instructions = exercise_data.get("instructions", [])
-                if isinstance(instructions, str):
-                    try:
-                        instructions = json.loads(instructions)
-                    except Exception:
-                        instructions = ["Instructions indisponibles"]
-
-                recommended_videos = exercise_data.get("recommended_videos", [])
-                if isinstance(recommended_videos, str):
-                    try:
-                        recommended_videos = json.loads(recommended_videos)
-                    except Exception:
-                        recommended_videos = []
-
-                Exercise.objects.create(
-                    step=step,
-                    title=exercise_data["title"],
-                    description=exercise_data["description"],
-                    duration=exercise_data["duration"],
-                    type=exercise_data["type"],
-                    instructions=instructions,
-                    animation_character=exercise_data.get("animation_character", "🤖"),
-                    recommended_videos=recommended_videos,
-                    image_url=image_url,
-                )
 
         UserProgress.objects.get_or_create(user=request.user)
 
