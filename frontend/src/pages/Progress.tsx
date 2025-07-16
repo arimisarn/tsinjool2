@@ -1,21 +1,20 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+} from "recharts";
 import { CheckCircle, BarChart3, Zap, Target, Clock } from "lucide-react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "sonner";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
 
-// Interfaces
 interface ProgressStats {
   total_exercises_completed: number;
   total_time_spent: number;
@@ -40,7 +39,6 @@ interface Achievement {
   description: string;
   icon: string;
   unlocked: boolean;
-  date_unlocked?: string;
 }
 
 export default function Progress() {
@@ -58,7 +56,6 @@ export default function Progress() {
   const loadProgressData = async () => {
     try {
       const token = localStorage.getItem("token");
-      if (!token) return;
 
       const [progressRes, weeklyRes] = await Promise.all([
         axios.get("https://tsinjool-backend.onrender.com/api/progress/", {
@@ -75,7 +72,8 @@ export default function Progress() {
       setStats(progressRes.data);
       setWeeklyData(weeklyRes.data);
       generateAchievements(progressRes.data);
-    } catch (error) {
+    } catch (error: any) {
+      console.error(error);
       toast.error("Erreur lors du chargement des progrès.");
     } finally {
       setLoading(false);
@@ -112,205 +110,143 @@ export default function Progress() {
         icon: "🔥",
         unlocked: stats.current_streak >= 7,
       },
-      {
-        id: "level_up",
-        title: "Montée en Grade",
-        description: "Atteignez le niveau 2",
-        icon: "⭐",
-        unlocked: stats.current_level >= 2,
-      },
-      {
-        id: "time_master",
-        title: "Maître du Temps",
-        description: "Passez 5 heures en exercices",
-        icon: "⏰",
-        unlocked: stats.total_time_spent >= 300,
-      },
-      {
-        id: "half_journey",
-        title: "Mi-Parcours",
-        description: "Terminez 50% de votre parcours",
-        icon: "🎖️",
-        unlocked: stats.overall_progress >= 50,
-      },
-      {
-        id: "completionist",
-        title: "Perfectionniste",
-        description: "Terminez tout votre parcours",
-        icon: "👑",
-        unlocked: stats.overall_progress >= 100,
-      },
     ];
     setAchievements(allAchievements);
   };
 
-  if (loading) {
+  if (loading || !stats) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-blue-50">
         <div className="text-center">
-          <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-blue-600 rounded-full flex items-center justify-center mb-4 mx-auto animate-pulse">
-            <BarChart3 className="w-8 h-8 text-white" />
+          <div className="w-16 h-16 bg-purple-500 rounded-full flex items-center justify-center animate-pulse mb-4 mx-auto">
+            <BarChart3 className="text-white w-8 h-8" />
           </div>
-          <p className="text-gray-600">Chargement de vos progrès...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!stats) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-gray-600">
-            Aucune donnée de progression disponible.
-          </p>
-          <button
-            onClick={() => navigate("/dashboard")}
-            className="mt-4 px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-          >
-            Retour au tableau de bord
-          </button>
+          <p className="text-gray-600">Chargement des progrès...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 py-10 px-4 md:px-8">
-      {/* Statistiques */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto mb-10">
+    <div className="min-h-screen px-4 py-8 bg-gradient-to-br from-slate-50 to-blue-50">
+      {/* Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 max-w-7xl mx-auto">
         <StatCard
-          icon={<CheckCircle className="w-6 h-6 text-green-600" />}
-          label="Exercices terminés"
+          title="Exercices terminés"
           value={stats.total_exercises_completed}
-          bg="green"
+          icon={<CheckCircle className="w-6 h-6 text-green-600" />}
+          color="green"
         />
         <StatCard
-          icon={<Clock className="w-6 h-6 text-blue-600" />}
-          label="Temps total"
+          title="Temps total"
           value={`${Math.floor(stats.total_time_spent / 60)}h ${
             stats.total_time_spent % 60
           }min`}
-          bg="blue"
+          icon={<Clock className="w-6 h-6 text-blue-600" />}
+          color="blue"
         />
         <StatCard
-          icon={<Zap className="w-6 h-6 text-orange-600" />}
-          label="Série actuelle"
+          title="Série actuelle"
           value={`${stats.current_streak} jours`}
-          bg="orange"
+          icon={<Zap className="w-6 h-6 text-orange-600" />}
+          color="orange"
         />
         <StatCard
-          icon={<Target className="w-6 h-6 text-purple-600" />}
-          label="Progression globale"
+          title="Progression globale"
           value={`${Math.round(stats.overall_progress)}%`}
-          bg="purple"
+          icon={<Target className="w-6 h-6 text-purple-600" />}
+          color="purple"
         />
       </div>
 
-      {/* Activité hebdomadaire */}
-      <div className="bg-white rounded-xl p-6 shadow-md mb-10 max-w-7xl mx-auto">
+      {/* Weekly Activity */}
+      <div className="bg-white rounded-xl p-6 shadow-sm mb-8 max-w-4xl mx-auto">
         <h3 className="text-lg font-semibold text-gray-900 mb-6 text-center">
-          Activité de la semaine
+          Activité hebdomadaire
         </h3>
-        <ResponsiveContainer width="100%" height={250}>
-          <LineChart data={weeklyData}>
+        <ResponsiveContainer width="100%" height={300}>
+          <BarChart data={weeklyData}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="day" />
             <YAxis />
             <Tooltip />
-            <Line
-              type="monotone"
-              dataKey="exercises"
-              stroke="#6366f1"
-              strokeWidth={2}
-              activeDot={{ r: 6 }}
-            />
-            <Line
-              type="monotone"
-              dataKey="time"
-              stroke="#3b82f6"
-              strokeWidth={2}
-            />
-          </LineChart>
+            <Bar dataKey="exercises" fill="#7c3aed" radius={[6, 6, 0, 0]} />
+          </BarChart>
         </ResponsiveContainer>
       </div>
 
-      {/* Accomplissements */}
-      <div className="bg-white rounded-xl p-6 shadow-md max-w-7xl mx-auto">
-        <h3 className="text-lg font-semibold text-gray-900 mb-6 text-center">
+      {/* Achievements */}
+      <div className="bg-white rounded-xl p-6 shadow-sm max-w-7xl mx-auto mb-8">
+        <h3 className="text-lg font-semibold text-gray-900 mb-6">
           Accomplissements
         </h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {achievements.map((a) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {achievements.map((ach) => (
             <div
-              key={a.id}
-              className={`p-5 rounded-xl border-2 text-center transition-all duration-200 ${
-                a.unlocked
-                  ? "border-green-300 bg-green-50"
+              key={ach.id}
+              className={`p-4 rounded-lg border-2 ${
+                ach.unlocked
+                  ? "border-green-200 bg-green-50"
                   : "border-gray-200 bg-gray-50 opacity-60"
               }`}
             >
-              <div className="text-4xl mb-2">{a.icon}</div>
+              <div className="text-3xl mb-2 text-center">{ach.icon}</div>
               <h4
-                className={`font-semibold mb-1 ${
-                  a.unlocked ? "text-green-800" : "text-gray-600"
+                className={`text-center font-semibold mb-1 ${
+                  ach.unlocked ? "text-green-800" : "text-gray-600"
                 }`}
               >
-                {a.title}
+                {ach.title}
               </h4>
               <p
-                className={`text-sm ${
-                  a.unlocked ? "text-green-600" : "text-gray-500"
+                className={`text-sm text-center ${
+                  ach.unlocked ? "text-green-600" : "text-gray-500"
                 }`}
               >
-                {a.description}
+                {ach.description}
               </p>
-              {a.unlocked && (
-                <CheckCircle className="w-5 h-5 text-green-600 mx-auto mt-2" />
+              {ach.unlocked && (
+                <div className="mt-2 flex justify-center">
+                  <CheckCircle className="w-5 h-5 text-green-600" />
+                </div>
               )}
             </div>
           ))}
         </div>
-        <div className="mt-10 text-center">
-          <button
-            onClick={() => navigate("/dashboard")}
-            className="px-8 py-3 bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-600 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-          >
-            Retour au tableau de bord
-          </button>
-        </div>
+      </div>
+
+      <div className="text-center">
+        <button
+          onClick={() => navigate("/dashboard")}
+          className="px-8 py-3 bg-gradient-to-r from-purple-500 to-blue-600 text-white rounded-xl font-medium shadow-lg hover:shadow-xl transition-all hover:scale-105"
+        >
+          Retour au tableau de bord
+        </button>
       </div>
     </div>
   );
 }
 
-// StatCard Component
 function StatCard({
-  icon,
-  label,
+  title,
   value,
-  bg,
+  icon,
+  color,
 }: {
-  icon: React.ReactNode;
-  label: string;
+  title: string;
   value: string | number;
-  bg: "green" | "blue" | "orange" | "purple";
+  icon: React.ReactNode;
+  color: string;
 }) {
-  const bgColors: Record<string, string> = {
-    green: "bg-green-100",
-    blue: "bg-blue-100",
-    orange: "bg-orange-100",
-    purple: "bg-purple-100",
-  };
   return (
-    <div className="bg-white rounded-xl p-6 shadow-md flex items-center gap-4">
+    <div className="bg-white rounded-xl p-6 shadow-sm flex items-center gap-4">
       <div
-        className={`w-12 h-12 ${bgColors[bg]} rounded-lg flex items-center justify-center`}
+        className={`w-12 h-12 bg-${color}-100 rounded-lg flex items-center justify-center`}
       >
         {icon}
       </div>
       <div>
-        <p className="text-sm text-gray-600">{label}</p>
+        <p className="text-sm text-gray-600">{title}</p>
         <p className="text-2xl font-bold text-gray-900">{value}</p>
       </div>
     </div>
