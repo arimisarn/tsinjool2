@@ -5,10 +5,12 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
-from .models import Evaluation, CoachingPath, Step, Exercise, UserProgress
+from rest_framework import generics, permissions
+from .models import Evaluation, CoachingPath, Notification, Step, Exercise, UserProgress
 from .serializers import (
     EvaluationSerializer,
     CoachingPathSerializer,
+    NotificationSerializer,
     StepSerializer,
     ExerciseSerializer,
     UserProgressSerializer,
@@ -17,6 +19,7 @@ from .ai_service import AICoachingService
 from rest_framework.views import APIView
 from .ai_service import AICoachingService, get_youtube_url_from_title
 from django.conf import settings
+
 
 class EvaluationViewSet(viewsets.ModelViewSet):
     serializer_class = EvaluationSerializer
@@ -323,3 +326,34 @@ def dashboard_data(request):
             {"error": f"Erreur lors du chargement des données: {str(e)}"},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
+
+
+class NotificationListView(generics.ListAPIView):
+    serializer_class = NotificationSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Notification.objects.filter(user=self.request.user)
+
+
+@api_view(["POST"])
+@permission_classes([permissions.IsAuthenticated])
+def mark_notification_as_read(request, pk):
+    try:
+        notif = Notification.objects.get(id=pk, user=request.user)
+        notif.is_read = True
+        notif.save()
+        return Response({"message": "Notification marquée comme lue."})
+    except Notification.DoesNotExist:
+        return Response({"error": "Notification introuvable."}, status=404)
+
+
+@api_view(["DELETE"])
+@permission_classes([permissions.IsAuthenticated])
+def delete_notification(request, pk):
+    try:
+        notif = Notification.objects.get(id=pk, user=request.user)
+        notif.delete()
+        return Response({"message": "Notification supprimée."})
+    except Notification.DoesNotExist:
+        return Response({"error": "Notification introuvable."}, status=404)

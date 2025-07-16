@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Evaluation, CoachingPath, Step, Exercise, UserProgress
+from .models import Evaluation, CoachingPath, Notification, Step, Exercise, UserProgress
 
 
 @admin.register(Evaluation)
@@ -60,3 +60,5 @@ class UserProgressAdmin(admin.ModelAdmin):
     )
     search_fields = ("user__username", "user__email")
     readonly_fields = ("last_activity_date",)
+
+admin.site.register(Notification)

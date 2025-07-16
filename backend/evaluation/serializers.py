@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Evaluation, CoachingPath, Step, Exercise, UserProgress
+from .models import Evaluation, CoachingPath, Notification, Step, Exercise, UserProgress
 
 
 class EvaluationSerializer(serializers.ModelSerializer):
@@ -72,3 +72,9 @@ class UserProgressSerializer(serializers.ModelSerializer):
             "current_streak",
             "last_activity_date",
         )
+
+
+class NotificationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Notification
+        fields = ["id", "message", "type", "is_read", "created_at"]

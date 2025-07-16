@@ -5,7 +5,7 @@ from django.conf import settings
 
 from django.utils import timezone
 import json
-
+from django.contrib.auth import get_user_model
 
 class Evaluation(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -145,3 +145,24 @@ class UserProgress(models.Model):
 
         self.last_activity_date = today
         self.save()
+
+User = get_user_model()
+
+class Notification(models.Model):
+    NOTIFICATION_TYPES = [
+        ("info", "Info"),
+        ("alert", "Alerte"),
+        ("success", "Succès"),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="notifications")
+    message = models.CharField(max_length=255)
+    type = models.CharField(max_length=20, choices=NOTIFICATION_TYPES, default="info")
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.user.email} - {self.message[:20]}"

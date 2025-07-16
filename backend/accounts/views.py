@@ -16,13 +16,12 @@ from .models import Profile  # import local correct
 from rest_framework import status
 from django.core.mail import send_mail
 from rest_framework.parsers import MultiPartParser, FormParser
-from .supabase_client import supabase
 from django.core.files.uploadedfile import UploadedFile
-from .supabase_client import supabase
+from .supabase_client import get_supabase_client
 from rest_framework.decorators import api_view, permission_classes
 
 # from storage3.exceptions import StorageApiError
-from .supabase_client import supabase
+# from .supabase_client import supabase
 import time
 import traceback
 import re

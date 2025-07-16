@@ -6,6 +6,7 @@ import axios from "axios";
 import pic from "../../assets/avatar.jpg";
 import DarkMode from "../theme/DarkMode";
 import logo from "../../assets/logoRond.png";
+import NotificationDropdown from "./NotificationDropdown";
 
 const MainHeader: React.FC = () => {
   const navigate = useNavigate();
@@ -79,56 +80,7 @@ const MainHeader: React.FC = () => {
 
           {/* Bell + badge */}
           <div className="relative">
-            <button
-              onClick={() => setShowNotifications(!showNotifications)}
-              className="relative text-gray-600 dark:text-gray-300 hover:text-blue-500 transition"
-            >
-              <Bell className="w-5 h-5" />
-              {notifications.length > 0 && (
-                <motion.span
-                  className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-4 h-4 rounded-full flex items-center justify-center"
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                >
-                  {notifications.length}
-                </motion.span>
-              )}
-            </button>
-
-            {/* Dropdown notifications */}
-            <AnimatePresence>
-              {showNotifications && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.2 }}
-                  className="absolute right-0 mt-3 w-72 bg-white dark:bg-zinc-800 border border-gray-200 dark:border-zinc-600 rounded-lg shadow-xl z-50 p-4"
-                >
-                  <div className="flex justify-between items-center mb-2">
-                    <h3 className="text-sm font-semibold text-gray-800 dark:text-white">
-                      Notifications
-                    </h3>
-                    <button
-                      onClick={() => setShowNotifications(false)}
-                      className="text-gray-500 hover:text-red-500"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  </div>
-                  <div className="space-y-2 max-h-60 overflow-y-auto">
-                    {notifications.map((notif, index) => (
-                      <div
-                        key={index}
-                        className="text-sm text-gray-700 dark:text-gray-200 bg-gray-50 dark:bg-zinc-700 px-3 py-2 rounded-lg shadow-sm"
-                      >
-                        {notif}
-                      </div>
-                    ))}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+         <NotificationDropdown/>
           </div>
 
           {/* Avatar */}
