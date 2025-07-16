@@ -26,6 +26,7 @@ interface Exercise {
   instructions: string[];
   animation_character: string;
   recommended_videos?: string[];
+  image_url?: string;
 }
 
 export default function ExercisePage() {
@@ -231,6 +232,20 @@ export default function ExercisePage() {
         <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
           {/* Character and Timer Section */}
           <div className="bg-gradient-to-br from-purple-500 via-blue-500 to-indigo-600 p-8 text-white text-center relative overflow-hidden">
+            {/* Image de l'exercice */}
+            {exercise.image_url && (
+              <div className="mt-8">
+                <img
+                  src={exercise.image_url}
+                  alt={`Illustration pour ${exercise.title}`}
+                  className="rounded-2xl shadow-xl mx-auto max-h-80 object-cover border-4 border-white"
+                />
+                <p className="mt-2 text-sm text-white/80 italic">
+                  Image illustrative générée automatiquement
+                </p>
+              </div>
+            )}
+
             {/* Background Animation */}
             <div className="absolute inset-0 opacity-20">
               <div className="absolute top-10 left-10 w-20 h-20 bg-white/10 rounded-full animate-pulse" />

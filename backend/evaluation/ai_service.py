@@ -203,3 +203,44 @@ def get_youtube_url_from_title(title: str, api_key: str) -> str | None:
         return None
     video_id = items[0]["id"]["videoId"]
     return f"https://www.youtube.com/watch?v={video_id}"
+
+
+def get_image_url_from_pexels(query: str) -> str | None:
+    """Recherche une image correspondant au titre via Pexels API"""
+    url = "https://api.pexels.com/v1/search"
+    headers = {
+        "Authorization": settings.PEXELS_API_KEY  # ➤ ajoute cette clé dans ton .env ou settings.py
+    }
+    params = {"query": query, "per_page": 1}
+
+    response = requests.get(url, headers=headers, params=params)
+
+    if response.status_code != 200:
+        print(f"[❌] Erreur API Pexels : {response.status_code} - {response.text}")
+        return None
+
+    data = response.json()
+    photos = data.get("photos", [])
+    if not photos:
+        return None
+
+    # Retourne l'URL de l'image (taille moyenne)
+    return photos[0]["src"]["medium"]
+
+
+def get_image_from_pexels(query: str) -> str | None:
+    """Retourne l'URL de la première image trouvée sur Pexels"""
+    url = "https://api.pexels.com/v1/search"
+    headers = {"Authorization": PEXELS_API_KEY}
+    params = {"query": query, "per_page": 1}
+
+    response = requests.get(url, headers=headers, params=params)
+    if response.status_code != 200:
+        print(f"Erreur Pexels: {response.status_code} - {response.text}")
+        return None
+
+    data = response.json()
+    photos = data.get("photos", [])
+    if photos:
+        return photos[0]["src"]["medium"]
+    return None

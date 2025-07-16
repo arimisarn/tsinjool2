@@ -22,6 +22,8 @@ from django.conf import settings
 from datetime import timedelta
 from django.utils.timezone import now
 from collections import defaultdict
+from .utils import get_image_from_pexels
+
 
 
 class EvaluationViewSet(viewsets.ModelViewSet):
@@ -117,6 +119,7 @@ def generate_coaching_path(request):
                     instructions=instructions,
                     animation_character=exercise_data.get("animation_character", "🤖"),
                     recommended_videos=recommended_videos,
+                    image_url=image_url,
                 )
 
         UserProgress.objects.get_or_create(user=request.user)

@@ -90,6 +90,7 @@ class Exercise(models.Model):
     recommended_videos = models.JSONField(default=list)
     completed = models.BooleanField(default=False)
     completed_at = models.DateTimeField(null=True, blank=True)
+    image_url = models.URLField(null=True, blank=True)
 
     def __str__(self):
         return f"{self.title} - {self.step.title}"

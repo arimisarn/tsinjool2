@@ -137,19 +137,6 @@ class LoginView(APIView):
             status=status.HTTP_400_BAD_REQUEST,
         )
 
-
-# class TestEmailView(APIView):
-#     def get(self, request):
-#         send_mail(
-#             "Test Tsinjool",
-#             "Ceci est un test d'envoi d'email depuis Django.",
-#             "Tsinjool <noreply@tsinjool.com>",
-#             ["arimisa.dev@gmail.com"],  # ← remplace ici par ton email
-#             fail_silently=False,
-#         )
-#         return Response({"message": "Email envoyé !"})
-
-
 class ConfirmEmailView(APIView):
     permission_classes = [AllowAny]
 
