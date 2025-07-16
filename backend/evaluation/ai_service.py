@@ -6,26 +6,23 @@ import re
 
 
 class AICoachingService:
-    """Service pour l'intégration avec Together.ai"""
+    """Service pour l'intégration avec Groq API (Mixtral)"""
 
-    BASE_URL = "https://api.together.xyz/v1/chat/completions"
+    BASE_URL = "https://api.groq.com/openai/v1/chat/completions"
 
     @classmethod
     def generate_coaching_path(cls, evaluation_data: Dict[str, Any]) -> List[Dict]:
-        """Génère un parcours de coaching personnalisé avec Together.ai"""
-
         prompt = cls._build_coaching_prompt(evaluation_data)
 
         try:
             response = requests.post(
                 cls.BASE_URL,
                 headers={
-                    "Authorization": f"Bearer {settings.MISTRAL_API_KEY}",
+                    "Authorization": f"Bearer {settings.GROQ_API_KEY}",
                     "Content-Type": "application/json",
                 },
                 json={
-                    # "model": "mistralai/Mixtral-8x7B-Instruct-v0.1",
-                    "model": "mistralai/Mistral-7B-Instruct-v0.2",
+                    "model": "mixtral-8x7b-32768",
                     "messages": [
                         {
                             "role": "system",
@@ -34,27 +31,24 @@ class AICoachingService:
                         {"role": "user", "content": prompt},
                     ],
                     "temperature": 0.7,
-                    "max_tokens": 3072,
+                    "max_tokens": 4096,
                 },
             )
 
             if response.status_code == 200:
                 ai_response = response.json()
                 content = ai_response["choices"][0]["message"]["content"]
-
                 print("🧠 Réponse brute de l’IA (non parsée) :\n", content)
 
                 return cls._parse_coaching_response(
                     content, evaluation_data["coaching_type"]
                 )
             else:
-                print(
-                    f"❌ Erreur API Together.ai: {response.status_code} - {response.text}"
-                )
+                print(f"❌ Erreur API Groq: {response.status_code} - {response.text}")
                 return cls._get_default_coaching_path(evaluation_data["coaching_type"])
 
         except Exception as e:
-            print(f"❌ Erreur lors de l'appel à Together.ai: {str(e)}")
+            print(f"❌ Erreur lors de l'appel à Groq: {str(e)}")
             return cls._get_default_coaching_path(evaluation_data["coaching_type"])
 
     @classmethod
@@ -62,20 +56,16 @@ class AICoachingService:
         coaching_type = evaluation_data["coaching_type"]
         answers = evaluation_data["answers"]
 
-        answers_text = "\n".join(
-            [f"Question {q_id}: {answer}" for q_id, answer in answers.items()]
-        )
+        answers_text = "\n".join([f"Question {k} : {v}" for k, v in answers.items()])
 
-        coaching_labels = {
+        label = {
             "life": "coaching de vie",
             "career": "coaching de carrière",
             "health": "coaching santé",
-        }
-
-        coaching_label = coaching_labels.get(coaching_type, coaching_type)
+        }.get(coaching_type, coaching_type)
 
         return f"""
-Tu es un coach professionnel expérimenté. Crée un parcours de coaching personnalisé en {coaching_label}, basé sur les réponses suivantes du client :
+Tu es un coach professionnel expérimenté. Crée un parcours de coaching personnalisé en {label}, basé sur les réponses suivantes du client :
 
 {answers_text}
 
@@ -121,7 +111,7 @@ Chaque exercice contient :
     }}
   ]
 }}
-Génère jusqu'à la fin, ne coupe pas lesréponses mais faites des réponsescourtes mais précises
+Génère jusqu'à la fin, ne coupe pas les réponses, Tu DOIS générer exactement 4 étapes avec 2 exercices par étape.
 """
 
     @classmethod
@@ -131,37 +121,29 @@ Génère jusqu'à la fin, ne coupe pas lesréponses mais faites des réponsescou
             if not json_match:
                 raise ValueError("Aucun objet JSON détecté dans la réponse")
 
-            json_str = json_match.group()
-
-            parsed = json.loads(json_str)
+            parsed = json.loads(json_match.group())
 
             if "steps" not in parsed or not isinstance(parsed["steps"], list):
                 raise ValueError(
-                    "Structure de réponse invalide : clé 'steps' manquante ou incorrecte"
+                    "Structure JSON invalide : 'steps' manquant ou incorrect"
                 )
 
             steps = []
             for i, step_data in enumerate(parsed["steps"][:4]):
                 step = {
                     "title": step_data.get("title", f"Étape {i+1}"),
-                    "description": step_data.get(
-                        "description", "Description non disponible"
-                    ),
+                    "description": step_data.get("description", ""),
                     "order": i + 1,
                     "exercises": [],
                 }
 
-                for j, exercise_data in enumerate(step_data.get("exercises", [])[:3]):
+                for j, exercise_data in enumerate(step_data.get("exercises", [])[:2]):
                     exercise = {
                         "title": exercise_data.get("title", f"Exercice {j+1}"),
-                        "description": exercise_data.get(
-                            "description", "Description non disponible"
-                        ),
+                        "description": exercise_data.get("description", ""),
                         "duration": min(max(exercise_data.get("duration", 15), 5), 30),
                         "type": exercise_data.get("type", "practice"),
-                        "instructions": exercise_data.get(
-                            "instructions", ["Suivez les instructions à l'écran"]
-                        ),
+                        "instructions": exercise_data.get("instructions", []),
                         "animation_character": exercise_data.get(
                             "animation_character", "🤖"
                         ),
@@ -176,15 +158,14 @@ Génère jusqu'à la fin, ne coupe pas lesréponses mais faites des réponsescou
             return steps
 
         except Exception as e:
-            print(f"[⚠️] Erreur lors du parsing de la réponse IA : {str(e)}")
+            print(f"[⚠️] Erreur parsing IA : {str(e)}")
             return []
 
     @staticmethod
     def _get_default_coaching_path(coaching_type: str) -> List[Dict]:
-        # Valeur par défaut simple, pour fallback
         return [
             {
-                "title": "Étape 1",
+                "title": "Étape 1 par défaut",
                 "description": "Description par défaut",
                 "order": 1,
                 "exercises": [
