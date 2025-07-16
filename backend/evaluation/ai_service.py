@@ -24,7 +24,8 @@ class AICoachingService:
                     "Content-Type": "application/json",
                 },
                 json={
-                    "model": "mistralai/Mixtral-8x7B-Instruct-v0.1",
+                    # "model": "mistralai/Mixtral-8x7B-Instruct-v0.1",
+                    "model": "mistralai/Mistral-7B-Instruct-v0.2",
                     "messages": [
                         {
                             "role": "system",
@@ -33,7 +34,7 @@ class AICoachingService:
                         {"role": "user", "content": prompt},
                     ],
                     "temperature": 0.7,
-                    "max_tokens": 4096,
+                    "max_tokens": 3072,
                 },
             )
 
@@ -120,7 +121,7 @@ Chaque exercice contient :
     }}
   ]
 }}
-Génère jusqu'à la fin
+Génère jusqu'à la fin, ne coupe pas lesréponses mais faites des réponsescourtes mais précises
 """
 
     @classmethod
