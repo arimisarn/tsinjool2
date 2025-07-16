@@ -285,65 +285,68 @@ export default function Progress() {
 
       {/* Activité hebdomadaire */}
       {/* Activité hebdomadaire */}
-      <div className="bg-white rounded-xl p-6 shadow-sm">
-        <h3 className="text-lg font-semibold text-gray-900 mb-6">
-          Activité de la semaine
-        </h3>
-        <div className="grid grid-cols-7 gap-4">
-          {weeklyData.map((day, index) => (
-            <div key={index} className="text-center">
-              <div className="text-sm font-medium text-gray-600 mb-2">
-                {day.day}
-              </div>
-              <div
-                className="w-full bg-gray-200 rounded-lg flex flex-col justify-end"
-                style={{ height: "100px" }}
-              >
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 max-w-7xl mx-auto">
+        {/* Activité hebdomadaire */}
+        <div className="bg-white rounded-xl p-6 shadow-sm">
+          <h3 className="text-lg font-semibold text-gray-900 mb-6">
+            Activité de la semaine
+          </h3>
+          <div className="grid grid-cols-7 gap-4">
+            {weeklyData.map((day, index) => (
+              <div key={index} className="text-center">
+                <div className="text-sm font-medium text-gray-600 mb-2">
+                  {day.day}
+                </div>
                 <div
-                  className="bg-gradient-to-t from-purple-500 to-blue-600 rounded-lg transition-all duration-500"
-                  style={{
-                    height: `${Math.max((day.exercises / 5) * 100, 10)}%`,
-                  }}
-                />
+                  className="w-full bg-gray-200 rounded-lg flex flex-col justify-end"
+                  style={{ height: "100px" }}
+                >
+                  <div
+                    className="bg-gradient-to-t from-purple-500 to-blue-600 rounded-lg transition-all duration-500"
+                    style={{
+                      height: `${Math.max((day.exercises / 5) * 100, 10)}%`,
+                    }}
+                  />
+                </div>
+                <div className="text-xs text-gray-500 mt-2">
+                  {day.exercises} ex.
+                </div>
               </div>
-              <div className="text-xs text-gray-500 mt-2">
-                {day.exercises} ex.
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
 
-      {/* Progression PieChart */}
-      <div className="bg-white rounded-xl p-6 shadow-sm flex flex-col items-center justify-center">
-        <h3 className="text-lg font-semibold text-gray-900 mb-6">
-          Progression Globale
-        </h3>
-        <ResponsiveContainer width="100%" height={240}>
-          <PieChart>
-            <Pie
-              data={[
-                { name: "Progression", value: stats.overall_progress },
-                { name: "Reste", value: 100 - stats.overall_progress },
-              ]}
-              cx="50%"
-              cy="50%"
-              labelLine={false}
-              label={(entry: any) => {
-                const percent = entry.percent ?? 0;
-                return `${entry.name}: ${(percent * 100).toFixed(0)}%`;
-              }}
-              outerRadius={80}
-              fill="#8884d8"
-              dataKey="value"
-            >
-              <Cell fill="#6366F1" /> {/* violet pour progression */}
-              <Cell fill="#E5E7EB" /> {/* gris clair pour le reste */}
-            </Pie>
-            <Tooltip />
-            <Legend />
-          </PieChart>
-        </ResponsiveContainer>
+        {/* Progression PieChart */}
+        <div className="bg-white rounded-xl p-6 shadow-sm flex flex-col items-center justify-center">
+          <h3 className="text-lg font-semibold text-gray-900 mb-6">
+            Progression Globale
+          </h3>
+          <ResponsiveContainer width="100%" height={240}>
+            <PieChart>
+              <Pie
+                data={[
+                  { name: "Progression", value: stats.overall_progress },
+                  { name: "Reste", value: 100 - stats.overall_progress },
+                ]}
+                cx="50%"
+                cy="50%"
+                labelLine={false}
+                label={(entry: any) => {
+                  const percent = entry.percent ?? 0;
+                  return `${entry.name}: ${(percent * 100).toFixed(0)}%`;
+                }}
+                outerRadius={80}
+                fill="#8884d8"
+                dataKey="value"
+              >
+                <Cell fill="#6366F1" /> {/* violet pour progression */}
+                <Cell fill="#E5E7EB" /> {/* gris clair pour le reste */}
+              </Pie>
+              <Tooltip />
+              <Legend />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
       </div>
 
       {/* Accomplissements */}
