@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
-import { Calendar, Bell, X } from "lucide-react";
+import { Calendar } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
 import axios from "axios";
 import pic from "../../assets/avatar.jpg";
 import DarkMode from "../theme/DarkMode";
@@ -80,7 +79,7 @@ const MainHeader: React.FC = () => {
 
           {/* Bell + badge */}
           <div className="relative">
-         <NotificationDropdown/>
+            <NotificationDropdown />
           </div>
 
           {/* Avatar */}
