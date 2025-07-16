@@ -5,7 +5,17 @@ import { CheckCircle, BarChart3, Zap, Target, Clock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "sonner";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
 
+// Interfaces
 interface ProgressStats {
   total_exercises_completed: number;
   total_time_spent: number;
@@ -39,7 +49,6 @@ export default function Progress() {
   const [weeklyData, setWeeklyData] = useState<WeeklyProgress[]>([]);
   const [achievements, setAchievements] = useState<Achievement[]>([]);
   const [loading, setLoading] = useState(true);
-  console.log(achievements);
 
   useEffect(() => {
     document.title = "Tsinjool - Mes Progrès";
@@ -49,33 +58,7 @@ export default function Progress() {
   const loadProgressData = async () => {
     try {
       const token = localStorage.getItem("token");
-      if (!token) {
-        // Mode démo - données fictives
-        const mockStats: ProgressStats = {
-          total_exercises_completed: 3,
-          total_time_spent: 85,
-          current_streak: 5,
-          last_activity_date: new Date().toISOString().split("T")[0],
-          total_steps: 4,
-          completed_steps: 1,
-          overall_progress: 25,
-          current_level: 2,
-          total_points: 150,
-        };
-        setStats(mockStats);
-        setWeeklyData([
-          { day: "Lun", exercises: 1, time: 30 },
-          { day: "Mar", exercises: 0, time: 0 },
-          { day: "Mer", exercises: 2, time: 50 },
-          { day: "Jeu", exercises: 1, time: 15 },
-          { day: "Ven", exercises: 0, time: 0 },
-          { day: "Sam", exercises: 1, time: 20 },
-          { day: "Dim", exercises: 0, time: 0 },
-        ]);
-        generateAchievements(mockStats);
-        setLoading(false);
-        return;
-      }
+      if (!token) return;
 
       const [progressRes, weeklyRes] = await Promise.all([
         axios.get("https://tsinjool-backend.onrender.com/api/progress/", {
@@ -92,8 +75,7 @@ export default function Progress() {
       setStats(progressRes.data);
       setWeeklyData(weeklyRes.data);
       generateAchievements(progressRes.data);
-    } catch (error: any) {
-      console.error(error);
+    } catch (error) {
       toast.error("Erreur lors du chargement des progrès.");
     } finally {
       setLoading(false);
@@ -162,23 +144,6 @@ export default function Progress() {
     setAchievements(allAchievements);
   };
 
-  const getStreakMessage = (streak: number) => {
-    if (streak === 0) return "Commencez votre série aujourd'hui !";
-    if (streak === 1) return "Bon début ! Continuez demain !";
-    if (streak < 7) return `${streak} jours de suite ! Excellent !`;
-    if (streak < 30) return `${streak} jours ! Vous êtes sur une lancée !`;
-    return `${streak} jours ! Incroyable régularité !`;
-  };
-  console.log(getStreakMessage);
-
-  const calculateNextLevelProgress = () => {
-    if (!stats) return 0;
-    const pointsForCurrentLevel = (stats.current_level - 1) * 100;
-    const currentLevelPoints = stats.total_points - pointsForCurrentLevel;
-    return (currentLevelPoints / 100) * 100;
-  };
-  console.log(calculateNextLevelProgress);
-
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
@@ -210,141 +175,103 @@ export default function Progress() {
     );
   }
 
-  // Le composant principal (statistiques + niveau + série + activité + accomplissements)
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
-      {/* ... en-tête + stats générales ... */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white rounded-xl p-6 shadow-sm">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-              <CheckCircle className="w-6 h-6 text-green-600" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Exercices terminés</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {stats.total_exercises_completed}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl p-6 shadow-sm">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-              <Clock className="w-6 h-6 text-blue-600" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Temps total</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {Math.floor(stats.total_time_spent / 60)}h{" "}
-                {stats.total_time_spent % 60}min
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl p-6 shadow-sm">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
-              <Zap className="w-6 h-6 text-orange-600" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Série actuelle</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {stats.current_streak} jours
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl p-6 shadow-sm">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-              <Target className="w-6 h-6 text-purple-600" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Progression globale</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {Math.round(stats.overall_progress)}%
-              </p>
-            </div>
-          </div>
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 py-10 px-4 md:px-8">
+      {/* Statistiques */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto mb-10">
+        <StatCard
+          icon={<CheckCircle className="w-6 h-6 text-green-600" />}
+          label="Exercices terminés"
+          value={stats.total_exercises_completed}
+          bg="green"
+        />
+        <StatCard
+          icon={<Clock className="w-6 h-6 text-blue-600" />}
+          label="Temps total"
+          value={`${Math.floor(stats.total_time_spent / 60)}h ${
+            stats.total_time_spent % 60
+          }min`}
+          bg="blue"
+        />
+        <StatCard
+          icon={<Zap className="w-6 h-6 text-orange-600" />}
+          label="Série actuelle"
+          value={`${stats.current_streak} jours`}
+          bg="orange"
+        />
+        <StatCard
+          icon={<Target className="w-6 h-6 text-purple-600" />}
+          label="Progression globale"
+          value={`${Math.round(stats.overall_progress)}%`}
+          bg="purple"
+        />
       </div>
 
       {/* Activité hebdomadaire */}
-      <div className="bg-white rounded-xl p-6 shadow-sm mb-8 max-w-7xl mx-auto">
-        <h3 className="text-lg font-semibold text-gray-900 mb-6">
+      <div className="bg-white rounded-xl p-6 shadow-md mb-10 max-w-7xl mx-auto">
+        <h3 className="text-lg font-semibold text-gray-900 mb-6 text-center">
           Activité de la semaine
         </h3>
-        <div className="grid grid-cols-7 gap-4">
-          {weeklyData.map((day, index) => (
-            <div key={index} className="text-center">
-              <div className="text-sm font-medium text-gray-600 mb-2">
-                {day.day}
-              </div>
-              <div
-                className="w-full bg-gray-200 rounded-lg flex flex-col justify-end"
-                style={{ height: "100px" }}
-              >
-                <div
-                  className="bg-gradient-to-t from-purple-500 to-blue-600 rounded-lg transition-all duration-500"
-                  style={{
-                    height: `${Math.max((day.exercises / 5) * 100, 10)}%`,
-                  }}
-                />
-              </div>
-              <div className="text-xs text-gray-500 mt-2">
-                {day.exercises} ex.
-              </div>
-            </div>
-          ))}
-        </div>
+        <ResponsiveContainer width="100%" height={250}>
+          <LineChart data={weeklyData}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="day" />
+            <YAxis />
+            <Tooltip />
+            <Line
+              type="monotone"
+              dataKey="exercises"
+              stroke="#6366f1"
+              strokeWidth={2}
+              activeDot={{ r: 6 }}
+            />
+            <Line
+              type="monotone"
+              dataKey="time"
+              stroke="#3b82f6"
+              strokeWidth={2}
+            />
+          </LineChart>
+        </ResponsiveContainer>
       </div>
 
-      {/* ... accomplissements + bouton retour ... */}
-      <div className="bg-white rounded-xl p-6 shadow-sm">
-        <h3 className="text-lg font-semibold text-gray-900 mb-6">
+      {/* Accomplissements */}
+      <div className="bg-white rounded-xl p-6 shadow-md max-w-7xl mx-auto">
+        <h3 className="text-lg font-semibold text-gray-900 mb-6 text-center">
           Accomplissements
         </h3>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {achievements.map((achievement) => (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {achievements.map((a) => (
             <div
-              key={achievement.id}
-              className={`p-4 rounded-lg border-2 transition-all duration-200 ${
-                achievement.unlocked
-                  ? "border-green-200 bg-green-50"
+              key={a.id}
+              className={`p-5 rounded-xl border-2 text-center transition-all duration-200 ${
+                a.unlocked
+                  ? "border-green-300 bg-green-50"
                   : "border-gray-200 bg-gray-50 opacity-60"
               }`}
             >
-              <div className="text-center">
-                <div className="text-3xl mb-2">{achievement.icon}</div>
-                <h4
-                  className={`font-semibold mb-1 ${
-                    achievement.unlocked ? "text-green-800" : "text-gray-600"
-                  }`}
-                >
-                  {achievement.title}
-                </h4>
-                <p
-                  className={`text-sm ${
-                    achievement.unlocked ? "text-green-600" : "text-gray-500"
-                  }`}
-                >
-                  {achievement.description}
-                </p>
-                {achievement.unlocked && (
-                  <div className="mt-2">
-                    <CheckCircle className="w-5 h-5 text-green-600 mx-auto" />
-                  </div>
-                )}
-              </div>
+              <div className="text-4xl mb-2">{a.icon}</div>
+              <h4
+                className={`font-semibold mb-1 ${
+                  a.unlocked ? "text-green-800" : "text-gray-600"
+                }`}
+              >
+                {a.title}
+              </h4>
+              <p
+                className={`text-sm ${
+                  a.unlocked ? "text-green-600" : "text-gray-500"
+                }`}
+              >
+                {a.description}
+              </p>
+              {a.unlocked && (
+                <CheckCircle className="w-5 h-5 text-green-600 mx-auto mt-2" />
+              )}
             </div>
           ))}
         </div>
-        <div className="mt-8 text-center">
+        <div className="mt-10 text-center">
           <button
             onClick={() => navigate("/dashboard")}
             className="px-8 py-3 bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-600 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
@@ -352,6 +279,39 @@ export default function Progress() {
             Retour au tableau de bord
           </button>
         </div>
+      </div>
+    </div>
+  );
+}
+
+// StatCard Component
+function StatCard({
+  icon,
+  label,
+  value,
+  bg,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: string | number;
+  bg: "green" | "blue" | "orange" | "purple";
+}) {
+  const bgColors: Record<string, string> = {
+    green: "bg-green-100",
+    blue: "bg-blue-100",
+    orange: "bg-orange-100",
+    purple: "bg-purple-100",
+  };
+  return (
+    <div className="bg-white rounded-xl p-6 shadow-md flex items-center gap-4">
+      <div
+        className={`w-12 h-12 ${bgColors[bg]} rounded-lg flex items-center justify-center`}
+      >
+        {icon}
+      </div>
+      <div>
+        <p className="text-sm text-gray-600">{label}</p>
+        <p className="text-2xl font-bold text-gray-900">{value}</p>
       </div>
     </div>
   );
