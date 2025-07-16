@@ -392,14 +392,6 @@ export default function Progress() {
           </div>
 
           {/* Bouton retour */}
-          <div className="mt-10 text-center">
-            <button
-              onClick={() => navigate("/dashboard")}
-              className="px-8 py-3 bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-600 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-            >
-              Retour au tableau de bord
-            </button>
-          </div>
         </div>
       </div>
     </div>

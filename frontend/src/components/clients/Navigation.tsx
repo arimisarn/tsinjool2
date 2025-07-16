@@ -33,12 +33,14 @@ const Navigation = () => {
       <NavigationMenu className="text-gray-900 dark:text-white">
         <NavigationMenuList>
           <NavigationMenuItem>
-            <NavigationMenuLink
-              className={`${navigationMenuTriggerStyle()} text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800`}
-            >
-              <Gauge className="w-5 h-5 mr-2" />
-              Dashboard
-            </NavigationMenuLink>
+            <Link to="/dashboard">
+              <NavigationMenuLink
+                className={`${navigationMenuTriggerStyle()} text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800`}
+              >
+                <Gauge className="w-5 h-5 mr-2" />
+                Dashboard
+              </NavigationMenuLink>
+            </Link>
           </NavigationMenuItem>
 
           <NavigationMenuItem>
