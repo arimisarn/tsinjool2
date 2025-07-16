@@ -220,9 +220,9 @@ export default function Progress() {
 
   // Le composant principal (statistiques + niveau + série + activité + accomplissements)
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 py-10">
       {/* Statistiques */}
-      <div className="max-w-7xl mx-auto px-4">
+      <div className="w-full px-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
           <div className="bg-white rounded-xl p-6 shadow-sm">
             <div className="flex items-center gap-3 mb-2">
@@ -285,7 +285,7 @@ export default function Progress() {
 
       {/* Activité hebdomadaire */}
       {/* Activité hebdomadaire */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 max-w-7xl mx-auto">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 w-full px-4">
         {/* Activité hebdomadaire */}
         <div className="bg-white rounded-xl p-6 shadow-sm">
           <h3 className="text-lg font-semibold text-gray-900 mb-6">
@@ -350,7 +350,7 @@ export default function Progress() {
       </div>
 
       {/* Accomplissements */}
-      <div className="max-w-7xl mx-auto px-4 mb-12">
+      <div className="w-full px-4 mb-12">
         <div className="bg-white rounded-xl p-6 shadow-sm">
           <h3 className="text-lg font-semibold text-gray-900 mb-6 text-center">
             Accomplissements
