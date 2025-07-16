@@ -336,7 +336,7 @@ export default function Progress() {
                   return `${entry.name}: ${(percent * 100).toFixed(0)}%`;
                 }}
                 outerRadius={80}
-                fill="#8884d8"
+                fill="#D1D5DB"
                 dataKey="value"
               >
                 <Cell fill="#6366F1" /> {/* violet pour progression */}
