@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { CheckCircle, BarChart3 } from "lucide-react";
+import { CheckCircle, BarChart3, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "sonner";
@@ -214,7 +214,37 @@ export default function Progress() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
       {/* ... en-tête + stats générales ... */}
+      <div className="bg-white shadow-sm border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between py-4">
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => navigate("/dashboard")}
+                className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </button>
+              <div>
+                <h1 className="text-xl font-bold text-gray-900">Mes Progrès</h1>
+                <p className="text-sm text-gray-600">
+                  Suivez votre évolution et vos accomplissements
+                </p>
+              </div>
+            </div>
 
+            <div className="flex items-center gap-4">
+              <div className="text-right">
+                <p className="text-sm text-gray-600">
+                  Niveau {stats.current_level}
+                </p>
+                <p className="text-lg font-bold text-purple-600">
+                  {stats.total_points} pts
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       {/* Activité hebdomadaire */}
       <div className="bg-white rounded-xl p-6 shadow-sm mb-8 max-w-7xl mx-auto">
         <h3 className="text-lg font-semibold text-gray-900 mb-6">
