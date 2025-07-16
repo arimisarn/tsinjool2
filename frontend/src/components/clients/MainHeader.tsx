@@ -18,13 +18,6 @@ const MainHeader: React.FC = () => {
   });
 
   const [profilePhoto, setProfilePhoto] = useState(pic);
-  const [showNotifications, setShowNotifications] = useState(false);
-  const [notifications, setNotifications] = useState([
-    "Bienvenue sur Tsinjool 👋",
-    "Votre nouveau parcours est prêt !",
-    "Rappel : exercice quotidien à faire 💪",
-  ]);
-  console.log(setNotifications);
 
   useEffect(() => {
     const loadPhoto = async () => {
