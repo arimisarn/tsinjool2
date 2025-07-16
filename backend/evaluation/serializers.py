@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from .models import Evaluation, CoachingPath, Notification, Step, Exercise, UserProgress
-from utils.pexels import get_image_from_pexels
+from .utils import get_image_from_pexels
 
 
 class EvaluationSerializer(serializers.ModelSerializer):
