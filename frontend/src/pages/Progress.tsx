@@ -9,7 +9,13 @@ import {
   ResponsiveContainer,
   CartesianGrid,
 } from "recharts";
-import { CheckCircle, BarChart3, Zap, Target, Clock } from "lucide-react";
+import {
+  CheckCircle,
+  BarChart3,
+  Zap,
+  Target,
+  Clock,
+} from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -61,12 +67,9 @@ export default function Progress() {
         axios.get("https://tsinjool-backend.onrender.com/api/progress/", {
           headers: { Authorization: `Token ${token}` },
         }),
-        axios.get(
-          "https://tsinjool-backend.onrender.com/api/weekly-activity/",
-          {
-            headers: { Authorization: `Token ${token}` },
-          }
-        ),
+        axios.get("https://tsinjool-backend.onrender.com/api/weekly-activity/", {
+          headers: { Authorization: `Token ${token}` },
+        }),
       ]);
 
       setStats(progressRes.data);
@@ -139,9 +142,7 @@ export default function Progress() {
         />
         <StatCard
           title="Temps total"
-          value={`${Math.floor(stats.total_time_spent / 60)}h ${
-            stats.total_time_spent % 60
-          }min`}
+          value={`${Math.floor(stats.total_time_spent / 60)}h ${stats.total_time_spent % 60}min`}
           icon={<Clock className="w-6 h-6 text-blue-600" />}
           color="blue"
         />
@@ -240,9 +241,7 @@ function StatCard({
 }) {
   return (
     <div className="bg-white rounded-xl p-6 shadow-sm flex items-center gap-4">
-      <div
-        className={`w-12 h-12 bg-${color}-100 rounded-lg flex items-center justify-center`}
-      >
+      <div className={`w-12 h-12 bg-${color}-100 rounded-lg flex items-center justify-center`}>
         {icon}
       </div>
       <div>
