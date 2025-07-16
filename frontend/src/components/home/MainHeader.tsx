@@ -1,14 +1,17 @@
-import { Brain, LogIn, UserPlus } from "lucide-react";
+import { LogIn, UserPlus } from "lucide-react";
 import { Link } from "react-router-dom";
+import logo from "../../assets/logoRond.png";
 import DarkMode from "../theme/DarkMode";
 const MainHeader = () => {
   return (
     <div className="border-b border-border bg-background px-6 py-4 transition-colors duration-500">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-blue-600 rounded-lg flex items-center justify-center">
-            <Brain className="w-6 h-6 text-white" />
-          </div>
+          <img
+            src={logo}
+            alt="logo"
+            className="w-10 h-10 flex items-center justify-center"
+          />
           <div>
             <h1 className="text-2xl font-bold text-foreground transition-colors duration-300">
               Tsinjool
@@ -20,7 +23,7 @@ const MainHeader = () => {
         </div>
 
         <div className="flex items-center gap-4">
-          <DarkMode/>
+          <DarkMode />
 
           <div className="flex items-center gap-2">
             <Link
