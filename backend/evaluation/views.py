@@ -24,7 +24,6 @@ from django.utils.timezone import now
 from collections import defaultdict
 
 
-
 class EvaluationViewSet(viewsets.ModelViewSet):
     serializer_class = EvaluationSerializer
     permission_classes = [IsAuthenticated]
@@ -248,6 +247,15 @@ def user_progress(request):
         progress = UserProgress.objects.get(user=request.user)
         serializer = UserProgressSerializer(progress)
 
+        # ⚠️ Récupérer ou fallback pour userprofile
+        try:
+            profile = request.user.userprofile
+            level = profile.level
+            points = profile.points
+        except Exception:
+            level = 1
+            points = 0
+
         # Ajouter des statistiques supplémentaires
         coaching_path = CoachingPath.objects.filter(user=request.user).first()
         additional_stats = {}
@@ -260,13 +268,27 @@ def user_progress(request):
                 "total_steps": total_steps,
                 "completed_steps": completed_steps,
                 "overall_progress": coaching_path.overall_progress,
-                "current_level": request.user.userprofile.level,
-                "total_points": request.user.userprofile.points,
             }
 
-        return Response({**serializer.data, **additional_stats})
+        return Response(
+            {
+                **serializer.data,
+                **additional_stats,
+                "current_level": level,
+                "total_points": points,
+            }
+        )
 
     except UserProgress.DoesNotExist:
+        # Cas rare si pas de UserProgress
+        try:
+            profile = request.user.userprofile
+            level = profile.level
+            points = profile.points
+        except Exception:
+            level = 1
+            points = 0
+
         return Response(
             {
                 "total_exercises_completed": 0,
@@ -276,8 +298,8 @@ def user_progress(request):
                 "total_steps": 0,
                 "completed_steps": 0,
                 "overall_progress": 0,
-                "current_level": request.user.userprofile.level,
-                "total_points": request.user.userprofile.points,
+                "current_level": level,
+                "total_points": points,
             }
         )
 
@@ -361,6 +383,7 @@ def delete_notification(request, pk):
         return Response({"message": "Notification supprimée."})
     except Notification.DoesNotExist:
         return Response({"error": "Notification introuvable."}, status=404)
+
 
 @api_view(["GET"])
 @permission_classes([permissions.IsAuthenticated])

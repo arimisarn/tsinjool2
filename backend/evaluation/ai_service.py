@@ -137,7 +137,7 @@ Génère jusqu'à la fin, ne coupe pas les réponses, Tu DOIS générer exacteme
                     "exercises": [],
                 }
 
-                for j, exercise_data in enumerate(step_data.get("exercises", [])[:2]):
+                for j, exercise_data in enumerate(step_data.get("exercises", [])[:3]):
                     exercise = {
                         "title": exercise_data.get("title", f"Exercice {j+1}"),
                         "description": exercise_data.get("description", ""),
