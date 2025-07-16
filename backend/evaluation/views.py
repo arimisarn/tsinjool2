@@ -19,6 +19,10 @@ from .ai_service import AICoachingService
 from rest_framework.views import APIView
 from .ai_service import AICoachingService, get_youtube_url_from_title
 from django.conf import settings
+from datetime import timedelta
+from django.utils.timezone import now
+from collections import defaultdict
+
 
 
 class EvaluationViewSet(viewsets.ModelViewSet):
@@ -357,3 +361,39 @@ def delete_notification(request, pk):
         return Response({"message": "Notification supprimée."})
     except Notification.DoesNotExist:
         return Response({"error": "Notification introuvable."}, status=404)
+
+@api_view(["GET"])
+@permission_classes([permissions.IsAuthenticated])
+def weekly_activity(request):
+    user = request.user
+    today = now().date()
+    start_of_week = today - timedelta(days=today.weekday())  # Lundi
+
+    # Initialisation des jours
+    days_labels = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"]
+    data = {label: {"exercises": 0, "time": 0} for label in days_labels}
+
+    exercises = Exercise.objects.filter(
+        step__coaching_path__user=user,
+        completed=True,
+        completed_at__date__gte=start_of_week,
+    )
+
+    for ex in exercises:
+        day = ex.completed_at.strftime("%a")  # Ex: 'Mon'
+        fr_day = {
+            "Mon": "Lun",
+            "Tue": "Mar",
+            "Wed": "Mer",
+            "Thu": "Jeu",
+            "Fri": "Ven",
+            "Sat": "Sam",
+            "Sun": "Dim",
+        }.get(day, "Lun")
+
+        data[fr_day]["exercises"] += 1
+        data[fr_day]["time"] += ex.duration
+
+    # Format pour le frontend
+    result = [{"day": day, **values} for day, values in data.items()]
+    return Response(result)

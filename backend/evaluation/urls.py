@@ -13,7 +13,9 @@ urlpatterns = [
     path("generate-path/", views.generate_coaching_path, name="generate-path"),
     path("progress/", views.user_progress, name="user-progress"),
     path("dashboard/", views.dashboard_data, name="dashboard-data"),
-    path("notifications/", views.NotificationListView.as_view(), name="notification-list"),
+    path(
+        "notifications/", views.NotificationListView.as_view(), name="notification-list"
+    ),
     path(
         "notifications/<int:pk>/read/",
         views.mark_notification_as_read,
@@ -24,4 +26,5 @@ urlpatterns = [
         views.delete_notification,
         name="notification-delete",
     ),
+    path("weekly-activity/", views.weekly_activity, name="weekly-activity"),
 ]

@@ -111,7 +111,7 @@ Chaque exercice contient :
     }}
   ]
 }}
-Génère jusqu'à la fin, ne coupe pas les réponses, Tu DOIS générer exactement 4 étapes avec 2 exercices par étape.
+Génère jusqu'à la fin, ne coupe pas les réponses, Tu DOIS générer exactement 4 étapes avec 3 exercices par étape.
 """
 
     @classmethod

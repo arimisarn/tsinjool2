@@ -1,323 +1,480 @@
-import React, { useState, useEffect } from "react";
+"use client";
+
+import { useState, useEffect } from "react";
 import {
-  Brain,
-  Camera,
   ArrowLeft,
-  User,
-  Briefcase,
-  Heart,
+  Target,
+  Clock,
+  Zap,
   CheckCircle,
+  BarChart3,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "sonner";
 
-type CoachingType = "life" | "career" | "health";
+interface ProgressStats {
+  total_exercises_completed: number;
+  total_time_spent: number;
+  current_streak: number;
+  last_activity_date: string | null;
+  total_steps: number;
+  completed_steps: number;
+  overall_progress: number;
+  current_level: number;
+  total_points: number;
+}
 
-export default function ProfileSetup() {
+interface WeeklyProgress {
+  day: string;
+  exercises: number;
+  time: number;
+}
+
+interface Achievement {
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
+  unlocked: boolean;
+  date_unlocked?: string;
+}
+
+export default function Progress() {
+  const navigate = useNavigate();
+  const [stats, setStats] = useState<ProgressStats | null>(null);
+  const [weeklyData, setWeeklyData] = useState<WeeklyProgress[]>([]);
+  const [achievements, setAchievements] = useState<Achievement[]>([]);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    document.title = "Tsinjool - Configuration de profil";
+    document.title = "Tsinjool - Mes Progrès";
+    loadProgressData();
   }, []);
 
-  const navigate = useNavigate();
-
-  const [bio, setBio] = useState("");
-  const [coachingType, setCoachingType] = useState<CoachingType | "">("");
-  const [photo, setPhoto] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-
-  const coachingOptions: {
-    value: CoachingType;
-    label: string;
-    description: string;
-    icon: React.ReactNode;
-    gradient: string;
-  }[] = [
-    {
-      value: "life",
-      label: "Coaching de vie",
-      description: "Développement personnel et équilibre de vie",
-      icon: <Heart className="w-5 h-5" />,
-      gradient: "from-pink-400 to-rose-500",
-    },
-    {
-      value: "career",
-      label: "Coaching de carrière",
-      description: "Évolution professionnelle et leadership",
-      icon: <Briefcase className="w-5 h-5" />,
-      gradient: "from-blue-400 to-indigo-500",
-    },
-    {
-      value: "health",
-      label: "Coaching santé",
-      description: "Bien-être physique et mental",
-      icon: <User className="w-5 h-5" />,
-      gradient: "from-green-400 to-teal-500",
-    },
-  ];
-
-  // Vérifie la présence du token dès le chargement
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      toast.error("Veuillez vous connecter.");
-      navigate("/login");
-    }
-  }, [navigate]);
-
-  // Met à jour le preview à chaque changement de photo
-  useEffect(() => {
-    if (!photo) {
-      setPreview(null);
-      return;
-    }
-    const objectUrl = URL.createObjectURL(photo);
-    setPreview(objectUrl);
-
-    // Cleanup à chaque changement pour éviter fuite mémoire
-    return () => URL.revokeObjectURL(objectUrl);
-  }, [photo]);
-
-  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0] ?? null;
-    setPhoto(file);
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!coachingType) {
-      toast.error("Veuillez sélectionner un type de coaching.");
-      return;
-    }
-
-    if (bio.length > 500) {
-      toast.error("La bio ne doit pas dépasser 500 caractères.");
-      return;
-    }
-
-    setLoading(true);
-    const formData = new FormData();
-    formData.append("bio", bio);
-    formData.append("coaching_type", coachingType);
-    if (photo) formData.append("photo", photo); // on envoie juste le fichier ici
-
+  const loadProgressData = async () => {
     try {
       const token = localStorage.getItem("token");
-      if (!token) throw new Error("Token manquant.");
+      if (!token) {
+        // Mode démo - utiliser des données de test
+        const mockStats: ProgressStats = {
+          total_exercises_completed: 3,
+          total_time_spent: 85,
+          current_streak: 5,
+          last_activity_date: new Date().toISOString().split("T")[0],
+          total_steps: 4,
+          completed_steps: 1,
+          overall_progress: 25,
+          current_level: 2,
+          total_points: 150,
+        };
+        setStats(mockStats);
+        generateWeeklyData();
+        generateAchievements(mockStats);
+        setLoading(false);
+        return;
+      }
 
-      const response = await axios.put(
-        "https://tsinjool-backend.onrender.com/api/profile/",
-        formData,
-        {
-          headers: {
-            Authorization: `Token ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-      console.log(response);
-
-      toast.success("Profil mis à jour avec succès !");
-      navigate("/evaluation", { state: { coachingType } });
+      // Essayer de charger depuis l'API
+      try {
+        const response = await axios.get(
+          "https://tsinjool-backend.onrender.com/api/progress/",
+          {
+            headers: { Authorization: `Token ${token}` },
+          }
+        );
+        setStats(response.data);
+        generateWeeklyData();
+        generateAchievements(response.data);
+      } catch (apiError) {
+        console.log("API non disponible, utilisation des données de test");
+        // Utiliser les données de test si l'API n'est pas disponible
+        const mockStats: ProgressStats = {
+          total_exercises_completed: 3,
+          total_time_spent: 85,
+          current_streak: 5,
+          last_activity_date: new Date().toISOString().split("T")[0],
+          total_steps: 4,
+          completed_steps: 1,
+          overall_progress: 25,
+          current_level: 2,
+          total_points: 150,
+        };
+        setStats(mockStats);
+        generateWeeklyData();
+        generateAchievements(mockStats);
+      }
     } catch (error: any) {
       console.error(error);
-      const errData = error?.response?.data;
-      toast.error(
-        errData?.detail ||
-          errData?.coaching_type?.[0] ||
-          errData?.photo?.[0] ||
-          "Erreur lors de l’enregistrement du profil."
-      );
+      toast.error("Erreur lors du chargement des progrès.");
     } finally {
       setLoading(false);
     }
   };
 
+  const generateWeeklyData = () => {
+    // Simuler des données hebdomadaires (à remplacer par de vraies données de l'API)
+    const days = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
+    const data = days.map((day) => ({
+      day,
+      exercises: Math.floor(Math.random() * 5),
+      time: Math.floor(Math.random() * 60) + 10,
+    }));
+    setWeeklyData(data);
+  };
+
+  const generateAchievements = (stats: ProgressStats) => {
+    const allAchievements: Achievement[] = [
+      {
+        id: "first_exercise",
+        title: "Premier Pas",
+        description: "Terminez votre premier exercice",
+        icon: "🎯",
+        unlocked: stats.total_exercises_completed >= 1,
+      },
+      {
+        id: "five_exercises",
+        title: "En Route !",
+        description: "Terminez 5 exercices",
+        icon: "🚀",
+        unlocked: stats.total_exercises_completed >= 5,
+      },
+      {
+        id: "first_step",
+        title: "Étape Franchie",
+        description: "Terminez votre première étape complète",
+        icon: "🏆",
+        unlocked: stats.completed_steps >= 1,
+      },
+      {
+        id: "week_streak",
+        title: "Régularité",
+        description: "Maintenez une série de 7 jours",
+        icon: "🔥",
+        unlocked: stats.current_streak >= 7,
+      },
+      {
+        id: "level_up",
+        title: "Montée en Grade",
+        description: "Atteignez le niveau 2",
+        icon: "⭐",
+        unlocked: stats.current_level >= 2,
+      },
+      {
+        id: "time_master",
+        title: "Maître du Temps",
+        description: "Passez 5 heures en exercices",
+        icon: "⏰",
+        unlocked: stats.total_time_spent >= 300,
+      },
+      {
+        id: "half_journey",
+        title: "Mi-Parcours",
+        description: "Terminez 50% de votre parcours",
+        icon: "🎖️",
+        unlocked: stats.overall_progress >= 50,
+      },
+      {
+        id: "completionist",
+        title: "Perfectionniste",
+        description: "Terminez tout votre parcours",
+        icon: "👑",
+        unlocked: stats.overall_progress >= 100,
+      },
+    ];
+
+    setAchievements(allAchievements);
+  };
+
+  const getProgressColor = (progress: number) => {
+    if (progress >= 75) return "bg-green-500";
+    if (progress >= 50) return "bg-blue-500";
+    if (progress >= 25) return "bg-yellow-500";
+    return "bg-gray-300";
+  };
+  console.log(getProgressColor);
+
+  const getStreakMessage = (streak: number) => {
+    if (streak === 0) return "Commencez votre série aujourd'hui !";
+    if (streak === 1) return "Bon début ! Continuez demain !";
+    if (streak < 7) return `${streak} jours de suite ! Excellent !`;
+    if (streak < 30) return `${streak} jours ! Vous êtes sur une lancée !`;
+    return `${streak} jours ! Incroyable régularité !`;
+  };
+
+  const calculateNextLevelProgress = () => {
+    if (!stats) return 0;
+    const pointsForCurrentLevel = (stats.current_level - 1) * 100;
+    const pointsForNextLevel = stats.current_level * 100;
+    const currentLevelPoints = stats.total_points - pointsForCurrentLevel;
+    return (currentLevelPoints / 100) * 100;
+    console.log(pointsForNextLevel);
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-blue-600 rounded-full flex items-center justify-center mb-4 mx-auto animate-pulse">
+            <BarChart3 className="w-8 h-8 text-white" />
+          </div>
+          <p className="text-gray-600">Chargement de vos progrès...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!stats) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600">
+            Aucune donnée de progression disponible.
+          </p>
+          <button
+            onClick={() => navigate("/dashboard")}
+            className="mt-4 px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+          >
+            Retour au tableau de bord
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center p-2 sm:p-4">
-      <div className="w-full max-w-4xl bg-white rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col lg:flex-row min-h-[600px]">
-        {/* SECTION FORMULAIRE */}
-        <div className="w-full lg:w-3/5 flex flex-col">
-          <div className="flex justify-between items-center p-4 sm:p-6 lg:p-8">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-blue-600 rounded-lg flex items-center justify-center">
-                <Brain className="w-6 h-6 text-white" />
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+      {/* Header */}
+      <div className="bg-white shadow-sm border-b">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between py-4">
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => navigate("/dashboard")}
+                className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </button>
+              <div>
+                <h1 className="text-xl font-bold text-gray-900">Mes Progrès</h1>
+                <p className="text-sm text-gray-600">
+                  Suivez votre évolution et vos accomplissements
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-4">
+              <div className="text-right">
+                <p className="text-sm text-gray-600">
+                  Niveau {stats.current_level}
+                </p>
+                <p className="text-lg font-bold text-purple-600">
+                  {stats.total_points} pts
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Statistiques principales */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <div className="bg-white rounded-xl p-6 shadow-sm">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                <CheckCircle className="w-6 h-6 text-green-600" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900">Tsinjool</h1>
-                <p className="text-sm text-gray-600">
-                  Coach personnel intelligent
+                <p className="text-sm text-gray-600">Exercices terminés</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {stats.total_exercises_completed}
                 </p>
               </div>
             </div>
           </div>
 
-          <div className="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-8">
-            <form onSubmit={handleSubmit} className="w-full max-w-md space-y-6">
+          <div className="bg-white rounded-xl p-6 shadow-sm">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                <Clock className="w-6 h-6 text-blue-600" />
+              </div>
               <div>
-                <p className="text-xs uppercase tracking-wide text-gray-400 mb-2">
-                  ÉTAPE 2 SUR 2
-                </p>
-                <h1 className="text-3xl font-bold text-gray-900 mb-1">
-                  Configurez votre profil
-                  <span className="text-purple-500">.</span>
-                </h1>
-                <p className="text-sm text-gray-600">
-                  Personnalisez votre expérience de coaching
+                <p className="text-sm text-gray-600">Temps total</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {Math.floor(stats.total_time_spent / 60)}h{" "}
+                  {stats.total_time_spent % 60}min
                 </p>
               </div>
+            </div>
+          </div>
 
-              {/* PHOTO DE PROFIL */}
-              <div className="flex flex-col items-center space-y-4">
-                <div className="relative group">
-                  <div className="w-24 h-24 bg-gradient-to-br from-purple-400 to-blue-500 rounded-full flex items-center justify-center overflow-hidden border-4 border-white shadow-lg">
-                    {preview ? (
-                      <img
-                        src={preview}
-                        alt="Aperçu"
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <User className="w-10 h-10 text-white" />
-                    )}
-                  </div>
-                  <label
-                    aria-label="Téléverser une photo de profil"
-                    className="absolute -bottom-2 -right-2 w-8 h-8 bg-blue-500 hover:bg-blue-600 rounded-full flex items-center justify-center cursor-pointer shadow-lg transition-all duration-200 transform hover:scale-110"
-                  >
-                    <Camera className="w-4 h-4 text-white" />
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handlePhotoChange}
-                      className="hidden"
-                    />
-                  </label>
-                </div>
-                {photo && (
-                  <p className="text-xs text-blue-600 font-medium">
-                    Photo sélectionnée: {photo.name}
-                  </p>
-                )}
+          <div className="bg-white rounded-xl p-6 shadow-sm">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+                <Zap className="w-6 h-6 text-orange-600" />
               </div>
-
-              {/* BIO */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Présentez-vous
-                </label>
-                <textarea
-                  value={bio}
-                  onChange={(e) => setBio(e.target.value)}
-                  placeholder="Vos objectifs, motivations..."
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all duration-200 outline-none resize-none"
-                  rows={4}
-                  maxLength={500}
-                />
-                <p className="text-xs text-gray-400 mt-1">{bio.length} / 500</p>
+                <p className="text-sm text-gray-600">Série actuelle</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {stats.current_streak} jours
+                </p>
               </div>
+            </div>
+          </div>
 
-              {/* TYPE DE COACHING */}
+          <div className="bg-white rounded-xl p-6 shadow-sm">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                <Target className="w-6 h-6 text-purple-600" />
+              </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Type de coaching souhaité
-                </label>
-                <div className="space-y-2">
-                  {coachingOptions.map((option) => (
-                    <div key={option.value} className="relative">
-                      <input
-                        type="radio"
-                        id={option.value}
-                        name="coachingType"
-                        value={option.value}
-                        checked={coachingType === option.value}
-                        onChange={(e) =>
-                          setCoachingType(e.target.value as CoachingType)
-                        }
-                        className="sr-only"
-                      />
-                      <label
-                        htmlFor={option.value}
-                        className={`flex items-center p-4 rounded-xl border-2 transition-all duration-200 cursor-pointer ${
-                          coachingType === option.value
-                            ? "border-blue-500 bg-blue-50 shadow-sm"
-                            : "border-gray-200 hover:bg-gray-50"
-                        }`}
-                      >
-                        <div
-                          className={`w-10 h-10 rounded-lg bg-gradient-to-br ${option.gradient} flex items-center justify-center text-white mr-4`}
-                        >
-                          {option.icon}
-                        </div>
-                        <div className="flex-1">
-                          <h3 className="font-semibold text-gray-900">
-                            {option.label}
-                          </h3>
-                          <p className="text-sm text-gray-600">
-                            {option.description}
-                          </p>
-                        </div>
-                        {coachingType === option.value && (
-                          <CheckCircle className="w-5 h-5 text-blue-500" />
-                        )}
-                      </label>
-                    </div>
-                  ))}
-                </div>
+                <p className="text-sm text-gray-600">Progression globale</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {Math.round(stats.overall_progress)}%
+                </p>
               </div>
-
-              {/* BOUTONS */}
-              <div className="flex gap-3 pt-2">
-                <button
-                  type="button"
-                  onClick={() => navigate(-1)}
-                  className="flex items-center gap-2 px-4 py-3 border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-100 transition duration-200"
-                  disabled={loading}
-                >
-                  <ArrowLeft className="w-5 h-5" />
-                  Retour
-                </button>
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="flex-1 py-3 px-6 bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-600 hover:to-blue-700 text-white rounded-xl transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-                >
-                  {loading ? "Enregistrement..." : "Terminer la configuration"}
-                </button>
-              </div>
-            </form>
+            </div>
           </div>
         </div>
 
-        {/* SECTION DÉCORATIVE */}
-        <div className="w-full lg:w-2/5 relative overflow-hidden min-h-[300px] lg:min-h-full">
-          <div className="w-full h-full bg-gradient-to-br from-purple-500 via-blue-500 to-indigo-600 relative">
-            <div
-              className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-20"
-              style={{
-                backgroundImage:
-                  "url(https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&h=600&fit=crop)",
-              }}
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+          {/* Progression du niveau */}
+          <div className="bg-white rounded-xl p-6 shadow-sm">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              Progression du niveau
+            </h3>
 
-            <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6 text-white">
-              <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mb-6">
-                <Brain className="w-8 h-8 text-white" />
-              </div>
-              <h3 className="text-2xl font-bold mb-2">Presque terminé !</h3>
-              <p className="text-base font-light max-w-sm">
-                Quelques informations pour personnaliser votre parcours
-              </p>
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm font-medium text-gray-600">
+                Niveau {stats.current_level}
+              </span>
+              <span className="text-sm font-medium text-gray-600">
+                Niveau {stats.current_level + 1}
+              </span>
             </div>
 
-            {/* Animations */}
-            <div className="absolute top-6 left-6 w-12 h-12 bg-white/10 rounded-full blur-sm animate-pulse" />
-            <div className="absolute top-1/4 right-10 w-16 h-16 bg-white/5 rounded-full blur-lg animate-pulse delay-300" />
-            <div className="absolute bottom-1/4 left-10 w-14 h-14 bg-white/15 rounded-full blur-md animate-pulse delay-700" />
+            <div className="w-full bg-gray-200 rounded-full h-3 mb-4">
+              <div
+                className="bg-gradient-to-r from-purple-500 to-blue-600 h-3 rounded-full transition-all duration-500"
+                style={{ width: `${calculateNextLevelProgress()}%` }}
+              />
+            </div>
+
+            <div className="text-center">
+              <p className="text-2xl font-bold text-purple-600 mb-1">
+                {stats.total_points} points
+              </p>
+              <p className="text-sm text-gray-600">
+                {100 - (stats.total_points % 100)} points pour le niveau suivant
+              </p>
+            </div>
           </div>
+
+          {/* Série quotidienne */}
+          <div className="bg-white rounded-xl p-6 shadow-sm">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              Série quotidienne
+            </h3>
+
+            <div className="text-center mb-4">
+              <div className="text-4xl mb-2">🔥</div>
+              <p className="text-3xl font-bold text-orange-600 mb-1">
+                {stats.current_streak}
+              </p>
+              <p className="text-sm text-gray-600">jours consécutifs</p>
+            </div>
+
+            <div className="bg-orange-50 rounded-lg p-4">
+              <p className="text-center text-orange-800 font-medium">
+                {getStreakMessage(stats.current_streak)}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Activité hebdomadaire */}
+        <div className="bg-white rounded-xl p-6 shadow-sm mb-8">
+          <h3 className="text-lg font-semibold text-gray-900 mb-6">
+            Activité de la semaine
+          </h3>
+
+          <div className="grid grid-cols-7 gap-4">
+            {weeklyData.map((day, index) => (
+              <div key={index} className="text-center">
+                <div className="text-sm font-medium text-gray-600 mb-2">
+                  {day.day}
+                </div>
+                <div
+                  className="w-full bg-gray-200 rounded-lg flex flex-col justify-end"
+                  style={{ height: "100px" }}
+                >
+                  <div
+                    className="bg-gradient-to-t from-purple-500 to-blue-600 rounded-lg transition-all duration-500"
+                    style={{
+                      height: `${Math.max((day.exercises / 5) * 100, 10)}%`,
+                    }}
+                  />
+                </div>
+                <div className="text-xs text-gray-500 mt-2">
+                  {day.exercises} ex.
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Accomplissements */}
+        <div className="bg-white rounded-xl p-6 shadow-sm">
+          <h3 className="text-lg font-semibold text-gray-900 mb-6">
+            Accomplissements
+          </h3>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {achievements.map((achievement) => (
+              <div
+                key={achievement.id}
+                className={`p-4 rounded-lg border-2 transition-all duration-200 ${
+                  achievement.unlocked
+                    ? "border-green-200 bg-green-50"
+                    : "border-gray-200 bg-gray-50 opacity-60"
+                }`}
+              >
+                <div className="text-center">
+                  <div className="text-3xl mb-2">{achievement.icon}</div>
+                  <h4
+                    className={`font-semibold mb-1 ${
+                      achievement.unlocked ? "text-green-800" : "text-gray-600"
+                    }`}
+                  >
+                    {achievement.title}
+                  </h4>
+                  <p
+                    className={`text-sm ${
+                      achievement.unlocked ? "text-green-600" : "text-gray-500"
+                    }`}
+                  >
+                    {achievement.description}
+                  </p>
+                  {achievement.unlocked && (
+                    <div className="mt-2">
+                      <CheckCircle className="w-5 h-5 text-green-600 mx-auto" />
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Actions rapides */}
+        <div className="mt-8 text-center">
+          <button
+            onClick={() => navigate("/dashboard")}
+            className="px-8 py-3 bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-600 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+          >
+            Retour au tableau de bord
+          </button>
         </div>
       </div>
     </div>
