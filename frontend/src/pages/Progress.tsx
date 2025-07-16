@@ -1,7 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { CheckCircle, BarChart3 , Zap, Target, Clock} from "lucide-react";
+import {
+  CheckCircle,
+  BarChart3,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "sonner";
@@ -214,64 +217,6 @@ export default function Progress() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
       {/* ... en-tête + stats générales ... */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white rounded-xl p-6 shadow-sm">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-              <CheckCircle className="w-6 h-6 text-green-600" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Exercices terminés</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {stats.total_exercises_completed}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl p-6 shadow-sm">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-              <Clock className="w-6 h-6 text-blue-600" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Temps total</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {Math.floor(stats.total_time_spent / 60)}h{" "}
-                {stats.total_time_spent % 60}min
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl p-6 shadow-sm">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
-              <Zap className="w-6 h-6 text-orange-600" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Série actuelle</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {stats.current_streak} jours
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl p-6 shadow-sm">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-              <Target className="w-6 h-6 text-purple-600" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Progression globale</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {Math.round(stats.overall_progress)}%
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
 
       {/* Activité hebdomadaire */}
       <div className="bg-white rounded-xl p-6 shadow-sm mb-8 max-w-7xl mx-auto">
