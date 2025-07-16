@@ -212,145 +212,152 @@ export default function Progress() {
 
   // Le composant principal (statistiques + niveau + série + activité + accomplissements)
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
-      {/* ... en-tête + stats générales ... */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white rounded-xl p-6 shadow-sm">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-              <CheckCircle className="w-6 h-6 text-green-600" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Exercices terminés</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {stats.total_exercises_completed}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl p-6 shadow-sm">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-              <Clock className="w-6 h-6 text-blue-600" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Temps total</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {Math.floor(stats.total_time_spent / 60)}h{" "}
-                {stats.total_time_spent % 60}min
-              </p>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 py-10">
+      {/* Statistiques */}
+      <div className="max-w-7xl mx-auto px-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          <div className="bg-white rounded-xl p-6 shadow-sm">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                <CheckCircle className="w-6 h-6 text-green-600" />
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">Exercices terminés</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {stats.total_exercises_completed}
+                </p>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="bg-white rounded-xl p-6 shadow-sm">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
-              <Zap className="w-6 h-6 text-orange-600" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">Série actuelle</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {stats.current_streak} jours
-              </p>
+          <div className="bg-white rounded-xl p-6 shadow-sm">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                <Clock className="w-6 h-6 text-blue-600" />
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">Temps total</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {Math.floor(stats.total_time_spent / 60)}h{" "}
+                  {stats.total_time_spent % 60}min
+                </p>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="bg-white rounded-xl p-6 shadow-sm">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-              <Target className="w-6 h-6 text-purple-600" />
+          <div className="bg-white rounded-xl p-6 shadow-sm">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+                <Zap className="w-6 h-6 text-orange-600" />
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">Série actuelle</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {stats.current_streak} jours
+                </p>
+              </div>
             </div>
-            <div>
-              <p className="text-sm text-gray-600">Progression globale</p>
-              <p className="text-2xl font-bold text-gray-900">
-                {Math.round(stats.overall_progress)}%
-              </p>
+          </div>
+
+          <div className="bg-white rounded-xl p-6 shadow-sm">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                <Target className="w-6 h-6 text-purple-600" />
+              </div>
+              <div>
+                <p className="text-sm text-gray-600">Progression globale</p>
+                <p className="text-2xl font-bold text-gray-900">
+                  {Math.round(stats.overall_progress)}%
+                </p>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
       {/* Activité hebdomadaire */}
-      <div className="bg-white rounded-xl p-6 shadow-sm mb-8 max-w-7xl mx-auto">
-        <h3 className="text-lg font-semibold text-gray-900 mb-6">
-          Activité de la semaine
-        </h3>
-        <div className="grid grid-cols-7 gap-4">
-          {weeklyData.map((day, index) => (
-            <div key={index} className="text-center">
-              <div className="text-sm font-medium text-gray-600 mb-2">
-                {day.day}
-              </div>
-              <div
-                className="w-full bg-gray-200 rounded-lg flex flex-col justify-end"
-                style={{ height: "100px" }}
-              >
+      <div className="max-w-4xl mx-auto px-4 mb-12">
+        <div className="bg-white rounded-xl p-6 shadow-sm">
+          <h3 className="text-lg font-semibold text-gray-900 mb-6 text-center">
+            Activité de la semaine
+          </h3>
+          <div className="flex justify-between gap-3">
+            {weeklyData.map((day, index) => (
+              <div key={index} className="flex flex-col items-center flex-1">
+                <div className="text-sm font-medium text-gray-600 mb-2">
+                  {day.day}
+                </div>
                 <div
-                  className="bg-gradient-to-t from-purple-500 to-blue-600 rounded-lg transition-all duration-500"
-                  style={{
-                    height: `${Math.max((day.exercises / 5) * 100, 10)}%`,
-                  }}
-                />
+                  className="w-full bg-gray-200 rounded-lg flex flex-col justify-end overflow-hidden"
+                  style={{ height: "100px" }}
+                >
+                  <div
+                    className="bg-gradient-to-t from-purple-500 to-blue-600 rounded-lg transition-all duration-500"
+                    style={{
+                      height: `${Math.max((day.exercises / 5) * 100, 10)}%`,
+                    }}
+                  />
+                </div>
+                <div className="text-xs text-gray-500 mt-2">
+                  {day.exercises} ex.
+                </div>
               </div>
-              <div className="text-xs text-gray-500 mt-2">
-                {day.exercises} ex.
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* ... accomplissements + bouton retour ... */}
-      <div className="bg-white rounded-xl p-6 shadow-sm">
-        <h3 className="text-lg font-semibold text-gray-900 mb-6">
-          Accomplissements
-        </h3>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {achievements.map((achievement) => (
-            <div
-              key={achievement.id}
-              className={`p-4 rounded-lg border-2 transition-all duration-200 ${
-                achievement.unlocked
-                  ? "border-green-200 bg-green-50"
-                  : "border-gray-200 bg-gray-50 opacity-60"
-              }`}
-            >
-              <div className="text-center">
-                <div className="text-3xl mb-2">{achievement.icon}</div>
-                <h4
-                  className={`font-semibold mb-1 ${
-                    achievement.unlocked ? "text-green-800" : "text-gray-600"
-                  }`}
-                >
-                  {achievement.title}
-                </h4>
-                <p
-                  className={`text-sm ${
-                    achievement.unlocked ? "text-green-600" : "text-gray-500"
-                  }`}
-                >
-                  {achievement.description}
-                </p>
-                {achievement.unlocked && (
-                  <div className="mt-2">
-                    <CheckCircle className="w-5 h-5 text-green-600 mx-auto" />
-                  </div>
-                )}
+      {/* Accomplissements */}
+      <div className="max-w-7xl mx-auto px-4 mb-12">
+        <div className="bg-white rounded-xl p-6 shadow-sm">
+          <h3 className="text-lg font-semibold text-gray-900 mb-6 text-center">
+            Accomplissements
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {achievements.map((achievement) => (
+              <div
+                key={achievement.id}
+                className={`p-4 rounded-lg border-2 transition-all duration-200 ${
+                  achievement.unlocked
+                    ? "border-green-200 bg-green-50"
+                    : "border-gray-200 bg-gray-50 opacity-60"
+                }`}
+              >
+                <div className="text-center">
+                  <div className="text-3xl mb-2">{achievement.icon}</div>
+                  <h4
+                    className={`font-semibold mb-1 ${
+                      achievement.unlocked ? "text-green-800" : "text-gray-600"
+                    }`}
+                  >
+                    {achievement.title}
+                  </h4>
+                  <p
+                    className={`text-sm ${
+                      achievement.unlocked ? "text-green-600" : "text-gray-500"
+                    }`}
+                  >
+                    {achievement.description}
+                  </p>
+                  {achievement.unlocked && (
+                    <div className="mt-2">
+                      <CheckCircle className="w-5 h-5 text-green-600 mx-auto" />
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
-        <div className="mt-8 text-center">
-          <button
-            onClick={() => navigate("/dashboard")}
-            className="px-8 py-3 bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-600 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-          >
-            Retour au tableau de bord
-          </button>
+            ))}
+          </div>
+
+          {/* Bouton retour */}
+          <div className="mt-10 text-center">
+            <button
+              onClick={() => navigate("/dashboard")}
+              className="px-8 py-3 bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-600 hover:to-blue-700 text-white rounded-xl font-medium transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+            >
+              Retour au tableau de bord
+            </button>
+          </div>
         </div>
       </div>
     </div>
