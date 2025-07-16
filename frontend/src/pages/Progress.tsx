@@ -340,7 +340,7 @@ export default function Progress() {
                 dataKey="value"
               >
                 <Cell fill="#6366F1" /> {/* violet pour progression */}
-                <Cell fill="#E5E7EB" /> {/* gris clair pour le reste */}
+                <Cell fill="#D1D5DB" /> {/* gris clair pour le reste */}
               </Pie>
               <Tooltip />
               <Legend />
