@@ -33,15 +33,16 @@ const Demos = () => {
   }, []);
 
   return (
-    <div className="relative overflow-hidden px-6 py-16 bg-muted/30 dark:bg-background">
-      {/* Effet de fond décoratif */}
-      <div className="absolute top-[-80px] -left-40 w-[500px] h-[500px] rounded-full bg-gradient-to-tr from-purple-300/20 to-blue-300/10 dark:from-purple-900/10 dark:to-blue-900/10 blur-3xl opacity-70 z-0"></div>
+    <div className="relative overflow-hidden px-6 py-16 bg-muted/30 dark:bg-background transition-colors duration-500">
+      {/* Effet décoratif en arrière-plan */}
+      <div className="absolute top-[-80px] -left-40 w-[500px] h-[500px] rounded-full bg-gradient-to-tr from-purple-300/20 to-blue-300/10 dark:from-purple-900/10 dark:to-blue-900/10 blur-3xl opacity-70 z-0 pointer-events-none" />
 
       <div className="max-w-6xl mx-auto relative z-10">
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+          whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
           className="text-3xl font-bold text-center mb-12 text-foreground"
         >
           Fonctionnalités principales
@@ -56,7 +57,8 @@ const Demos = () => {
         ) : (
           <motion.div
             initial="hidden"
-            animate="visible"
+            whileInView="visible"
+            viewport={{ once: true }}
             variants={{
               hidden: {},
               visible: {

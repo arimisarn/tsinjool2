@@ -2,9 +2,9 @@ import { motion } from "framer-motion";
 
 const Fin = () => {
   return (
-    <div className="relative overflow-hidden px-6 py-16 bg-muted/30 dark:bg-background">
+    <div className="relative overflow-hidden px-6 py-16 bg-muted/30 dark:bg-background transition-colors duration-500">
       {/* Fond décoratif flou */}
-      <div className="absolute -top-40 left-1/2 transform -translate-x-1/2 w-[400px] h-[400px] rounded-full bg-gradient-to-br from-blue-400/20 to-purple-500/10 blur-3xl opacity-60 z-0 pointer-events-none"></div>
+      <div className="absolute -top-40 left-1/2 transform -translate-x-1/2 w-[400px] h-[400px] rounded-full bg-gradient-to-br from-blue-400/20 to-purple-500/10 dark:from-blue-900/20 dark:to-purple-900/10 blur-3xl opacity-60 z-0 pointer-events-none" />
 
       <motion.div
         initial={{ opacity: 0, y: 30 }}
