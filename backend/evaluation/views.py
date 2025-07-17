@@ -539,21 +539,27 @@ def plan_exercise(request):
 def check_scheduled_exercises(request):
     user = request.user
     now = timezone.now()
+    print("🔍 Vérification pour :", user)
 
-    plans = PlannedExercise.objects.filter(
-        user=user, planned_datetime__lte=now, notified=False
+    upcoming = PlannedExercise.objects.filter(
+        user=user,
+        planned_datetime__lte=now,
+        notified=False,
     )
 
     count = 0
-    for plan in plans:
+    for plan in upcoming:
         send_notification(
-            user, f"C'est l'heure de faire : {plan.exercise.title}", notif_type="info"
+            user,
+            f"C'est l'heure de faire l'exercice : {plan.exercise.title}",
+            notif_type="info",
         )
         plan.notified = True
         plan.save()
         count += 1
 
-    return Response({"checked": True, "notifications_sent": count})
+    print(f"➡️ {count} notification(s) envoyée(s)")
+    return Response({"notifications_sent": count})
 
 
 # class ScheduleExerciseView(APIView):

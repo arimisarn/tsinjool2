@@ -92,6 +92,13 @@ export default function NotificationDropdown() {
         return <Info className="w-4 h-4 text-blue-500" />;
     }
   };
+  useEffect(() => {
+    const handleRefresh = () => fetchNotifications();
+    window.addEventListener("refresh-notifications", handleRefresh);
+    return () => {
+      window.removeEventListener("refresh-notifications", handleRefresh);
+    };
+  }, []);
 
   return (
     <div className="relative">
