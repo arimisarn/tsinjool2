@@ -186,7 +186,7 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
       {/* Main Content */}
-      <div className="w-full px-4 py-8">
+      <div className="w-full px-6 py-8">
         {/* Welcome Section */}
         <div className="mb-8">
           <p className="text-gray-600">
