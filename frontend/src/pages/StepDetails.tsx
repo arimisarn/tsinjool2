@@ -13,6 +13,8 @@ import {
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import axios from "axios";
 import { toast } from "sonner";
+import { Calendar } from "@/components/ui/calendar";
+
 
 interface Exercise {
   id: number;
@@ -44,6 +46,12 @@ export default function StepDetail() {
     null
   );
   const [loading, setLoading] = useState(true);
+
+  const [showScheduler, setShowScheduler] = useState(false);
+  const [scheduledDate, setScheduledDate] = useState<Date | undefined>(
+    undefined
+  );
+  const [scheduledTime, setScheduledTime] = useState("09:00");
 
   useEffect(() => {
     document.title = "Tsinjool - Détail de l'étape";
@@ -97,7 +105,44 @@ export default function StepDetail() {
       },
     });
   };
+  // Fonction pour planifier l'exercice (appel API)
+  const handleScheduleExercise = async () => {
+    if (!scheduledDate) {
+      toast.error("Veuillez choisir une date.");
+      return;
+    }
+    if (!selectedExercise) {
+      toast.error("Aucun exercice sélectionné.");
+      return;
+    }
 
+    // Construire un ISO datetime avec la date et l'heure choisies
+    const dateStr = scheduledDate.toISOString().split("T")[0];
+    const isoDatetime = new Date(
+      `${dateStr}T${scheduledTime}:00`
+    ).toISOString();
+
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        toast.error("Veuillez vous connecter.");
+        navigate("/login");
+        return;
+      }
+
+      await axios.post(
+        `https://tsinjool-backend.onrender.com/api/exercises/${selectedExercise.id}/schedule/`,
+        { scheduled_datetime: isoDatetime },
+        { headers: { Authorization: `Token ${token}` } }
+      );
+
+      toast.success("Exercice planifié !");
+      setShowScheduler(false);
+    } catch (error) {
+      console.error(error);
+      toast.error("Erreur lors de la planification.");
+    }
+  };
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
@@ -349,6 +394,14 @@ export default function StepDetail() {
                             );
                           }
                         )}
+                        <div className="flex justify-center mt-6">
+                          <button
+                            onClick={() => setShowScheduler(true)}
+                            className="px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-medium shadow-md hover:shadow-lg transition"
+                          >
+                            Planifier cet exercice
+                          </button>
+                        </div>
                       </div>
                     </div>
                   )}
@@ -394,6 +447,48 @@ export default function StepDetail() {
             )}
           </div>
         </div>
+
+        {showScheduler && (
+          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
+            <div className="bg-white rounded-xl p-6 w-[90%] max-w-md shadow-xl">
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                Planifier l'exercice
+              </h2>
+
+              <Calendar
+                mode="single"
+                selected={scheduledDate}
+                onSelect={setScheduledDate}
+                className="mb-4"
+              />
+
+              <label className="block mb-2 text-sm font-medium text-gray-700">
+                Heure :
+              </label>
+              <input
+                type="time"
+                value={scheduledTime}
+                onChange={(e) => setScheduledTime(e.target.value)}
+                className="w-full mb-4 border-gray-300 rounded-lg shadow-sm"
+              />
+
+              <div className="flex justify-between mt-6">
+                <button
+                  onClick={() => setShowScheduler(false)}
+                  className="text-sm px-4 py-2 text-gray-600 hover:text-red-500"
+                >
+                  Annuler
+                </button>
+                <button
+                  onClick={handleScheduleExercise}
+                  className="px-6 py-2 bg-indigo-600 text-white rounded-lg shadow hover:bg-indigo-700"
+                >
+                  Planifier
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

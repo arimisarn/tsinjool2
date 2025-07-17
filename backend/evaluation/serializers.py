@@ -1,5 +1,13 @@
 from rest_framework import serializers
-from .models import Evaluation, CoachingPath, Notification, Step, Exercise, UserProgress
+from .models import (
+    Evaluation,
+    CoachingPath,
+    Notification,
+    ScheduledExercise,
+    Step,
+    Exercise,
+    UserProgress,
+)
 from .utils import get_image_from_pexels
 
 
@@ -28,7 +36,7 @@ class ExerciseSerializer(serializers.ModelSerializer):
             "recommended_videos",
             "completed",
             "completed_at",
-            "image_url"
+            "image_url",
         )
         read_only_fields = ("completed", "completed_at")
 
@@ -81,3 +89,9 @@ class NotificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Notification
         fields = ["id", "message", "type", "is_read", "created_at"]
+
+
+class ScheduledExerciseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ScheduledExercise
+        fields = ["id", "exercise", "scheduled_datetime"]

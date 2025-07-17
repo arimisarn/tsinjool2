@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from rest_framework import generics, permissions
-from .models import Evaluation, CoachingPath, Notification, Step, Exercise, UserProgress
+from .models import Evaluation, CoachingPath, Notification, ScheduledExercise, Step, Exercise, UserProgress
 from .serializers import (
     EvaluationSerializer,
     CoachingPathSerializer,
@@ -24,7 +24,8 @@ from datetime import timedelta
 from django.utils.timezone import now
 from collections import defaultdict
 from .utils import get_image_from_pexels, send_notification
-
+from django.utils.dateparse import parse_datetime
+from .tasks import send_scheduled_notification
 
 class EvaluationViewSet(viewsets.ModelViewSet):
     serializer_class = EvaluationSerializer
@@ -294,6 +295,35 @@ class ExerciseViewSet(viewsets.ReadOnlyModelViewSet):
         )
 
         return Response({"recommended_videos": videos})
+    
+    @action(detail=True, methods=["post"])
+    def schedule(self, request, pk=None):
+        """Planifier une notification pour un exercice"""
+        try:
+            datetime_str = request.data.get("scheduled_datetime")
+            if not datetime_str:
+                return Response({"error": "Date/heure manquante"}, status=400)
+
+            scheduled_dt = parse_datetime(datetime_str)
+            if not scheduled_dt:
+                return Response({"error": "Format de date invalide"}, status=400)
+
+            # 💡 Planifie la tâche (via Celery ou autre)
+            send_scheduled_notification.apply_async(
+                args=[request.user.id, pk],
+                eta=scheduled_dt
+            )
+
+            return Response({"message": "Notification planifiée avec succès"})
+        except Exception as e:
+            return Response({"error": str(e)}, status=500)
+    
+    
+    
+    
+    
+    
+    
 
 
 @api_view(["GET"])
@@ -478,3 +508,21 @@ def weekly_activity(request):
     # Format pour le frontend
     result = [{"day": day, **values} for day, values in data.items()]
     return Response(result)
+
+
+
+class ScheduleExerciseView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, exercise_id):
+        exercise = Exercise.objects.get(id=exercise_id)
+        datetime_str = request.data.get("scheduled_datetime")
+        if not datetime_str:
+            return Response({"error": "Date manquante"}, status=400)
+
+        scheduled = ScheduledExercise.objects.create(
+            user=request.user,
+            exercise=exercise,
+            scheduled_datetime=datetime_str
+        )
+        return Response({"success": "Exercice planifié."}, status=201)

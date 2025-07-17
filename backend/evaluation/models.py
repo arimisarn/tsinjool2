@@ -167,3 +167,16 @@ class Notification(models.Model):
 
     def __str__(self):
         return f"{self.user.email} - {self.message[:20]}"
+    
+    
+    
+    
+
+class ScheduledExercise(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE)
+    scheduled_datetime = models.DateTimeField()
+    notified = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.user.email} - {self.exercise.title} à {self.scheduled_datetime}"
