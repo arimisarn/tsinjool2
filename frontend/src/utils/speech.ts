@@ -15,10 +15,19 @@ export class SpeechRecognitionService {
         window.SpeechRecognition || window.webkitSpeechRecognition;
       this.recognition = new SpeechRecognition();
 
-      this.recognition.continuous = false;
-      this.recognition.interimResults = true;
-      this.recognition.lang = "fr-FR";
-      this.recognition.maxAlternatives = 1;
+      if (this.recognition) {
+        this.recognition.continuous = false;
+        this.recognition.interimResults = true;
+        this.recognition.lang = "fr-FR";
+        this.recognition.maxAlternatives = 1;
+
+        if ("webkitSpeechRecognition" in window) {
+          (this.recognition as any).serviceURI =
+            "wss://www.google.com/speech-api/v2/recognize";
+        }
+
+        this.isSupported = true;
+      }
 
       if ("webkitSpeechRecognition" in window) {
         (this.recognition as any).serviceURI =
