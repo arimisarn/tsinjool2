@@ -77,6 +77,7 @@ export default function StepDetail() {
     } catch (error: any) {
       console.error(error);
       toast.error("Erreur lors du chargement de l'étape.");
+      window.dispatchEvent(new Event("refresh-notifications"));
       navigate("/dashboard");
     } finally {
       setLoading(false);

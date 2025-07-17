@@ -54,6 +54,14 @@ export default function NotificationDropdown() {
   // ✅ Récupération au montage
   useEffect(() => {
     fetchNotifications();
+
+    // 🔄 Écouteur personnalisé quand on veut forcer le refresh
+    const handleRefresh = () => fetchNotifications();
+    window.addEventListener("refresh-notifications", handleRefresh);
+
+    return () => {
+      window.removeEventListener("refresh-notifications", handleRefresh);
+    };
   }, []);
 
   // ✅ Affichage automatique des nouvelles notifications

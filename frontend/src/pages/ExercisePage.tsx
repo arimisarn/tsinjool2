@@ -121,6 +121,7 @@ export default function ExercisePage() {
       );
 
       toast.success("Félicitations ! Exercice terminé avec succès !");
+      window.dispatchEvent(new Event("refresh-notifications"));
     } catch (error: any) {
       console.error(error);
       toast.error("Erreur lors de l'enregistrement de la progression.");

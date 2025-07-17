@@ -193,12 +193,45 @@ class CoachingPathRetrieveView(APIView):
         return Response(data)
 
 
+# class StepViewSet(viewsets.ReadOnlyModelViewSet):
+#     serializer_class = StepSerializer
+#     permission_classes = [IsAuthenticated]
+
+#     def get_queryset(self):
+#         return Step.objects.filter(coaching_path__user=self.request.user)
+
+
 class StepViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = StepSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         return Step.objects.filter(coaching_path__user=self.request.user)
+
+    @action(detail=True, methods=["post"])
+    def complete(self, request, pk=None):
+        step = self.get_object()
+        if step.completed:
+            return Response(
+                {"message": "Étape déjà terminée"}, status=status.HTTP_200_OK
+            )
+
+        step.completed = True
+        step.save()
+
+        # ✅ Notifier l'utilisateur
+        from .utils import send_notification
+
+        send_notification(
+            request.user,
+            f"🎯 Vous avez terminé l’étape « {step.title} ». Félicitations !",
+            "success",
+        )
+
+        return Response(
+            {"message": "Étape terminée avec succès"},
+            status=status.HTTP_200_OK,
+        )
 
 
 class ExerciseViewSet(viewsets.ReadOnlyModelViewSet):
@@ -229,7 +262,7 @@ class ExerciseViewSet(viewsets.ReadOnlyModelViewSet):
             send_notification(
                 request.user,
                 f"🏁 Vous avez terminé l'étape « {step.title} ». Continuez comme ça !",
-                "success"
+                "success",
             )
 
         # ✅ Mettre à jour les progrès utilisateur
