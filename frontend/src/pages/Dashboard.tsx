@@ -118,7 +118,6 @@ export default function Dashboard() {
         }
       );
 
-      // setSteps(response.data.steps);
       setSteps(response.data.coaching_path.steps);
       toast.success("Votre parcours personnalisé a été généré !");
     } catch (error: any) {
@@ -186,7 +185,7 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-2 sm:px-3 lg:px-4 py-8">
         {/* Welcome Section */}
         <div className="mb-8">
           <p className="text-gray-600">
