@@ -110,16 +110,11 @@ export default function StepDetail() {
       toast.error("Veuillez choisir une date.");
       return;
     }
+
     if (!selectedExercise) {
       toast.error("Aucun exercice sélectionné.");
       return;
     }
-
-    // Construire un ISO datetime avec la date et l'heure choisies
-    const dateStr = scheduledDate.toISOString().split("T")[0];
-    const isoDatetime = new Date(
-      `${dateStr}T${scheduledTime}:00`
-    ).toISOString();
 
     try {
       const token = localStorage.getItem("token");
@@ -129,19 +124,37 @@ export default function StepDetail() {
         return;
       }
 
+      // Créer l'ISO datetime : ex "2025-07-18T14:00:00Z"
+      const dateStr = scheduledDate.toISOString().split("T")[0];
+      const localDatetime = new Date(`${dateStr}T${scheduledTime}:00`);
+      const plannedDatetime = localDatetime.toISOString();
+
       await axios.post(
-        `https://tsinjool-backend.onrender.com/api/exercises/${selectedExercise.id}/schedule/`,
-        { scheduled_datetime: isoDatetime },
-        { headers: { Authorization: `Token ${token}` } }
+        "https://tsinjool-backend.onrender.com/api/plan-exercise/",
+        {
+          exercise_id: selectedExercise.id,
+          planned_datetime: plannedDatetime,
+        },
+        {
+          headers: {
+            Authorization: `Token ${token}`,
+          },
+        }
       );
 
-      toast.success("Exercice planifié !");
+      toast.success("Exercice planifié avec succès !");
       setShowScheduler(false);
+      setScheduledDate(undefined);
+      setScheduledTime("09:00");
+
+      // 🔁 Optionnel : refresh notifications (si besoin)
+      window.dispatchEvent(new Event("refresh-notifications"));
     } catch (error) {
-      console.error(error);
+      console.error("Erreur planification exercice", error);
       toast.error("Erreur lors de la planification.");
     }
   };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">

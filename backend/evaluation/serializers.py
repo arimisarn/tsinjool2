@@ -3,7 +3,6 @@ from .models import (
     Evaluation,
     CoachingPath,
     Notification,
-    ScheduledExercise,
     Step,
     Exercise,
     UserProgress,
@@ -89,9 +88,3 @@ class NotificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Notification
         fields = ["id", "message", "type", "is_read", "created_at"]
-
-
-class ScheduledExerciseSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ScheduledExercise
-        fields = ["id", "exercise", "scheduled_datetime"]

@@ -11,7 +11,7 @@ from .models import (
     Evaluation,
     CoachingPath,
     Notification,
-    ScheduledExercise,
+    PlannedExercise,
     Step,
     Exercise,
     UserProgress,
@@ -20,7 +20,6 @@ from .serializers import (
     EvaluationSerializer,
     CoachingPathSerializer,
     NotificationSerializer,
-    ScheduledExerciseSerializer,
     StepSerializer,
     ExerciseSerializer,
     UserProgressSerializer,
@@ -513,6 +512,28 @@ def weekly_activity(request):
     return Response(result)
 
 
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def plan_exercise(request):
+    user = request.user
+    exercise_id = request.data.get("exercise_id")
+    planned_datetime = request.data.get("planned_datetime")
+
+    if not exercise_id or not planned_datetime:
+        return Response({"error": "Champs manquants"}, status=400)
+
+    try:
+        exercise = Exercise.objects.get(id=exercise_id)
+        PlannedExercise.objects.create(
+            user=user,
+            exercise=exercise,
+            planned_datetime=planned_datetime,
+        )
+        return Response({"success": "Exercice planifié avec succès"})
+    except Exercise.DoesNotExist:
+        return Response({"error": "Exercice non trouvé"}, status=404)
+
+
 # class ScheduleExerciseView(APIView):
 #     permission_classes = [IsAuthenticated]
 
@@ -561,9 +582,3 @@ def weekly_activity(request):
 #             return Response({
 #                 "error": str(e),
 #             }, status=500)
-
-
-
-class ScheduleExerciseView(APIView):
-    def post(self, request, exercise_id):
-        return Response({"message": f"Vous avez atteint la vue pour l'exercice {exercise_id}"})

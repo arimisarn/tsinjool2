@@ -119,6 +119,19 @@ class Exercise(models.Model):
             self.step.update_completion_status()
 
 
+
+
+class PlannedExercise(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE, related_name="plans")
+    planned_datetime = models.DateTimeField()
+
+    notified = models.BooleanField(default=False)  # pour indiquer si la notif a déjà été envoyée
+
+    def __str__(self):
+        return f"{self.user.username} - {self.exercise.title} @ {self.planned_datetime}"
+
+
 class UserProgress(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     total_exercises_completed = models.IntegerField(default=0)
@@ -170,12 +183,3 @@ class Notification(models.Model):
 
     def __str__(self):
         return f"{self.user.email} - {self.message[:20]}"
-
-
-class ScheduledExercise(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    exercise = models.ForeignKey(Exercise, on_delete=models.CASCADE)
-    scheduled_datetime = models.DateTimeField()
-
-    def __str__(self):
-        return f"{self.user} - {self.exercise.title} - {self.scheduled_datetime}"
