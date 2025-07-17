@@ -390,8 +390,6 @@ export default function Progress() {
               </div>
             ))}
           </div>
-
-          {/* Bouton retour */}
         </div>
       </div>
     </div>

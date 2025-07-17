@@ -118,6 +118,7 @@ export default function Dashboard() {
         }
       );
 
+      // setSteps(response.data.steps);
       setSteps(response.data.coaching_path.steps);
       toast.success("Votre parcours personnalisé a été généré !");
     } catch (error: any) {
@@ -185,7 +186,7 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-2 sm:px-3 lg:px-4 py-8">
+      <div className="w-full px-2 py-8">
         {/* Welcome Section */}
         <div className="mb-8">
           <p className="text-gray-600">
@@ -196,7 +197,7 @@ export default function Dashboard() {
 
         {/* Progress Overview */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white rounded-xl p-6 shadow-sm">
+          <div className="bg-white rounded-xl p-4 shadow-sm">
             <div className="flex items-center gap-3 mb-2">
               <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
                 <Target className="w-6 h-6 text-blue-600" />
