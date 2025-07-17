@@ -1,5 +1,4 @@
-import { VoiceSettings } from "@/types";
-
+import { type VoiceSettings } from "@/types";
 export class SpeechRecognitionService {
   private recognition: SpeechRecognition | null = null;
   private isSupported: boolean = false;

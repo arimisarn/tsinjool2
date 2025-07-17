@@ -1,12 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Bot, Settings, Wifi, WifiOff } from 'lucide-react';
-import VoiceVisualizer from '@/components/clients/VoiceVizualiser';
-import VoiceControls from '@/components/clients/VoiceControl';
-import MessageHistory from '@/components/clients/MessageHistory';
-import { SpeechRecognitionService, SpeechSynthesisService } from '@/utils/speech';
-import { sendToGroq } from '@/utils/groq';
-import { Message, AIState, VoiceSettings } from '@/types';
+import VoiceVisualizer from '@/components/clients/VoiceVisualizer';
+import { sendToGroq, testGroqConnection } from "@/utils/groq";
+import VoiceControls from "@/components/clients/VoiceControls";
+import MessageHistory from "@/components/clients/MessageHistory";
+import { SpeechRecognitionService, SpeechSynthesisService } from "@/utils/speech";
+import { type Message, type AIState, type VoiceSettings } from "@/types";
+
 
 
 function App() {
