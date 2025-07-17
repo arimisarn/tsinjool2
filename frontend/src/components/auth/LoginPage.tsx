@@ -4,7 +4,6 @@ import { toast } from "sonner";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import logo from "../../assets/logoRond.png";
-
 const slides = [
   {
     image: "/carousel1.jpg",
@@ -23,15 +22,13 @@ const slides = [
   },
 ];
 
+// ... imports identiques
 export default function LoginPage() {
   useEffect(() => {
     document.title = "Tsinjool - Connexion";
   }, []);
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({
-    username: "",
-    password: "",
-  });
+  const [formData, setFormData] = useState({ username: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [current, setCurrent] = useState(0);
@@ -71,80 +68,63 @@ export default function LoginPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-100 dark:from-slate-900 dark:to-blue-900 flex items-center justify-center p-4 transition-colors duration-500">
-      <div className="w-full max-w-6xl bg-white dark:bg-gray-900 rounded-3xl shadow-2xl overflow-hidden flex flex-col lg:flex-row min-h-[600px]">
+    <div className="min-h-screen bg-gradient-to-br from-gray-100 to-blue-100 dark:from-slate-900 dark:to-blue-900 flex items-center justify-center p-4 transition-colors duration-500">
+      <div className="w-full max-w-6xl bg-white dark:bg-gray-900 rounded-3xl shadow-2xl overflow-hidden flex flex-col lg:flex-row min-h-[600px] transition-all duration-500">
         {/* Section formulaire */}
-        <div className="w-full lg:w-1/2 flex flex-col relative px-6 py-8 sm:px-10 sm:py-12">
-          <div className="flex justify-between items-center mb-10">
+        <div className="w-full lg:w-1/2 flex flex-col relative">
+          <div className="flex justify-between items-center p-6 lg:p-8">
             <div className="flex items-center gap-3">
-              <img src={logo} alt="logo" className="w-10 h-10" />
+              <Link to="/">
+                <img src={logo} alt="Logo Tsinjool" className="w-10 h-10" />
+              </Link>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900 dark:text-white transition-colors duration-300">
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
                   Tsinjool
                 </h1>
-                <p className="text-sm text-gray-500 dark:text-gray-300 transition-colors duration-300">
+                <p className="text-sm text-gray-600 dark:text-gray-300">
                   Votre coach personnel intelligent
                 </p>
               </div>
             </div>
           </div>
 
-          <div className="flex-1 flex items-center justify-center">
-            <form
-              onSubmit={handleSubmit}
-              className="w-full max-w-md space-y-6"
-              autoComplete="off"
-            >
+          <div className="flex-1 flex items-center justify-center p-6 lg:p-8">
+            <form onSubmit={handleSubmit} className="w-full max-w-md space-y-5">
               <h2 className="text-3xl font-bold text-indigo-600 dark:text-indigo-400 text-center">
                 Connexion à votre compte
               </h2>
+
               <div>
-                <label
-                  htmlFor="username"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-                >
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Nom d'utilisateur
                 </label>
                 <input
-                  id="username"
                   type="text"
                   name="username"
                   value={formData.username}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-800 focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-600 transition-all duration-200 outline-none text-gray-900 dark:text-gray-100 placeholder-gray-400"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 focus:bg-gray-100 dark:focus:bg-gray-900 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-600 outline-none text-gray-900 dark:text-white placeholder-gray-400"
                   required
-                  placeholder="Votre nom d'utilisateur"
                 />
               </div>
 
               <div>
-                <label
-                  htmlFor="password"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-                >
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Mot de passe
                 </label>
                 <div className="relative">
                   <input
-                    id="password"
                     type={showPassword ? "text" : "password"}
                     name="password"
                     value={formData.password}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 pr-12 border border-gray-300 dark:border-gray-600 rounded-xl bg-gray-50 dark:bg-gray-800 focus:bg-white dark:focus:bg-gray-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-600 transition-all duration-200 outline-none text-gray-900 dark:text-gray-100 placeholder-gray-400"
+                    className="w-full px-4 py-3 pr-12 border border-gray-300 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 focus:bg-gray-100 dark:focus:bg-gray-900 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-600 outline-none text-gray-900 dark:text-white placeholder-gray-400"
                     required
-                    placeholder="••••••••"
-                    autoComplete="current-password"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition"
-                    aria-label={
-                      showPassword
-                        ? "Masquer le mot de passe"
-                        : "Afficher le mot de passe"
-                    }
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
                   >
                     {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                   </button>
@@ -153,17 +133,17 @@ export default function LoginPage() {
 
               <button
                 type="submit"
+                className="w-full py-3 px-6 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={loading}
-                className="w-full py-3 px-6 bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-700 dark:hover:bg-indigo-600 text-white rounded-xl transition font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? "Connexion..." : "Se connecter"}
               </button>
 
-              <p className="text-center text-sm text-gray-500 dark:text-gray-400">
+              <p className="text-center text-sm text-gray-600 dark:text-gray-400">
                 Vous n’avez pas encore de compte ?{" "}
                 <Link
                   to="/register"
-                  className="text-indigo-600 dark:text-indigo-400 hover:underline font-semibold"
+                  className="text-indigo-600 dark:text-indigo-400 hover:underline font-medium"
                 >
                   S’inscrire
                 </Link>
@@ -180,24 +160,21 @@ export default function LoginPage() {
                 key={index}
                 className={`absolute inset-0 w-full h-full transition-all duration-1000 ease-in-out ${
                   index === current
-                    ? "opacity-100 translate-x-0"
+                    ? "opacity-100 transform translate-x-0"
                     : index < current
-                    ? "-translate-x-full opacity-0"
-                    : "translate-x-full opacity-0"
+                    ? "opacity-0 transform -translate-x-full"
+                    : "opacity-0 transform translate-x-full"
                 }`}
               >
                 <div
                   className="absolute inset-0 bg-cover bg-center bg-no-repeat"
                   style={{ backgroundImage: `url(${slide.image})` }}
                 />
-                {/* Overlay dégradé */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col items-center justify-center text-white px-6 sm:px-12 text-center">
-                  <h3 className="text-3xl sm:text-4xl font-bold mb-2 drop-shadow">
+                <div className="absolute inset-0 bg-black/70 flex flex-col items-center justify-center text-white px-10 text-center">
+                  <h3 className="text-4xl font-bold mb-2 drop-shadow">
                     {slide.title}
                   </h3>
-                  <p className="text-lg sm:text-xl font-light">
-                    {slide.subtitle}
-                  </p>
+                  <p className="text-lg font-light">{slide.subtitle}</p>
                 </div>
               </div>
             ))}
