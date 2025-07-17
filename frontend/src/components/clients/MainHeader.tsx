@@ -54,32 +54,31 @@ const MainHeader: React.FC = () => {
     loadPhoto();
   }, []);
 
-  // Fermer dropdown si clic en dehors
+  // Close dropdown on outside click
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    function handleClickOutside(event: MouseEvent) {
       if (
         dropdownRef.current &&
         !dropdownRef.current.contains(event.target as Node)
       ) {
         setDropdownOpen(false);
       }
-    };
-    if (dropdownOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
     }
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [dropdownOpen]);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
-    <header className="bg-white dark:bg-zinc-900 border-b border-gray-200 dark:border-zinc-700 px-4 sm:px-0 py-4 sticky top-0 z-50 shadow-sm">
-      <div className="flex items-center justify-between flex-wrap gap-4 max-w-[1280px] mx-auto">
-        {/* Logo */}
-        <div className="flex items-center gap-3 flex-shrink-0">
-          <img src={logo} alt="logo" className="w-10 h-10" />
+    <header className="sticky top-0 z-50 bg-white dark:bg-zinc-900 border-b border-gray-200 dark:border-zinc-700">
+      <div className="flex justify-between items-center w-full max-w-[1280px] mx-auto">
+        {/* Logo à gauche, bord à bord */}
+        <div className="flex items-center gap-3 pl-0 sm:pl-2">
+          <img
+            src={logo}
+            alt="logo"
+            className="w-10 h-10"
+            style={{ marginLeft: 0 }}
+          />
           <div>
             <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
               Tsinjool
@@ -90,17 +89,15 @@ const MainHeader: React.FC = () => {
           </div>
         </div>
 
-        {/* Actions */}
-        <div className="flex items-center gap-4 flex-shrink-0">
+        {/* Actions à droite, bord à bord */}
+        <div className="flex items-center gap-4 pr-0 sm:pr-2">
           <DarkMode />
 
-          {/* Date */}
           <div className="hidden sm:flex items-center gap-2 text-gray-700 dark:text-gray-300 text-sm whitespace-nowrap">
             <Calendar className="w-4 h-4" />
             {formatDate}
           </div>
 
-          {/* Notifications */}
           <div className="relative">
             <NotificationDropdown />
           </div>
@@ -121,9 +118,11 @@ const MainHeader: React.FC = () => {
               />
             </button>
 
-            {/* Dropdown menu */}
             {dropdownOpen && (
-              <div className="absolute right-0 mt-2 w-72 bg-white dark:bg-zinc-800 rounded-lg shadow-lg border border-gray-200 dark:border-zinc-700 overflow-hidden z-50 animate-fadeIn">
+              <div
+                className="absolute right-0 mt-2 w-72 bg-white dark:bg-zinc-800 rounded-lg shadow-lg border border-gray-200 dark:border-zinc-700 overflow-hidden z-[1000]"
+                style={{ minWidth: "280px" }}
+              >
                 {/* Header */}
                 <div className="flex items-center gap-3 p-4 border-b border-gray-200 dark:border-zinc-700">
                   <img
@@ -187,17 +186,6 @@ const MainHeader: React.FC = () => {
           </div>
         </div>
       </div>
-
-      {/* Animations CSS simple (à ajouter dans tailwind.config.js ou fichier CSS global) */}
-      <style>{`
-        @keyframes fadeIn {
-          from {opacity: 0; transform: translateY(-5px);}
-          to {opacity: 1; transform: translateY(0);}
-        }
-        .animate-fadeIn {
-          animation: fadeIn 0.2s ease forwards;
-        }
-      `}</style>
     </header>
   );
 };
