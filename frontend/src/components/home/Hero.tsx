@@ -6,7 +6,6 @@ import { useState, useEffect } from "react";
 const Hero = () => {
   const [loading, setLoading] = useState(true);
 
-  // Simulation du chargement
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 1000);
     return () => clearTimeout(timer);

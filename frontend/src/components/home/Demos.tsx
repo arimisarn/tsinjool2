@@ -34,15 +34,21 @@ const Demos = () => {
 
   return (
     <div className="relative overflow-hidden px-6 py-16 bg-muted/30 dark:bg-background transition-colors duration-500">
-      {/* Effet décoratif en arrière-plan */}
-      <div className="absolute top-[-80px] -left-40 w-[500px] h-[500px] rounded-full bg-gradient-to-tr from-purple-300/20 to-blue-300/10 dark:from-purple-900/10 dark:to-blue-900/10 blur-3xl opacity-70 z-0 pointer-events-none" />
+      {/* Effet décoratif en arrière-plan avec blur */}
+      <div
+        aria-hidden="true"
+        className="absolute top-[-80px] -left-40 w-[500px] h-[500px] rounded-full
+                   bg-gradient-to-tr from-purple-300/20 to-blue-300/10
+                   dark:from-purple-900/10 dark:to-blue-900/10
+                   blur-3xl opacity-70 z-0 pointer-events-none"
+      />
 
       <div className="max-w-6xl mx-auto relative z-10">
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
           viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
           className="text-3xl font-bold text-center mb-12 text-foreground"
         >
           Fonctionnalités principales
@@ -80,7 +86,7 @@ const Demos = () => {
                 className="bg-card p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 border border-border"
               >
                 <div
-                  className={`w-12 h-12 ${card.bg} rounded-lg flex items-center justify-center mb-4`}
+                  className={`${card.bg} w-12 h-12 rounded-lg flex items-center justify-center mb-4`}
                 >
                   {card.icon}
                 </div>
