@@ -8,65 +8,70 @@ class AIService {
   private baseUrl: string;
 
   constructor() {
-    this.apiKey = import.meta.env.VITE_GROQ_API_KEY || '';
-    this.baseUrl = 'https://api.groq.com/openai/v1/chat/completions';
-    
-    console.log('API Key configured:', this.apiKey ? 'Yes' : 'No');
+    this.apiKey = import.meta.env.VITE_GROQ_API_KEY || "";
+    this.baseUrl = "https://api.groq.com/openai/v1/chat/completions";
+
+    console.log("API Key configured:", this.apiKey ? "Yes" : "No");
   }
 
   async sendMessage(message: string): Promise<AIResponse> {
     if (!this.apiKey) {
       return {
-        response: 'Pour utiliser l\'IA vocale, vous devez configurer une clé API Groq gratuite. Rendez-vous sur console.groq.com pour créer un compte et obtenir votre clé API.',
-        error: 'API_KEY_MISSING'
+        response:
+          "Pour utiliser l'IA vocale, vous devez configurer une clé API Groq gratuite. Rendez-vous sur console.groq.com pour créer un compte et obtenir votre clé API.",
+        error: "API_KEY_MISSING",
       };
     }
 
-    console.log('Sending message to Groq API:', message);
+    console.log("Sending message to Groq API:", message);
 
     try {
       const response = await fetch(this.baseUrl, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Authorization': `Bearer ${this.apiKey}`,
-          'Content-Type': 'application/json',
+          Authorization: `Bearer ${this.apiKey}`,
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: 'llama3-8b-8192',
+          model: "llama3-8b-8192",
           messages: [
             {
-              role: 'system',
-              content: 'Tu es un assistant IA vocal français amical et utile. Réponds de manière naturelle et conversationnelle, comme dans une vraie conversation. Sois concis mais informatif.'
+              role: "system",
+              content:
+                "Tu es un assistant IA vocal français amical et utile. Réponds de manière naturelle et conversationnelle, comme dans une vraie conversation. Sois concis mais informatif.",
             },
             {
-              role: 'user',
-              content: message
-            }
+              role: "user",
+              content: message,
+            },
           ],
           max_tokens: 150,
           temperature: 0.7,
         }),
       });
 
-      console.log('Groq API response status:', response.status);
+      console.log("Groq API response status:", response.status);
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error('Groq API error:', errorText);
+        console.error("Groq API error:", errorText);
         throw new Error(`Erreur API (${response.status}): ${errorText}`);
       }
 
       const data = await response.json();
-      console.log('Groq API response:', data);
-      
+      console.log("Groq API response:", data);
+
       return {
-        response: data.choices[0]?.message?.content || 'Désolé, je n\'ai pas pu générer une réponse.'
+        response:
+          data.choices[0]?.message?.content ||
+          "Désolé, je n'ai pas pu générer une réponse.",
       };
     } catch (error) {
-      console.error('AI Service Error:', error);
+      console.error("AI Service Error:", error);
       return {
-        response: 'Erreur réseau. Vérifiez votre connexion internet et votre clé API Groq.',
-        error: 'NETWORK_ERROR'
+        response:
+          "Erreur réseau. Vérifiez votre connexion internet et votre clé API Groq.",
+        error: error instanceof Error ? error.message : "NETWORK_ERROR",
       };
     }
   }
