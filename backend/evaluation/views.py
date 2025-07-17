@@ -513,52 +513,57 @@ def weekly_activity(request):
     return Response(result)
 
 
+# class ScheduleExerciseView(APIView):
+#     permission_classes = [IsAuthenticated]
+
+#     def post(self, request, exercise_id):
+#         try:
+#             # 👇 Log debug (Render doit afficher ça !)
+#             print("📨 Requête reçue pour planification")
+
+#             # 🔒 Authentification
+#             user = request.user
+#             print("👤 Utilisateur :", user)
+
+#             # 🔁 Exercice
+#             exercise = Exercise.objects.get(pk=exercise_id)
+#             print("🏋️‍♀️ Exercice récupéré :", exercise)
+
+#             # 📆 Date/heure
+#             scheduled_str = request.data.get("scheduled_datetime")
+#             print("🕓 datetime reçu (string) :", scheduled_str)
+
+#             if not scheduled_str:
+#                 return Response(
+#                     {"error": "Date de planification manquante."}, status=400
+#                 )
+
+#             # 🔁 Conversion ISO → datetime Python
+#             scheduled_datetime = parse_datetime(scheduled_str)
+#             if scheduled_datetime is None:
+#                 return Response({"error": "Format datetime invalide."}, status=400)
+
+#             print("✅ datetime parsé :", scheduled_datetime)
+
+#             # 📦 Création
+#             se = ScheduledExercise.objects.create(
+#                 user=user, exercise=exercise, scheduled_datetime=scheduled_datetime
+#             )
+
+#             return Response(
+#                 {"success": f"Exercice planifié pour {scheduled_datetime}."}
+#             )
+
+#         except Exception as e:
+#             import traceback
+#             print("❌ Erreur lors de la planification :", e)
+#             print(traceback.format_exc())  # 👈 Affiche l'erreur complète dans les logs Render
+#             return Response({
+#                 "error": str(e),
+#             }, status=500)
+
+
+
 class ScheduleExerciseView(APIView):
-    permission_classes = [IsAuthenticated]
-
     def post(self, request, exercise_id):
-        try:
-            # 👇 Log debug (Render doit afficher ça !)
-            print("📨 Requête reçue pour planification")
-
-            # 🔒 Authentification
-            user = request.user
-            print("👤 Utilisateur :", user)
-
-            # 🔁 Exercice
-            exercise = Exercise.objects.get(pk=exercise_id)
-            print("🏋️‍♀️ Exercice récupéré :", exercise)
-
-            # 📆 Date/heure
-            scheduled_str = request.data.get("scheduled_datetime")
-            print("🕓 datetime reçu (string) :", scheduled_str)
-
-            if not scheduled_str:
-                return Response(
-                    {"error": "Date de planification manquante."}, status=400
-                )
-
-            # 🔁 Conversion ISO → datetime Python
-            scheduled_datetime = parse_datetime(scheduled_str)
-            if scheduled_datetime is None:
-                return Response({"error": "Format datetime invalide."}, status=400)
-
-            print("✅ datetime parsé :", scheduled_datetime)
-
-            # 📦 Création
-            se = ScheduledExercise.objects.create(
-                user=user, exercise=exercise, scheduled_datetime=scheduled_datetime
-            )
-
-            return Response(
-                {"success": f"Exercice planifié pour {scheduled_datetime}."}
-            )
-
-        except Exception as e:
-            import traceback
-            print("❌ Erreur lors de la planification :", e)
-            print(traceback.format_exc())  # 👈 Affiche l'erreur complète dans les logs Render
-            return Response({
-                "error": str(e),
-            }, status=500)
-
+        return Response({"message": f"Vous avez atteint la vue pour l'exercice {exercise_id}"})
