@@ -514,56 +514,49 @@ def weekly_activity(request):
 
 
 class ScheduleExerciseView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
-    print("📨 ScheduleExerciseView appelée")
+    permission_classes = [IsAuthenticated]
 
     def post(self, request, exercise_id):
         try:
-            scheduled_datetime = request.data.get("scheduled_datetime")
-            if not scheduled_datetime:
+            # 👇 Log debug (Render doit afficher ça !)
+            print("📨 Requête reçue pour planification")
+
+            # 🔒 Authentification
+            user = request.user
+            print("👤 Utilisateur :", user)
+
+            # 🔁 Exercice
+            exercise = Exercise.objects.get(pk=exercise_id)
+            print("🏋️‍♀️ Exercice récupéré :", exercise)
+
+            # 📆 Date/heure
+            scheduled_str = request.data.get("scheduled_datetime")
+            print("🕓 datetime reçu (string) :", scheduled_str)
+
+            if not scheduled_str:
                 return Response(
-                    {"error": "Date de planification manquante."},
-                    status=status.HTTP_400_BAD_REQUEST,
+                    {"error": "Date de planification manquante."}, status=400
                 )
 
-            # Debug
-            print("📅 Données reçues:", request.data)
+            # 🔁 Conversion ISO → datetime Python
+            scheduled_datetime = parse_datetime(scheduled_str)
+            if scheduled_datetime is None:
+                return Response({"error": "Format datetime invalide."}, status=400)
 
-            parsed_datetime = parse_datetime(scheduled_datetime)
-            if not parsed_datetime:
-                return Response(
-                    {"error": "Format de date invalide."},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
+            print("✅ datetime parsé :", scheduled_datetime)
 
-            exercise = Exercise.objects.get(id=exercise_id)
-
-            scheduled = ScheduledExercise.objects.create(
-                user=request.user,
-                exercise=exercise,
-                scheduled_datetime=parsed_datetime,
+            # 📦 Création
+            se = ScheduledExercise.objects.create(
+                user=user, exercise=exercise, scheduled_datetime=scheduled_datetime
             )
 
-            # Tu peux ajouter l'envoi de notification ici plus tard
-            serializer = ScheduledExerciseSerializer(scheduled)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-        except Exercise.DoesNotExist:
             return Response(
-                {"error": "Exercice introuvable."}, status=status.HTTP_404_NOT_FOUND
+                {"success": f"Exercice planifié pour {scheduled_datetime}."}
             )
-        except Exception as e:
-            traceback.print_exc()  # <== Affiche l'erreur exacte dans Render Logs
-            return Response(
-                {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
+
         except Exception as e:
             import traceback
 
             return Response(
-                {
-                    "error": str(e),
-                    "trace": traceback.format_exc(),  # ⬅️ on affiche toute la stacktrace ici
-                },
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                {"error": str(e), "trace": traceback.format_exc()}, status=500
             )
