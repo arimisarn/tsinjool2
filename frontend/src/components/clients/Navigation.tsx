@@ -108,65 +108,15 @@ const Navigation = () => {
               </ul>
             </NavigationMenuContent>
           </NavigationMenuItem>
-
           <NavigationMenuItem>
-            <NavigationMenuTrigger className="text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800">
-              <Brain className="w-5 h-5 mr-2" />
-              IA & Méthodes
-            </NavigationMenuTrigger>
-            <NavigationMenuContent className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700">
-              <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
-                {[
-                  "Coach IA Personnel",
-                  "Analyse Comportementale",
-                  "Suivi Personnalisé",
-                  "Méthodes Validées",
-                  "Sessions Interactives",
-                  "Recommandations",
-                ].map((title, i) => {
-                  const icons = [
-                    <Sparkles className="w-4 h-4 text-purple-500" />,
-                    <Search className="w-4 h-4 text-blue-500" />,
-                    <TrendingUp className="w-4 h-4 text-green-500" />,
-                    <CheckCircle className="w-4 h-4 text-emerald-500" />,
-                    <MessageCircle className="w-4 h-4 text-cyan-500" />,
-                    <Filter className="w-4 h-4 text-orange-500" />,
-                  ];
-                  const descriptions = [
-                    "Votre assistant intelligent 24/7",
-                    "Compréhension de vos habitudes",
-                    "Adaptation en temps réel",
-                    "Approches scientifiques éprouvées",
-                    "Conversations naturelles avec l'IA",
-                    "Suggestions personnalisées",
-                  ];
-                  return (
-                    <li key={i}>
-                      <NavigationMenuLink asChild>
-                        <a className="block space-y-1 rounded-md p-3 transition-colors hover:bg-gray-100 dark:hover:bg-gray-700 focus:bg-gray-100 dark:focus:bg-gray-700">
-                          <div className="text-sm font-medium flex items-center text-gray-900 dark:text-white">
-                            {icons[i]}
-                            <span className="ml-2">{title}</span>
-                          </div>
-                          <p className="text-sm text-gray-600 dark:text-gray-400">
-                            {descriptions[i]}
-                          </p>
-                        </a>
-                      </NavigationMenuLink>
-                    </li>
-                  );
-                })}
-              </ul>
-            </NavigationMenuContent>
-          </NavigationMenuItem>
-
-          <NavigationMenuItem>
-            <NavigationMenuLink
-              className={`${navigationMenuTriggerStyle()} text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800`}
-            >
-              <Trophy className="w-5 h-5 mr-2" />
-              Succès & Résultats
-            </NavigationMenuLink>
+            <Link to="/progress">
+              <NavigationMenuLink
+                className={`${navigationMenuTriggerStyle()} text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800`}
+              >
+                <Trophy className="w-5 h-5 mr-2" />
+                Mes Progrès
+              </NavigationMenuLink>
+            </Link>
           </NavigationMenuItem>
 
           <NavigationMenuItem>
