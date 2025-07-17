@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import {
+  Brain,
   Trophy,
   Target,
   Clock,
@@ -16,10 +17,6 @@ import {
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import { toast } from "sonner";
-
-import { Skeleton } from "@/components/ui/skeleton";
-
-import { motion, AnimatePresence } from "framer-motion";
 
 interface Step {
   id: number;
@@ -48,7 +45,11 @@ interface UserProfile {
   points: number;
 }
 
-function useDarkMode() {
+export default function Dashboard() {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // État dark mode
   const [isDark, setIsDark] = useState(() => {
     if (typeof window !== "undefined") {
       return document.documentElement.classList.contains("dark");
@@ -64,22 +65,14 @@ function useDarkMode() {
     }
   }, [isDark]);
 
-  return [isDark, setIsDark] as const;
-}
-
-export default function Dashboard() {
-  const navigate = useNavigate();
-  const location = useLocation();
   const [steps, setSteps] = useState<Step[]>([]);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [generatingPath, setGeneratingPath] = useState(false);
-  const [isDark, setIsDark] = useDarkMode();
 
   useEffect(() => {
     document.title = "Tsinjool - Tableau de bord";
     loadDashboardData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadDashboardData = async () => {
@@ -139,7 +132,6 @@ export default function Dashboard() {
           headers: { Authorization: `Token ${token}` },
         }
       );
-
       setSteps(response.data.coaching_path.steps);
       toast.success("Votre parcours personnalisé a été généré !");
     } catch (error: any) {
@@ -171,69 +163,53 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-zinc-900 dark:to-zinc-800 flex flex-col items-center justify-center p-6 transition-colors duration-500">
-        <Skeleton className="w-16 h-16 rounded-full mb-4" />
-        <Skeleton className="w-48 h-6 mb-2" />
-        <Skeleton className="w-64 h-4" />
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-zinc-900 dark:to-zinc-800 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-blue-600 rounded-full flex items-center justify-center mb-4 mx-auto animate-pulse">
+            <Brain className="w-8 h-8 text-white" />
+          </div>
+          <p className="text-gray-600 dark:text-gray-300">
+            Chargement de votre tableau de bord...
+          </p>
+        </div>
       </div>
     );
   }
 
   if (generatingPath) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-zinc-900 dark:to-zinc-800 flex flex-col items-center justify-center p-6 transition-colors duration-500">
-        <Skeleton className="w-20 h-20 rounded-full mb-6 animate-spin" />
-        <Skeleton className="w-64 h-8 mb-2" />
-        <Skeleton className="w-96 h-5" />
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-zinc-900 dark:to-zinc-800 flex items-center justify-center">
+        <div className="text-center max-w-md">
+          <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-blue-600 rounded-full flex items-center justify-center mb-6 mx-auto animate-spin">
+            <Brain className="w-10 h-10 text-white" />
+          </div>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+            Génération de votre parcours personnalisé
+          </h2>
+          <p className="text-gray-600 dark:text-gray-300">
+            Notre IA analyse vos réponses pour créer un programme adapté à vos
+            besoins...
+          </p>
+        </div>
       </div>
     );
   }
 
   return (
-    <motion.div
-      key={isDark ? "dark" : "light"}
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -10 }}
-      transition={{ duration: 0.4 }}
-      className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-zinc-900 dark:to-zinc-800 transition-colors duration-500"
-    >
-      {/* Dark Mode Toggle */}
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-zinc-900 dark:to-zinc-800">
+      {/* Toggle Dark Mode */}
       <div className="flex justify-end p-4">
         <button
-          aria-label="Toggle Dark Mode"
+          aria-label="Basculer mode clair/sombre"
           onClick={() => setIsDark(!isDark)}
           className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
         >
-          <AnimatePresence mode="wait" initial={false}>
-            {isDark ? (
-              <motion.span
-                key="sun"
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.8 }}
-                transition={{ duration: 0.25 }}
-              >
-                <Sun className="w-6 h-6" />
-              </motion.span>
-            ) : (
-              <motion.span
-                key="moon"
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.8 }}
-                transition={{ duration: 0.25 }}
-              >
-                <Moon className="w-6 h-6" />
-              </motion.span>
-            )}
-          </AnimatePresence>
+          {isDark ? <Sun className="w-6 h-6" /> : <Moon className="w-6 h-6" />}
         </button>
       </div>
 
       {/* Main Content */}
-      <div className="w-full px-6 py-8">
-        {/* Welcome Section */}
+      <div className="w-full px-4 py-8">
         <div className="mb-8">
           <p className="text-gray-600 dark:text-gray-300">
             Voici votre parcours personnalisé de{" "}
@@ -445,6 +421,6 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }
