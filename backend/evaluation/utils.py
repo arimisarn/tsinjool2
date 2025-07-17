@@ -46,7 +46,7 @@ from django.contrib.auth import get_user_model
 
 User = get_user_model()
 
-def send_notification(user: User, message: str, notif_type: str = "info"):
+def send_notification(user, message: str, notif_type: str = "info"):
     Notification.objects.create(
         user=user,
         message=message,
