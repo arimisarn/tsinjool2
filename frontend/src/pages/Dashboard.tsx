@@ -17,8 +17,9 @@ import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import { toast } from "sonner";
 
-// Import du Skeleton Shadcn UI (ou crée-le si tu ne l’as pas)
 import { Skeleton } from "@/components/ui/skeleton";
+
+import { motion, AnimatePresence } from "framer-motion";
 
 interface Step {
   id: number;
@@ -78,6 +79,7 @@ export default function Dashboard() {
   useEffect(() => {
     document.title = "Tsinjool - Tableau de bord";
     loadDashboardData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadDashboardData = async () => {
@@ -89,7 +91,6 @@ export default function Dashboard() {
         return;
       }
 
-      // Charger le profil utilisateur
       const profileResponse = await axios.get(
         "https://tsinjool-backend.onrender.com/api/profile/",
         {
@@ -98,7 +99,6 @@ export default function Dashboard() {
       );
       setUserProfile(profileResponse.data);
 
-      // Vérifier si un parcours existe déjà
       try {
         const pathResponse = await axios.get(
           "https://tsinjool-backend.onrender.com/api/coaching-paths/my/",
@@ -106,11 +106,9 @@ export default function Dashboard() {
             headers: { Authorization: `Token ${token}` },
           }
         );
-
         setSteps(pathResponse.data.steps || []);
       } catch (pathError: any) {
         if (pathError.response?.status === 404) {
-          // Aucun parcours trouvé, générer un nouveau
           await generateCoachingPath();
         } else {
           throw pathError;
@@ -146,7 +144,6 @@ export default function Dashboard() {
       toast.success("Votre parcours personnalisé a été généré !");
     } catch (error: any) {
       console.error(error);
-
       toast.error("Erreur lors de la génération du parcours.");
     } finally {
       setGeneratingPath(false);
@@ -193,7 +190,14 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-zinc-900 dark:to-zinc-800 transition-colors duration-500">
+    <motion.div
+      key={isDark ? "dark" : "light"}
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      transition={{ duration: 0.4 }}
+      className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-zinc-900 dark:to-zinc-800 transition-colors duration-500"
+    >
       {/* Dark Mode Toggle */}
       <div className="flex justify-end p-4">
         <button
@@ -201,7 +205,29 @@ export default function Dashboard() {
           onClick={() => setIsDark(!isDark)}
           className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
         >
-          {isDark ? <Sun className="w-6 h-6" /> : <Moon className="w-6 h-6" />}
+          <AnimatePresence mode="wait" initial={false}>
+            {isDark ? (
+              <motion.span
+                key="sun"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                transition={{ duration: 0.25 }}
+              >
+                <Sun className="w-6 h-6" />
+              </motion.span>
+            ) : (
+              <motion.span
+                key="moon"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                transition={{ duration: 0.25 }}
+              >
+                <Moon className="w-6 h-6" />
+              </motion.span>
+            )}
+          </AnimatePresence>
         </button>
       </div>
 
@@ -419,6 +445,6 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
