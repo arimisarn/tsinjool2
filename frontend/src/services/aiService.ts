@@ -10,15 +10,19 @@ class AIService {
   constructor() {
     this.apiKey = import.meta.env.VITE_GROQ_API_KEY || '';
     this.baseUrl = 'https://api.groq.com/openai/v1/chat/completions';
+    
+    console.log('API Key configured:', this.apiKey ? 'Yes' : 'No');
   }
 
   async sendMessage(message: string): Promise<AIResponse> {
     if (!this.apiKey) {
       return {
-        response: 'Erreur: Clé API Groq non configurée. Veuillez ajouter VITE_GROQ_API_KEY dans votre fichier .env',
+        response: 'Pour utiliser l\'IA vocale, vous devez configurer une clé API Groq gratuite. Rendez-vous sur console.groq.com pour créer un compte et obtenir votre clé API.',
         error: 'API_KEY_MISSING'
       };
     }
+
+    console.log('Sending message to Groq API:', message);
 
     try {
       const response = await fetch(this.baseUrl, {
@@ -44,11 +48,16 @@ class AIService {
         }),
       });
 
+      console.log('Groq API response status:', response.status);
+
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        console.error('Groq API error:', errorText);
+        throw new Error(`Erreur API (${response.status}): ${errorText}`);
       }
 
       const data = await response.json();
+      console.log('Groq API response:', data);
       
       return {
         response: data.choices[0]?.message?.content || 'Désolé, je n\'ai pas pu générer une réponse.'
@@ -56,7 +65,7 @@ class AIService {
     } catch (error) {
       console.error('AI Service Error:', error);
       return {
-        response: 'Désolé, je rencontre des difficultés techniques. Veuillez réessayer.',
+        response: 'Erreur réseau. Vérifiez votre connexion internet et votre clé API Groq.',
         error: 'NETWORK_ERROR'
       };
     }
