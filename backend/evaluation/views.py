@@ -11,6 +11,7 @@ from .serializers import (
     EvaluationSerializer,
     CoachingPathSerializer,
     NotificationSerializer,
+    ScheduledExerciseSerializer,
     StepSerializer,
     ExerciseSerializer,
     UserProgressSerializer,
@@ -511,18 +512,25 @@ def weekly_activity(request):
 
 
 
+
 class ScheduleExerciseView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, exercise_id):
-        exercise = Exercise.objects.get(id=exercise_id)
-        datetime_str = request.data.get("scheduled_datetime")
-        if not datetime_str:
-            return Response({"error": "Date manquante"}, status=400)
+        try:
+            exercise = Exercise.objects.get(id=exercise_id)
+        except Exercise.DoesNotExist:
+            return Response({'error': 'Exercise not found'}, status=404)
+
+        scheduled_datetime = request.data.get('scheduled_datetime')
+        if not scheduled_datetime:
+            return Response({'error': 'Scheduled datetime is required'}, status=400)
 
         scheduled = ScheduledExercise.objects.create(
             user=request.user,
             exercise=exercise,
-            scheduled_datetime=datetime_str
+            scheduled_datetime=scheduled_datetime
         )
-        return Response({"success": "Exercice planifié."}, status=201)
+
+        serializer = ScheduledExerciseSerializer(scheduled)
+        return Response(serializer.data, status=201)

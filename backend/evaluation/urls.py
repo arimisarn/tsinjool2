@@ -28,5 +28,5 @@ urlpatterns = [
     ),
     path("weekly-activity/", views.weekly_activity, name="weekly-activity"),
     # urls.py
-    path("exercises/<int:exercise_id>/schedule/", views.ScheduleExerciseView.as_view()),
+        path("exercises/<int:exercise_id>/schedule/", views.ScheduleExerciseView.as_view(), name="schedule-exercise"),
 ]
