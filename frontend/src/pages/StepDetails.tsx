@@ -110,11 +110,20 @@ export default function StepDetail() {
       toast.error("Veuillez choisir une date.");
       return;
     }
-
     if (!selectedExercise) {
       toast.error("Aucun exercice sélectionné.");
       return;
     }
+
+    // Construire la date + heure locale en string "YYYY-MM-DD HH:mm:ss"
+    const year = scheduledDate.getFullYear();
+    const month = (scheduledDate.getMonth() + 1).toString().padStart(2, "0");
+    const day = scheduledDate.getDate().toString().padStart(2, "0");
+
+    // Heure au format HH:mm:ss
+    const timeStr = scheduledTime + ":00";
+
+    const planned_datetime_str = `${year}-${month}-${day} ${timeStr}`;
 
     try {
       const token = localStorage.getItem("token");
@@ -124,33 +133,16 @@ export default function StepDetail() {
         return;
       }
 
-      // Créer l'ISO datetime : ex "2025-07-18T14:00:00Z"
-      const dateStr = scheduledDate.toISOString().split("T")[0];
-      const localDatetime = new Date(`${dateStr}T${scheduledTime}:00`);
-      const plannedDatetime = localDatetime.toISOString();
-
       await axios.post(
-        "https://tsinjool-backend.onrender.com/api/plan-exercise/",
-        {
-          exercise_id: selectedExercise.id,
-          planned_datetime: plannedDatetime,
-        },
-        {
-          headers: {
-            Authorization: `Token ${token}`,
-          },
-        }
+        `https://tsinjool-backend.onrender.com/api/exercises/${selectedExercise.id}/schedule/`,
+        { planned_datetime: planned_datetime_str },
+        { headers: { Authorization: `Token ${token}` } }
       );
 
-      toast.success("Exercice planifié avec succès !");
+      toast.success("Exercice planifié !");
       setShowScheduler(false);
-      setScheduledDate(undefined);
-      setScheduledTime("09:00");
-
-      // 🔁 Optionnel : refresh notifications (si besoin)
-      window.dispatchEvent(new Event("refresh-notifications"));
     } catch (error) {
-      console.error("Erreur planification exercice", error);
+      console.error(error);
       toast.error("Erreur lors de la planification.");
     }
   };

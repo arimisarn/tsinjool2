@@ -185,3 +185,5 @@ YOUTUBE_API_KEY = os.getenv("YOUTUBE_API_KEY")
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 PEXELS_API_KEY = os.getenv("PEXELS_API_KEY")
 
+USE_TZ = False
+TIME_ZONE = "Indian/Antananarivo"  # Ou ton fuseau horaire local
