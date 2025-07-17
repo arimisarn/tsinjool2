@@ -30,59 +30,36 @@ const Navigation = () => {
     <div className="border-b border-gray-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 transition-colors duration-300 px-4 sm:px-6 py-2">
       {/* Responsive menu trigger (mobile only) */}
       <div className="flex justify-between items-center sm:hidden">
-        <span className="text-gray-900 dark:text-white font-semibold text-lg">
-          Menu
-        </span>
+        <span className="text-gray-900 dark:text-white font-semibold text-lg">Menu</span>
         <Sheet>
           <SheetTrigger asChild>
             <Button variant="ghost" size="icon">
               <Menu className="w-5 h-5 text-gray-800 dark:text-white" />
             </Button>
           </SheetTrigger>
-          <SheetContent
-            side="left"
-            className="w-72 sm:w-80 bg-white dark:bg-zinc-900"
-          >
+          <SheetContent side="left" className="w-72 sm:w-80 bg-white dark:bg-zinc-900">
             <div className="mt-6 space-y-2 text-gray-900 dark:text-white">
-              <a
-                href="/"
-                className="flex items-center gap-2 hover:text-purple-600"
-              >
+              <a href="/" className="flex items-center gap-2 hover:text-purple-600">
                 <Home className="w-4 h-4" />
                 Accueil
               </a>
-              <a
-                href="#"
-                className="flex items-center gap-2 hover:text-purple-600"
-              >
+              <a href="#" className="flex items-center gap-2 hover:text-purple-600">
                 <Target className="w-4 h-4" />
                 Programmes
               </a>
-              <a
-                href="#"
-                className="flex items-center gap-2 hover:text-purple-600"
-              >
+              <a href="#" className="flex items-center gap-2 hover:text-purple-600">
                 <Brain className="w-4 h-4" />
                 IA & Méthodes
               </a>
-              <a
-                href="#"
-                className="flex items-center gap-2 hover:text-purple-600"
-              >
+              <a href="#" className="flex items-center gap-2 hover:text-purple-600">
                 <BookOpen className="w-4 h-4" />
                 Ressources
               </a>
-              <a
-                href="#"
-                className="flex items-center gap-2 hover:text-purple-600"
-              >
+              <a href="#" className="flex items-center gap-2 hover:text-purple-600">
                 <Trophy className="w-4 h-4" />
                 Succès
               </a>
-              <a
-                href="#"
-                className="flex items-center gap-2 hover:text-purple-600"
-              >
+              <a href="#" className="flex items-center gap-2 hover:text-purple-600">
                 <MessageCircle className="w-4 h-4" />
                 Support
               </a>
@@ -132,9 +109,7 @@ const Navigation = () => {
                   {[
                     {
                       title: "Développement Personnel",
-                      icon: (
-                        <TrendingUp className="w-4 h-4 mr-2 text-green-500" />
-                      ),
+                      icon: <TrendingUp className="w-4 h-4 mr-2 text-green-500" />,
                       desc: "Confiance, gestion du stress, etc.",
                     },
                     {
@@ -195,9 +170,7 @@ const Navigation = () => {
                     },
                     {
                       title: "Méthodes Validées",
-                      icon: (
-                        <CheckCircle className="w-4 h-4 text-emerald-500" />
-                      ),
+                      icon: <CheckCircle className="w-4 h-4 text-emerald-500" />,
                       desc: "Basé sur la science",
                     },
                   ].map((item, idx) => (

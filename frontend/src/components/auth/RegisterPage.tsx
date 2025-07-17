@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Eye, EyeOff, Brain, ArrowLeft } from "lucide-react";
+import { Eye, EyeOff, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import logo from "../../assets/logoRond.png";
 
 interface Slide {
   image: string;
@@ -43,9 +44,10 @@ const slides: Slide[] = [
 ];
 
 export default function RegisterPage() {
-    useEffect(() => {
-      document.title = "Tsinjool - Inscription";
-    }, []);
+  useEffect(() => {
+    document.title = "Tsinjool - Inscription";
+  }, []);
+
   const navigate = useNavigate();
   const [formData, setFormData] = useState<FormData>({
     email: "",
@@ -106,21 +108,19 @@ export default function RegisterPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 to-blue-900 flex items-center justify-center p-4">
-      <div className="w-full max-w-6xl bg-gray-900 rounded-3xl shadow-2xl overflow-hidden flex flex-col lg:flex-row min-h-[600px]">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-100 dark:from-slate-900 dark:to-blue-900 flex items-center justify-center p-4 transition-colors duration-500">
+      <div className="w-full max-w-6xl bg-white dark:bg-gray-900 rounded-3xl shadow-2xl overflow-hidden flex flex-col lg:flex-row min-h-[600px]">
         {/* Section formulaire */}
-        <div className="w-full lg:w-1/2 flex flex-col relative">
+        <div className="w-full lg:w-1/2 flex flex-col relative px-6 py-8 sm:px-10 sm:py-12">
           {/* Header avec logo et navigation */}
-          <div className="flex justify-between items-center p-6 lg:p-8">
+          <div className="flex justify-between items-center mb-10">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-blue-700 rounded-lg flex items-center justify-center">
-                <Brain className="w-6 h-6 text-white" />
-              </div>
+              <img src={logo} alt="logo" className="w-10 h-10" />
               <div>
-                <h1 className="text-2xl font-bold text-white transition-colors duration-300">
+                <h1 className="text-2xl font-bold text-gray-900 dark:text-white transition-colors duration-300">
                   Tsinjool
                 </h1>
-                <p className="text-sm text-gray-300 transition-colors duration-300">
+                <p className="text-sm text-gray-500 dark:text-gray-300 transition-colors duration-300">
                   Votre coach personnel intelligent
                 </p>
               </div>
@@ -129,7 +129,7 @@ export default function RegisterPage() {
             <button
               type="button"
               onClick={() => navigate("/login")}
-              className="text-purple-500 hover:underline font-medium"
+              className="text-purple-600 dark:text-purple-400 hover:underline font-semibold"
             >
               Déjà un compte ? Se connecter
             </button>
@@ -138,153 +138,151 @@ export default function RegisterPage() {
           {/* Formulaire */}
           <form
             onSubmit={(e) => e.preventDefault()}
-            className="flex-1 flex items-center justify-center p-6 lg:p-8"
+            className="flex-1 flex flex-col justify-center"
           >
-            <div className="w-full max-w-md">
-              <div className="mb-8">
-                <p className="text-xs uppercase tracking-wide text-gray-400 mb-2">
+            <div className="max-w-md w-full mx-auto space-y-6">
+              <div>
+                <p className="text-xs uppercase tracking-widest text-gray-400 dark:text-gray-500 mb-2">
                   COMMENCEZ GRATUITEMENT
                 </p>
-                <h1 className="text-3xl lg:text-4xl font-bold text-white mb-3">
+                <h1 className="text-3xl lg:text-4xl font-extrabold text-gray-900 dark:text-white mb-4">
                   Créer un nouveau compte
-                  <span className="text-blue-500">.</span>
+                  <span className="text-blue-600 dark:text-blue-400">.</span>
                 </h1>
               </div>
 
-              <div className="space-y-4">
-                {/* Nom et email sur la même ligne */}
-                <div className="flex gap-3">
-                  <div className="flex-1">
-                    <label
-                      htmlFor="nom_utilisateur"
-                      className="block text-sm font-medium text-gray-300 mb-2"
-                    >
-                      Nom d'utilisateur
-                    </label>
-                    <input
-                      id="nom_utilisateur"
-                      type="text"
-                      name="nom_utilisateur"
-                      value={formData.nom_utilisateur}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 border border-gray-700 rounded-xl bg-gray-800 focus:bg-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-600 transition-all duration-200 outline-none text-white placeholder-gray-400"
-                      placeholder="Michel"
-                      required
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <label
-                      htmlFor="email"
-                      className="block text-sm font-medium text-gray-300 mb-2"
-                    >
-                      Email
-                    </label>
-                    <input
-                      id="email"
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 border border-gray-700 rounded-xl bg-gray-800 focus:bg-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-600 transition-all duration-200 outline-none text-white placeholder-gray-400"
-                      placeholder="michel.masiak@anywhere.co"
-                      required
-                    />
-                  </div>
-                </div>
-
-                {/* Mot de passe */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* Nom d'utilisateur */}
                 <div>
                   <label
-                    htmlFor="password"
-                    className="block text-sm font-medium text-gray-300 mb-2"
+                    htmlFor="nom_utilisateur"
+                    className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
                   >
-                    Mot de passe
+                    Nom d'utilisateur
                   </label>
-                  <div className="relative">
-                    <input
-                      id="password"
-                      type={showPassword ? "text" : "password"}
-                      name="password"
-                      value={formData.password}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 pr-12 border border-gray-700 rounded-xl bg-gray-800 focus:bg-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-600 transition-all duration-200 outline-none text-white placeholder-gray-400"
-                      placeholder="••••••••"
-                      required
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-200 transition-colors duration-200"
-                      aria-label={
-                        showPassword
-                          ? "Masquer le mot de passe"
-                          : "Afficher le mot de passe"
-                      }
-                    >
-                      {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                    </button>
-                  </div>
+                  <input
+                    id="nom_utilisateur"
+                    name="nom_utilisateur"
+                    type="text"
+                    value={formData.nom_utilisateur}
+                    onChange={handleChange}
+                    placeholder="Michel"
+                    required
+                    className="w-full rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 px-4 py-3 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition"
+                  />
                 </div>
 
-                {/* Confirmer mot de passe */}
+                {/* Email */}
                 <div>
                   <label
-                    htmlFor="password2"
-                    className="block text-sm font-medium text-gray-300 mb-2"
+                    htmlFor="email"
+                    className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
                   >
-                    Confirmer le mot de passe
+                    Email
                   </label>
-                  <div className="relative">
-                    <input
-                      id="password2"
-                      type={showConfirmPassword ? "text" : "password"}
-                      name="password2"
-                      value={formData.password2}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 pr-12 border border-gray-700 rounded-xl bg-gray-800 focus:bg-gray-900 focus:border-blue-500 focus:ring-2 focus:ring-blue-600 transition-all duration-200 outline-none text-white placeholder-gray-400"
-                      placeholder="••••••••"
-                      required
-                    />
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setShowConfirmPassword(!showConfirmPassword)
-                      }
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-200 transition-colors duration-200"
-                      aria-label={
-                        showConfirmPassword
-                          ? "Masquer le mot de passe"
-                          : "Afficher le mot de passe"
-                      }
-                    >
-                      {showConfirmPassword ? (
-                        <EyeOff size={20} />
-                      ) : (
-                        <Eye size={20} />
-                      )}
-                    </button>
-                  </div>
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    placeholder="michel.masiak@anywhere.co"
+                    required
+                    className="w-full rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 px-4 py-3 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition"
+                  />
                 </div>
+              </div>
 
-                {/* Boutons */}
-                <div className="flex gap-3 pt-4">
+              {/* Mot de passe */}
+              <div>
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                >
+                  Mot de passe
+                </label>
+                <div className="relative">
+                  <input
+                    id="password"
+                    name="password"
+                    type={showPassword ? "text" : "password"}
+                    value={formData.password}
+                    onChange={handleChange}
+                    placeholder="••••••••"
+                    required
+                    className="w-full rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 px-4 py-3 pr-12 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition"
+                  />
                   <button
                     type="button"
-                    onClick={() => navigate(-1)}
-                    className="flex items-center justify-center gap-2 py-3 px-6 border border-gray-700 rounded-xl text-gray-300 hover:bg-gray-800 transition-all duration-200 font-medium group"
+                    onClick={() => setShowPassword(!showPassword)}
+                    aria-label={
+                      showPassword
+                        ? "Masquer le mot de passe"
+                        : "Afficher le mot de passe"
+                    }
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition"
                   >
-                    <ArrowLeft className="w-5 h-5 transform transition-transform duration-300 group-hover:-translate-x-1" />
-                    Retour
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleSubmit}
-                    disabled={loading}
-                    className="flex-1 py-3 px-6 bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {loading ? "Chargement..." : "S'inscrire"}
+                    {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                   </button>
                 </div>
+              </div>
+
+              {/* Confirmation mot de passe */}
+              <div>
+                <label
+                  htmlFor="password2"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                >
+                  Confirmer le mot de passe
+                </label>
+                <div className="relative">
+                  <input
+                    id="password2"
+                    name="password2"
+                    type={showConfirmPassword ? "text" : "password"}
+                    value={formData.password2}
+                    onChange={handleChange}
+                    placeholder="••••••••"
+                    required
+                    className="w-full rounded-xl border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 px-4 py-3 pr-12 text-gray-900 dark:text-gray-100 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    aria-label={
+                      showConfirmPassword
+                        ? "Masquer le mot de passe"
+                        : "Afficher le mot de passe"
+                    }
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition"
+                  >
+                    {showConfirmPassword ? (
+                      <EyeOff size={20} />
+                    ) : (
+                      <Eye size={20} />
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {/* Boutons */}
+              <div className="flex gap-3 pt-4 flex-wrap">
+                <button
+                  type="button"
+                  onClick={() => navigate(-1)}
+                  className="flex items-center justify-center gap-2 py-3 px-6 border border-gray-400 dark:border-gray-600 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition font-semibold w-full sm:w-auto"
+                >
+                  <ArrowLeft className="w-5 h-5" />
+                  Retour
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSubmit}
+                  disabled={loading}
+                  className="flex-1 py-3 px-6 bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600 text-white rounded-xl transition font-semibold disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto"
+                >
+                  {loading ? "Chargement..." : "S'inscrire"}
+                </button>
               </div>
             </div>
           </form>
@@ -299,10 +297,10 @@ export default function RegisterPage() {
                 key={index}
                 className={`absolute inset-0 w-full h-full transition-all duration-1000 ease-in-out ${
                   index === current
-                    ? "opacity-100 transform translate-x-0"
+                    ? "opacity-100 translate-x-0"
                     : index < current
-                    ? "opacity-0 transform -translate-x-full"
-                    : "opacity-0 transform translate-x-full"
+                    ? "-translate-x-full opacity-0"
+                    : "translate-x-full opacity-0"
                 }`}
               >
                 <div
@@ -317,56 +315,48 @@ export default function RegisterPage() {
                     }}
                   />
 
-                  {/* Overlay décoratif */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+                  {/* Overlays décoratifs */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                   <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-black/80 to-transparent"></div>
 
-                  {/* Contenu du slide avec animation */}
+                  {/* Contenu du slide */}
                   <div
-                    className={`absolute inset-0 flex flex-col items-center justify-center text-center px-8 text-white transition-all duration-1000 delay-300 ${
+                    className={`absolute inset-0 flex flex-col items-center justify-center text-center px-6 sm:px-12 text-white transition-all duration-1000 delay-300 ${
                       index === current
-                        ? "opacity-100 transform translate-y-0"
-                        : "opacity-0 transform translate-y-8"
+                        ? "opacity-100 translate-y-0"
+                        : "opacity-0 translate-y-8"
                     }`}
                   >
-                    <h3 className="text-3xl lg:text-4xl font-bold mb-4 drop-shadow-lg">
+                    <h3 className="text-3xl sm:text-4xl font-bold mb-4 drop-shadow-lg">
                       {slide.title}
                     </h3>
-                    <p className="text-lg lg:text-xl font-light max-w-md">
+                    <p className="text-lg sm:text-xl font-light max-w-md">
                       {slide.subtitle}
                     </p>
                   </div>
 
-                  {/* Éléments décoratifs animés */}
+                  {/* Décorations animées */}
                   <div
-                    className={`absolute top-8 left-8 transition-all duration-1000 delay-500 ${
+                    className={`absolute top-8 left-8 rounded-full bg-white/20 blur-sm w-16 h-16 transition-all duration-1000 delay-500 ${
                       index === current
-                        ? "opacity-60 transform scale-100"
-                        : "opacity-0 transform scale-75"
+                        ? "opacity-60 scale-100"
+                        : "opacity-0 scale-75"
                     }`}
-                  >
-                    <div className="w-16 h-16 bg-white/20 rounded-full blur-sm"></div>
-                  </div>
-
+                  />
                   <div
-                    className={`absolute top-1/4 right-12 transition-all duration-1000 delay-700 ${
+                    className={`absolute top-1/4 right-12 rounded-full bg-white/10 blur-lg w-24 h-24 transition-all duration-1000 delay-700 ${
                       index === current
-                        ? "opacity-40 transform scale-100"
-                        : "opacity-0 transform scale-75"
+                        ? "opacity-40 scale-100"
+                        : "opacity-0 scale-75"
                     }`}
-                  >
-                    <div className="w-24 h-24 bg-white/10 rounded-full blur-lg"></div>
-                  </div>
-
+                  />
                   <div
-                    className={`absolute bottom-1/4 left-12 transition-all duration-1000 delay-900 ${
+                    className={`absolute bottom-1/4 left-12 rounded-full bg-white/15 blur-md w-20 h-20 transition-all duration-1000 delay-900 ${
                       index === current
-                        ? "opacity-50 transform scale-100"
-                        : "opacity-0 transform scale-75"
+                        ? "opacity-50 scale-100"
+                        : "opacity-0 scale-75"
                     }`}
-                  >
-                    <div className="w-20 h-20 bg-white/15 rounded-full blur-md"></div>
-                  </div>
+                  />
                 </div>
               </div>
             ))}
@@ -379,7 +369,7 @@ export default function RegisterPage() {
                 key={index}
                 onClick={() => setCurrent(index)}
                 aria-label={`Slide ${index + 1}`}
-                className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                className={`w-3 h-3 rounded-full transition-transform duration-300 ${
                   index === current
                     ? "bg-white scale-125"
                     : "bg-white/50 hover:bg-white/75"
@@ -389,21 +379,19 @@ export default function RegisterPage() {
           </div>
 
           {/* Logo décoratif animé */}
-          <div className="absolute bottom-8 right-8 z-10">
-            <div className="flex space-x-1">
-              {[0, 1, 2].map((i) => (
-                <div
-                  key={i}
-                  className={`w-8 h-2 bg-white/80 rounded-full transform rotate-45 transition-all duration-300 ${
-                    current === i ? "scale-110 bg-white" : ""
-                  }`}
-                  style={{
-                    animationDelay: `${i * 0.1}s`,
-                    animation: current === i ? "pulse 2s infinite" : "none",
-                  }}
-                />
-              ))}
-            </div>
+          <div className="absolute bottom-8 right-8 z-10 flex space-x-1">
+            {[0, 1, 2].map((i) => (
+              <div
+                key={i}
+                className={`w-8 h-2 bg-white/80 rounded-full transform rotate-45 transition-all duration-300 ${
+                  current === i ? "scale-110 bg-white" : ""
+                }`}
+                style={{
+                  animationDelay: `${i * 0.1}s`,
+                  animation: current === i ? "pulse 2s infinite" : "none",
+                }}
+              />
+            ))}
           </div>
         </div>
       </div>

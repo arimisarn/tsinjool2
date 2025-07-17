@@ -29,7 +29,7 @@ const MainHeader = () => {
             className="flex items-center px-4 py-2 rounded-lg font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors duration-300"
           >
             <LogIn className="w-4 h-4 mr-2" />
-            <span className="hidden xs:inline">Se connecter</span>
+            <span className="hidden sm:inline">Se connecter</span>
           </Link>
 
           <Link
@@ -37,7 +37,7 @@ const MainHeader = () => {
             className="flex items-center bg-gradient-to-r from-purple-500 to-blue-600 text-white px-5 py-2 rounded-lg font-medium hover:from-purple-600 hover:to-blue-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
           >
             <UserPlus className="w-4 h-4 mr-2" />
-            <span className="hidden xs:inline">S'inscrire</span>
+            <span className="hidden sm:inline">S'inscrire</span>
           </Link>
         </div>
       </div>
