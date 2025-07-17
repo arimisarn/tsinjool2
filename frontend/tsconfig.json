@@ -10,7 +10,7 @@
   ],
   "types": ["node"],
   "compilerOptions": {
-    "typeRoots": ["./src/types", "./node_modules/@types"],
+    "typeRoots": ["./node_modules/@types", "./src/types"],
     "types": ["node", "web"],
     "baseUrl": ".",
     "paths": {
