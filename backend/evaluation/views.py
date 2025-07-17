@@ -515,6 +515,7 @@ def weekly_activity(request):
 
 class ScheduleExerciseView(APIView):
     permission_classes = [permissions.IsAuthenticated]
+    print("📨 ScheduleExerciseView appelée")
 
     def post(self, request, exercise_id):
         try:
@@ -555,4 +556,14 @@ class ScheduleExerciseView(APIView):
             traceback.print_exc()  # <== Affiche l'erreur exacte dans Render Logs
             return Response(
                 {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+        except Exception as e:
+            import traceback
+
+            return Response(
+                {
+                    "error": str(e),
+                    "trace": traceback.format_exc(),  # ⬅️ on affiche toute la stacktrace ici
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
