@@ -556,7 +556,9 @@ class ScheduleExerciseView(APIView):
 
         except Exception as e:
             import traceback
+            print("❌ Erreur lors de la planification :", e)
+            print(traceback.format_exc())  # 👈 Affiche l'erreur complète dans les logs Render
+            return Response({
+                "error": str(e),
+            }, status=500)
 
-            return Response(
-                {"error": str(e), "trace": traceback.format_exc()}, status=500
-            )
