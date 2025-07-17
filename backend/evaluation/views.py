@@ -95,6 +95,7 @@ def generate_coaching_path(request):
 
             for exercise_data in step_data["exercises"]:
                 instructions = exercise_data.get("instructions", [])
+                image_url = get_image_from_pexels(exercise_data["title"])
                 if isinstance(instructions, str):
                     try:
                         instructions = json.loads(instructions)
@@ -107,7 +108,6 @@ def generate_coaching_path(request):
                         recommended_videos = json.loads(recommended_videos)
                     except Exception:
                         recommended_videos = []
-                image_url = get_image_from_pexels(exercise_data["title"])
                 Exercise.objects.create(
                     step=step,
                     title=exercise_data["title"],
@@ -117,6 +117,7 @@ def generate_coaching_path(request):
                     instructions=instructions,
                     animation_character=exercise_data.get("animation_character", "🤖"),
                     recommended_videos=recommended_videos,
+                    image_url=image_url,  # maintenant défini
                 )
 
         UserProgress.objects.get_or_create(user=request.user)
