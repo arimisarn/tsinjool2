@@ -520,10 +520,21 @@ class ScheduleExerciseView(APIView):
             exercise = Exercise.objects.get(id=exercise_id)
             scheduled_datetime = request.data.get("scheduled_datetime")
 
+            print("✅ Données reçues :", request.data)
+            print("📅 Datetime reçu :", scheduled_datetime)
+
             if not scheduled_datetime:
                 return Response(
                     {"error": "Date de planification manquante."}, status=400
                 )
+
+            # Optionnel : valider le format
+            try:
+                parsed_dt = parse_datetime(scheduled_datetime)
+                if parsed_dt is None:
+                    raise ValueError("Datetime invalide")
+            except Exception as e:
+                return Response({"error": f"Date invalide: {e}"}, status=400)
 
             scheduled = ScheduledExercise.objects.create(
                 user=request.user,
@@ -538,8 +549,7 @@ class ScheduleExerciseView(APIView):
             return Response({"error": "Exercice introuvable."}, status=404)
 
         except Exception as e:
-            print("ERREUR DANS ScheduleExerciseView :", e)
             import traceback
 
-            traceback.print_exc()
-            return Response({"error": "Erreur interne du serveur."}, status=500)
+            traceback.print_exc()  # ✅ Affiche la vraie erreur dans Render
+            return Response({"error": f"Erreur interne: {str(e)}"}, status=500)
