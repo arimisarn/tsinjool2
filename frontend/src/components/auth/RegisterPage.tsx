@@ -78,16 +78,13 @@ export default function RegisterPage() {
 
     setLoading(true);
     try {
-      const res = await axios.post(
+      await axios.post(
         "https://tsinjool-backend.onrender.com/api/register/",
         formData
       );
-      console.log(res);
-
       sessionStorage.setItem("pendingUsername", formData.nom_utilisateur);
       sessionStorage.setItem("pendingEmail", formData.email);
       sessionStorage.setItem("pendingPassword", formData.password);
-
       toast.success("Inscription réussie ! Veuillez confirmer votre email.");
       navigate("/confirm-email", { state: { email: formData.email } });
     } catch (error: any) {
@@ -131,7 +128,10 @@ export default function RegisterPage() {
           </div>
 
           <form
-            onSubmit={(e) => e.preventDefault()}
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleSubmit();
+            }}
             className="flex-1 flex items-center justify-center p-6 lg:p-8"
           >
             <div className="w-full max-w-md space-y-6">
@@ -153,7 +153,7 @@ export default function RegisterPage() {
                     name="nom_utilisateur"
                     value={formData.nom_utilisateur}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                     placeholder="JeanDupont"
                     required
                   />
@@ -164,10 +164,10 @@ export default function RegisterPage() {
                   </label>
                   <input
                     name="email"
+                    type="email"
                     value={formData.email}
                     onChange={handleChange}
-                    type="email"
-                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                     placeholder="email@example.com"
                     required
                   />
@@ -184,14 +184,14 @@ export default function RegisterPage() {
                     type={showPassword ? "text" : "password"}
                     value={formData.password}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 pr-12 border border-gray-300 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-3 pr-12 border border-gray-300 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                     placeholder="••••••••"
                     required
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400"
                   >
                     {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                   </button>
@@ -208,14 +208,14 @@ export default function RegisterPage() {
                     type={showConfirmPassword ? "text" : "password"}
                     value={formData.password2}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 pr-12 border border-gray-300 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-4 py-3 pr-12 border border-gray-300 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                     placeholder="••••••••"
                     required
                   />
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 dark:text-gray-400"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400"
                   >
                     {showConfirmPassword ? (
                       <EyeOff size={20} />
@@ -230,16 +230,15 @@ export default function RegisterPage() {
                 <button
                   type="button"
                   onClick={() => navigate(-1)}
-                  className="flex items-center gap-2 px-6 py-3 border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-200 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all"
+                  className="flex items-center gap-2 px-6 py-3 border border-gray-300 dark:border-gray-700 text-gray-800 dark:text-gray-200 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800"
                 >
                   <ArrowLeft className="w-4 h-4" />
                   Retour
                 </button>
                 <button
-                  type="button"
-                  onClick={handleSubmit}
+                  type="submit"
                   disabled={loading}
-                  className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 disabled:opacity-50"
                 >
                   {loading ? "Chargement..." : "S'inscrire"}
                 </button>
@@ -248,7 +247,7 @@ export default function RegisterPage() {
           </form>
         </div>
 
-        {/* Carrousel (inchangé ici) */}
+        {/* Section carrousel avec animations */}
         <div className="w-full lg:w-1/2 relative overflow-hidden min-h-[300px] lg:min-h-full">
           <div className="relative w-full h-full">
             {slides.map((slide, index) => (
@@ -256,7 +255,7 @@ export default function RegisterPage() {
                 key={index}
                 className={`absolute inset-0 w-full h-full transition-all duration-1000 ease-in-out ${
                   index === current
-                    ? "opacity-100 transform translate-x-0"
+                    ? "opacity-100 translate-x-0"
                     : index < current
                     ? "opacity-0 -translate-x-full"
                     : "opacity-0 translate-x-full"
@@ -269,12 +268,61 @@ export default function RegisterPage() {
                     className="absolute inset-0 bg-cover bg-center"
                     style={{ backgroundImage: `url(${slide.image})` }}
                   />
-                  <div className="absolute inset-0 bg-black/50 dark:bg-black/60 flex flex-col items-center justify-center text-white text-center px-6">
-                    <h3 className="text-3xl font-bold mb-2">{slide.title}</h3>
-                    <p className="text-lg">{slide.subtitle}</p>
+                  <div className="absolute inset-0 bg-black/70 flex flex-col items-center justify-center text-white px-8 text-center">
+                    <h3 className="text-3xl lg:text-4xl font-bold mb-4">
+                      {slide.title}
+                    </h3>
+                    <p className="text-lg lg:text-xl font-light max-w-md">
+                      {slide.subtitle}
+                    </p>
+                  </div>
+
+                  {/* Décors animés */}
+                  <div
+                    className={`absolute top-8 left-8 ${
+                      index === current
+                        ? "opacity-60 scale-100"
+                        : "opacity-0 scale-75"
+                    } transition-all duration-1000`}
+                  >
+                    <div className="w-16 h-16 bg-white/20 rounded-full blur-sm"></div>
+                  </div>
+                  <div
+                    className={`absolute top-1/4 right-12 ${
+                      index === current
+                        ? "opacity-40 scale-100"
+                        : "opacity-0 scale-75"
+                    } transition-all duration-1000 delay-200`}
+                  >
+                    <div className="w-24 h-24 bg-white/10 rounded-full blur-lg"></div>
+                  </div>
+                  <div
+                    className={`absolute bottom-1/4 left-12 ${
+                      index === current
+                        ? "opacity-50 scale-100"
+                        : "opacity-0 scale-75"
+                    } transition-all duration-1000 delay-400`}
+                  >
+                    <div className="w-20 h-20 bg-white/15 rounded-full blur-md"></div>
                   </div>
                 </div>
               </div>
+            ))}
+          </div>
+
+          {/* Indicateurs */}
+          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex space-x-3 z-10">
+            {slides.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrent(index)}
+                aria-label={`Slide ${index + 1}`}
+                className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                  index === current
+                    ? "bg-white scale-125"
+                    : "bg-white/50 hover:bg-white/75"
+                }`}
+              />
             ))}
           </div>
         </div>
