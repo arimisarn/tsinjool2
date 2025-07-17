@@ -1,4 +1,5 @@
 import json
+import traceback
 from rest_framework import viewsets, status
 from rest_framework.decorators import api_view, permission_classes, action
 from rest_framework.permissions import IsAuthenticated
@@ -517,39 +518,41 @@ class ScheduleExerciseView(APIView):
 
     def post(self, request, exercise_id):
         try:
-            exercise = Exercise.objects.get(id=exercise_id)
             scheduled_datetime = request.data.get("scheduled_datetime")
-
-            print("✅ Données reçues :", request.data)
-            print("📅 Datetime reçu :", scheduled_datetime)
-
             if not scheduled_datetime:
                 return Response(
-                    {"error": "Date de planification manquante."}, status=400
+                    {"error": "Date de planification manquante."},
+                    status=status.HTTP_400_BAD_REQUEST,
                 )
 
-            # Optionnel : valider le format
-            try:
-                parsed_dt = parse_datetime(scheduled_datetime)
-                if parsed_dt is None:
-                    raise ValueError("Datetime invalide")
-            except Exception as e:
-                return Response({"error": f"Date invalide: {e}"}, status=400)
+            # Debug
+            print("📅 Données reçues:", request.data)
+
+            parsed_datetime = parse_datetime(scheduled_datetime)
+            if not parsed_datetime:
+                return Response(
+                    {"error": "Format de date invalide."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+            exercise = Exercise.objects.get(id=exercise_id)
 
             scheduled = ScheduledExercise.objects.create(
                 user=request.user,
                 exercise=exercise,
-                scheduled_datetime=scheduled_datetime,
+                scheduled_datetime=parsed_datetime,
             )
 
+            # Tu peux ajouter l'envoi de notification ici plus tard
             serializer = ScheduledExerciseSerializer(scheduled)
-            return Response(serializer.data, status=201)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         except Exercise.DoesNotExist:
-            return Response({"error": "Exercice introuvable."}, status=404)
-
+            return Response(
+                {"error": "Exercice introuvable."}, status=status.HTTP_404_NOT_FOUND
+            )
         except Exception as e:
-            import traceback
-
-            traceback.print_exc()  # ✅ Affiche la vraie erreur dans Render
-            return Response({"error": f"Erreur interne: {str(e)}"}, status=500)
+            traceback.print_exc()  # <== Affiche l'erreur exacte dans Render Logs
+            return Response(
+                {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
