@@ -110,20 +110,11 @@ export default function StepDetail() {
       toast.error("Veuillez choisir une date.");
       return;
     }
+
     if (!selectedExercise) {
       toast.error("Aucun exercice sélectionné.");
       return;
     }
-
-    // Construire la date + heure locale en string "YYYY-MM-DD HH:mm:ss"
-    const year = scheduledDate.getFullYear();
-    const month = (scheduledDate.getMonth() + 1).toString().padStart(2, "0");
-    const day = scheduledDate.getDate().toString().padStart(2, "0");
-
-    // Heure au format HH:mm:ss
-    const timeStr = scheduledTime + ":00";
-
-    const planned_datetime_str = `${year}-${month}-${day} ${timeStr}`;
 
     try {
       const token = localStorage.getItem("token");
@@ -133,16 +124,34 @@ export default function StepDetail() {
         return;
       }
 
+      // ✅ Construire une datetime locale sans UTC (ex: "2025-07-18 18:30:00")
+      const year = scheduledDate.getFullYear();
+      const month = String(scheduledDate.getMonth() + 1).padStart(2, "0");
+      const day = String(scheduledDate.getDate()).padStart(2, "0");
+
+      const plannedDatetime = `${year}-${month}-${day} ${scheduledTime}:00`;
+
       await axios.post(
-        `https://tsinjool-backend.onrender.com/api/exercises/${selectedExercise.id}/schedule/`,
-        { planned_datetime: planned_datetime_str },
-        { headers: { Authorization: `Token ${token}` } }
+        "https://tsinjool-backend.onrender.com/api/plan-exercise/",
+        {
+          exercise_id: selectedExercise.id,
+          planned_datetime: plannedDatetime,
+        },
+        {
+          headers: {
+            Authorization: `Token ${token}`,
+          },
+        }
       );
 
-      toast.success("Exercice planifié !");
+      toast.success("Exercice planifié avec succès !");
       setShowScheduler(false);
+      setScheduledDate(undefined);
+      setScheduledTime("09:00");
+
+      window.dispatchEvent(new Event("refresh-notifications"));
     } catch (error) {
-      console.error(error);
+      console.error("Erreur planification exercice", error);
       toast.error("Erreur lors de la planification.");
     }
   };
