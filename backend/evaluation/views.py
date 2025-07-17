@@ -15,6 +15,7 @@ from .serializers import (
     ExerciseSerializer,
     UserProgressSerializer,
 )
+from .utils import send_notification
 from .ai_service import AICoachingService
 from rest_framework.views import APIView
 from .ai_service import AICoachingService, get_youtube_url_from_title
@@ -22,7 +23,8 @@ from django.conf import settings
 from datetime import timedelta
 from django.utils.timezone import now
 from collections import defaultdict
-from .utils import get_image_from_pexels
+from .utils import get_image_from_pexels, send_notification
+
 
 class EvaluationViewSet(viewsets.ModelViewSet):
     serializer_class = EvaluationSerializer
@@ -123,6 +125,12 @@ def generate_coaching_path(request):
         UserProgress.objects.get_or_create(user=request.user)
 
         serializer = CoachingPathSerializer(coaching_path)
+        send_notification(
+            request.user,
+            "🎯 Votre parcours de coaching a été généré avec succès !",
+            "success",
+        )
+
         return Response(
             {
                 "message": "Parcours généré avec succès",
@@ -133,6 +141,12 @@ def generate_coaching_path(request):
 
     except Exception as e:
         print("ERREUR lors de la génération du parcours IA :", str(e))
+        send_notification(
+            request.user,
+            "❌ Une erreur est survenue lors de la génération de votre parcours. Veuillez réessayer.",
+            "alert",
+        )
+        print("DEBUG - Erreur :", str(e))
         return Response(
             {"error": f"Erreur lors de la génération du parcours : {str(e)}"},
             status=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -206,6 +220,17 @@ class ExerciseViewSet(viewsets.ReadOnlyModelViewSet):
 
         # ✅ Marquer comme terminé (cela met aussi à jour les points et le niveau)
         exercise.mark_completed()
+        # ✅ Vérifier si l'étape entière est terminée
+        step = exercise.step
+        total = step.exercises.count()
+        completed = step.exercises.filter(completed=True).count()
+
+        if completed == total:
+            send_notification(
+                request.user,
+                f"🏁 Vous avez terminé l'étape « {step.title} ». Continuez comme ça !",
+                "success"
+            )
 
         # ✅ Mettre à jour les progrès utilisateur
         user_progress, created = UserProgress.objects.get_or_create(user=request.user)

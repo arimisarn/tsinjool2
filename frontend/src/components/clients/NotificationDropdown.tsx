@@ -1,4 +1,3 @@
-// components/NotificationDropdown.tsx
 "use client";
 
 import { Bell, CheckCircle, Info, AlertCircle } from "lucide-react";
@@ -52,9 +51,26 @@ export default function NotificationDropdown() {
     }
   };
 
+  // ✅ Récupération au montage
   useEffect(() => {
     fetchNotifications();
   }, []);
+
+  // ✅ Affichage automatique des nouvelles notifications
+  useEffect(() => {
+    const unread = notifications.filter((n) => !n.is_read);
+
+    unread.forEach((notif) => {
+      const shownKey = `shown-notif-${notif.id}`;
+      if (!sessionStorage.getItem(shownKey)) {
+        if (notif.type === "alert") toast.error(notif.message);
+        else if (notif.type === "success") toast.success(notif.message);
+        else toast.info(notif.message);
+
+        sessionStorage.setItem(shownKey, "true");
+      }
+    });
+  }, [notifications]);
 
   const unreadCount = notifications.filter((n) => !n.is_read).length;
 
@@ -71,6 +87,7 @@ export default function NotificationDropdown() {
 
   return (
     <div className="relative">
+      {/* Bouton cloche */}
       <button
         onClick={() => setOpen(!open)}
         className="relative p-2 rounded-full hover:bg-gray-100 dark:hover:bg-zinc-700 transition"
@@ -83,6 +100,7 @@ export default function NotificationDropdown() {
         )}
       </button>
 
+      {/* Dropdown avec Framer Motion */}
       <AnimatePresence>
         {open && (
           <motion.div

@@ -1,3 +1,4 @@
+from .models import Notification
 import openai
 from django.conf import settings
 import requests
@@ -40,3 +41,14 @@ def get_image_from_pexels(query: str) -> str | None:
     if photos:
         return photos[0]["src"]["medium"]
     return None
+
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
+def send_notification(user: User, message: str, notif_type: str = "info"):
+    Notification.objects.create(
+        user=user,
+        message=message,
+        type=notif_type
+    )
