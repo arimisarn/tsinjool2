@@ -1,5 +1,5 @@
-{
-  "files": [],
+
+{"files": [],
   "references": [
     {
       "path": "./tsconfig.app.json"
@@ -10,7 +10,8 @@
   ],
   "types": ["node"],
   "compilerOptions": {
-    "types": ["node"],
+    "typeRoots": ["./src/types", "./node_modules/@types"],
+    "types": ["node", "web"],
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]

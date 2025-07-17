@@ -18,13 +18,13 @@ import RequireAuth from "./components/auth/RequireAuth";
 import "./index.css";
 import ConfirmEmailPage from "./pages/ ConfirmEmailPage";
 import ChatBot from "./pages/ChatBot";
-import AssistantVocal from "./pages/AssistantVocal";
 import CoachVisuel from "./pages/CoachVisuel";
 import Evaluation from "./pages/Evaluation";
 import ExercicePage from "./pages/ExercisePage";
 import StepDetail from "./pages/StepDetails";
 import Settings from "./pages/Settings";
 import Progress from "./pages/Progress";
+import ChatVoice from "./pages/ChatVoice";
 // import { AuthProvider } from "./context/AuthContext";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
@@ -81,7 +81,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
                 path="/assistant-vocal"
                 element={
                   <RequireAuth>
-                    <AssistantVocal />
+                    <ChatVoice />
                   </RequireAuth>
                 }
               />
