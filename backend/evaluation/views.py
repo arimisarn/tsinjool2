@@ -269,11 +269,12 @@ class ExerciseViewSet(viewsets.ReadOnlyModelViewSet):
         except Exception:
             total_points = 0  # fallback si le profil n'existe pas
         
-        send_notification(
-            request.user,
-            f"🏁 Vous avez terminé l'étape « {step.title} ». Continuez comme ça !",
-            "success",
-        )
+        if completed == total:
+            send_notification(
+                request.user,
+                f"🏁 Vous avez terminé l'étape « {step.title} ». Continuez comme ça !",
+                "success",
+            )
         return Response(
             {
                 "message": "Exercice terminé avec succès",
