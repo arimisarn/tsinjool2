@@ -6,7 +6,15 @@ from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from rest_framework import generics, permissions
-from .models import Evaluation, CoachingPath, Notification, ScheduledExercise, Step, Exercise, UserProgress
+from .models import (
+    Evaluation,
+    CoachingPath,
+    Notification,
+    ScheduledExercise,
+    Step,
+    Exercise,
+    UserProgress,
+)
 from .serializers import (
     EvaluationSerializer,
     CoachingPathSerializer,
@@ -27,6 +35,7 @@ from collections import defaultdict
 from .utils import get_image_from_pexels, send_notification
 from django.utils.dateparse import parse_datetime
 from .tasks import send_scheduled_notification
+
 
 class EvaluationViewSet(viewsets.ModelViewSet):
     serializer_class = EvaluationSerializer
@@ -270,7 +279,7 @@ class ExerciseViewSet(viewsets.ReadOnlyModelViewSet):
             total_points = request.user.profile.points
         except Exception:
             total_points = 0  # fallback si le profil n'existe pas
-        
+
         if completed == total:
             send_notification(
                 request.user,
@@ -296,7 +305,7 @@ class ExerciseViewSet(viewsets.ReadOnlyModelViewSet):
         )
 
         return Response({"recommended_videos": videos})
-    
+
     @action(detail=True, methods=["post"])
     def schedule(self, request, pk=None):
         """Planifier une notification pour un exercice"""
@@ -311,20 +320,12 @@ class ExerciseViewSet(viewsets.ReadOnlyModelViewSet):
 
             # 💡 Planifie la tâche (via Celery ou autre)
             send_scheduled_notification.apply_async(
-                args=[request.user.id, pk],
-                eta=scheduled_dt
+                args=[request.user.id, pk], eta=scheduled_dt
             )
 
             return Response({"message": "Notification planifiée avec succès"})
         except Exception as e:
             return Response({"error": str(e)}, status=500)
-    
-    
-    
-    
-    
-    
-    
 
 
 @api_view(["GET"])
@@ -511,26 +512,34 @@ def weekly_activity(request):
     return Response(result)
 
 
-
-
 class ScheduleExerciseView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, exercise_id):
         try:
             exercise = Exercise.objects.get(id=exercise_id)
+            scheduled_datetime = request.data.get("scheduled_datetime")
+
+            if not scheduled_datetime:
+                return Response(
+                    {"error": "Date de planification manquante."}, status=400
+                )
+
+            scheduled = ScheduledExercise.objects.create(
+                user=request.user,
+                exercise=exercise,
+                scheduled_datetime=scheduled_datetime,
+            )
+
+            serializer = ScheduledExerciseSerializer(scheduled)
+            return Response(serializer.data, status=201)
+
         except Exercise.DoesNotExist:
-            return Response({'error': 'Exercise not found'}, status=404)
+            return Response({"error": "Exercice introuvable."}, status=404)
 
-        scheduled_datetime = request.data.get('scheduled_datetime')
-        if not scheduled_datetime:
-            return Response({'error': 'Scheduled datetime is required'}, status=400)
+        except Exception as e:
+            print("ERREUR DANS ScheduleExerciseView :", e)
+            import traceback
 
-        scheduled = ScheduledExercise.objects.create(
-            user=request.user,
-            exercise=exercise,
-            scheduled_datetime=scheduled_datetime
-        )
-
-        serializer = ScheduledExerciseSerializer(scheduled)
-        return Response(serializer.data, status=201)
+            traceback.print_exc()
+            return Response({"error": "Erreur interne du serveur."}, status=500)

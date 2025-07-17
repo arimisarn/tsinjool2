@@ -15,7 +15,6 @@ import axios from "axios";
 import { toast } from "sonner";
 import { Calendar } from "@/components/ui/calendar";
 
-
 interface Exercise {
   id: number;
   title: string;
