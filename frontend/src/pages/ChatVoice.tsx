@@ -1,255 +1,404 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { Brain, MessageSquare, Settings } from 'lucide-react';
-import { useSpeechRecognition } from '@/hooks/useSpeechRecognition';
-import { useSpeechSynthesis } from '@/hooks/useSpeechSynthesis';
-import { aiService } from '@/services/aiService';
-import { VoiceButton } from '@/components/clients/VoiceButton';
-import { AudioVisualizer } from '@/components/clients/AudioVisualizer';
-import { ConversationHistory } from '@/components/clients/ConversationHistory';
-import { StatusIndicator } from '@/components/clients/StatusIndicator';
+import { Bot, Settings, Wifi, WifiOff } from 'lucide-react';
+import VoiceVisualizer from '@/components/clients/VoiceVizualiser';
+import VoiceControls from '@/components/clients/VoiceControl';
+import MessageHistory from '@/components/clients/MessageHistory';
+import { SpeechRecognitionService, SpeechSynthesisService } from '@/utils/speech';
+import { sendToGroq } from '@/utils/groq';
+import { Message, AIState, VoiceSettings } from '@/types';
 
-interface Message {
-  id: string;
-  type: 'user' | 'ai';
-  content: string;
-  timestamp: Date;
-}
 
-function ChatVoice() {
+function App() {
   const [messages, setMessages] = useState<Message[]>([]);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [error, setError] = useState<string>('');
+  const [aiState, setAiState] = useState<AIState>({
+    isListening: false,
+    isProcessing: false,
+    isSpeaking: false,
+    isIdle: true,
+  });
+  const [voiceSettings, setVoiceSettings] = useState<VoiceSettings>({
+    language: 'fr-FR',
+    voice: null,
+    rate: 1,
+    pitch: 1,
+  });
+  const [showSettings, setShowSettings] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [apiStatus, setApiStatus] = useState<'unknown' | 'working' | 'error'>('unknown');
 
-  const {
-    transcript,
-    isListening,
-    startListening,
-    stopListening,
-    resetTranscript,
-    isSupported: speechRecognitionSupported
-  } = useSpeechRecognition();
+  const speechRecognition = useRef<SpeechRecognitionService | null>(null);
+  const speechSynthesis = useRef<SpeechSynthesisService | null>(null);
 
-  const {
-    speak,
-    cancel: cancelSpeech,
-    isSpeaking,
-    isSupported: speechSynthesisSupported
-  } = useSpeechSynthesis();
-
-  // Gérer le statut de connexion
   useEffect(() => {
+    speechRecognition.current = new SpeechRecognitionService();
+    speechSynthesis.current = new SpeechSynthesisService();
+
+    if (!speechRecognition.current.isRecognitionSupported()) {
+      setError('Reconnaissance vocale non supportée par votre navigateur. Utilisez Chrome ou Edge.');
+    }
+
+    // Test de la connexion API au démarrage
+    testGroqConnection().then(isWorking => {
+      setApiStatus(isWorking ? 'working' : 'error');
+    });
+
+    // Écouter les changements de connexion
     const handleOnline = () => setIsOnline(true);
     const handleOffline = () => setIsOnline(false);
-
+    
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
 
     return () => {
+      if (speechSynthesis.current) {
+        speechSynthesis.current.stop();
+      }
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
     };
   }, []);
 
-  // Traiter le transcript quand l'utilisateur arrête de parler
-  useEffect(() => {
-    if (transcript && !isListening && !isProcessing) {
-      handleUserMessage(transcript);
-    }
-  }, [transcript, isListening, isProcessing]);
-
-  const handleUserMessage = useCallback(async (message: string) => {
-    if (!message.trim()) return;
-
-    setError('');
-    setIsProcessing(true);
-    
-    // Ajouter le message utilisateur
-    const userMessage: Message = {
+  const addMessage = (text: string, isUser: boolean) => {
+    const newMessage: Message = {
       id: Date.now().toString(),
-      type: 'user',
-      content: message,
-      timestamp: new Date()
+      text,
+      isUser,
+      timestamp: new Date(),
     };
-    
-    setMessages(prev => [...prev, userMessage]);
-    resetTranscript();
-
-    try {
-      // Obtenir la réponse de l'IA
-      const aiResponse = await aiService.sendMessage(message);
-      
-      if (aiResponse.error) {
-        setError(aiResponse.response);
-      } else {
-        // Ajouter la réponse de l'IA
-        const aiMessage: Message = {
-          id: (Date.now() + 1).toString(),
-          type: 'ai',
-          content: aiResponse.response,
-          timestamp: new Date()
-        };
-        
-        setMessages(prev => [...prev, aiMessage]);
-        
-        // Parler la réponse
-        if (speechSynthesisSupported) {
-          speak(aiResponse.response);
-        }
-      }
-    } catch (error) {
-      console.error('Error processing message:', error);
-      setError('Erreur lors du traitement de votre message.');
-    } finally {
-      setIsProcessing(false);
-    }
-  }, [resetTranscript, speak, speechSynthesisSupported]);
-
-  const handleStopSpeaking = () => {
-    cancelSpeech();
+    setMessages(prev => [...prev, newMessage]);
+    return newMessage;
   };
 
-  const isSystemReady = speechRecognitionSupported && speechSynthesisSupported && isOnline;
+  const handleStartListening = () => {
+    if (!speechRecognition.current) return;
+    
+    if (!isOnline) {
+      setError('Pas de connexion internet. Vérifiez votre connexion.');
+      return;
+    }
+
+    setError(null);
+    setAiState({
+      isListening: true,
+      isProcessing: false,
+      isSpeaking: false,
+      isIdle: false,
+    });
+
+    speechRecognition.current.startListening(
+      async (transcript) => {
+        console.log('Transcript reçu:', transcript);
+        
+        setAiState({
+          isListening: false,
+          isProcessing: true,
+          isSpeaking: false,
+          isIdle: false,
+        });
+
+        addMessage(transcript, true);
+
+        try {
+          const aiResponse = await sendToGroq(transcript);
+          
+          setAiState({
+            isListening: false,
+            isProcessing: false,
+            isSpeaking: true,
+            isIdle: false,
+          });
+
+          addMessage(aiResponse, false);
+
+          if (speechSynthesis.current) {
+            await speechSynthesis.current.speak(aiResponse, voiceSettings);
+          }
+          
+          setApiStatus('working');
+        } catch (error) {
+          console.error('Erreur IA:', error);
+          setApiStatus('error');
+          
+          let errorMessage = 'Erreur lors de la communication avec l\'IA';
+          if (error instanceof Error) {
+            errorMessage = error.message;
+          }
+          
+          setError(errorMessage);
+          addMessage(`Erreur: ${errorMessage}`, false);
+        }
+
+        setAiState({
+          isListening: false,
+          isProcessing: false,
+          isSpeaking: false,
+          isIdle: true,
+        });
+      },
+      (error) => {
+        console.error('Erreur reconnaissance:', error);
+        setError(error);
+        setAiState({
+          isListening: false,
+          isProcessing: false,
+          isSpeaking: false,
+          isIdle: true,
+        });
+      }
+    );
+  };
+
+  const handleStopListening = () => {
+    if (speechRecognition.current) {
+      speechRecognition.current.stopListening();
+    }
+    setAiState({
+      isListening: false,
+      isProcessing: false,
+      isSpeaking: false,
+      isIdle: true,
+    });
+  };
+
+  const handleStopSpeaking = () => {
+    if (speechSynthesis.current) {
+      speechSynthesis.current.stop();
+    }
+    setAiState({
+      isListening: false,
+      isProcessing: false,
+      isSpeaking: false,
+      isIdle: true,
+    });
+  };
+
+  const clearHistory = () => {
+    setMessages([]);
+    setError(null);
+  };
+
+  const retryConnection = async () => {
+    setError(null);
+    const isWorking = await testGroqConnection();
+    setApiStatus(isWorking ? 'working' : 'error');
+    if (!isWorking) {
+      setError('Impossible de se connecter à l\'API Groq. Vérifiez votre clé API.');
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white">
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
-        {/* Header */}
-        <motion.header 
-          className="text-center mb-12"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          <div className="flex items-center justify-center space-x-3 mb-4">
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-            >
-              <Brain className="w-12 h-12 text-blue-500" />
-            </motion.div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-              IA Vocale
-            </h1>
-          </div>
-          <p className="text-gray-400 text-lg">
-            Parlez naturellement avec votre assistant IA
-          </p>
-        </motion.header>
-
-        {/* Status Bar */}
-        <motion.div 
-          className="flex justify-between items-center mb-8 p-4 bg-gray-800/50 rounded-lg backdrop-blur-sm"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
-        >
-          <StatusIndicator isOnline={isOnline} error={error} />
-          <div className="flex items-center space-x-4">
-            <AudioVisualizer isActive={isListening} />
-            <MessageSquare className="w-5 h-5 text-gray-400" />
-            <span className="text-sm text-gray-400">{messages.length} messages</span>
-          </div>
-        </motion.div>
-
-        {/* Error Message */}
-        {error && (
-          <motion.div 
-            className="mb-6 p-4 bg-red-900/20 border border-red-500/30 rounded-lg"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.3 }}
-          >
-            <p className="text-red-400 text-sm">{error}</p>
-          </motion.div>
-        )}
-
-        {/* Conversation History */}
-        <motion.div 
-          className="mb-8 h-96 overflow-y-auto p-4 bg-gray-800/30 rounded-lg backdrop-blur-sm"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-        >
-          {messages.length === 0 ? (
-            <div className="h-full flex items-center justify-center text-gray-500">
-              <div className="text-center">
-                <MessageSquare className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                <p>Aucune conversation pour le moment</p>
-                <p className="text-sm mt-2">Cliquez sur le micro pour commencer</p>
-              </div>
-            </div>
-          ) : (
-            <ConversationHistory messages={messages} />
-          )}
-        </motion.div>
-
-        {/* Voice Controls */}
-        <motion.div 
-          className="flex justify-center"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
-        >
-          <VoiceButton
-            isListening={isListening}
-            isSpeaking={isSpeaking}
-            onStartListening={startListening}
-            onStopListening={stopListening}
-            onStopSpeaking={handleStopSpeaking}
-            disabled={!isSystemReady || isProcessing}
-          />
-        </motion.div>
-
-        {/* System Status */}
-        {!isSystemReady && (
-          <motion.div 
-            className="mt-8 p-4 bg-yellow-900/20 border border-yellow-500/30 rounded-lg"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.8 }}
-          >
-            <div className="flex items-center space-x-2 text-yellow-400">
-              <Settings className="w-5 h-5" />
-              <span className="font-medium">Configuration requise:</span>
-            </div>
-            <ul className="mt-2 text-sm text-yellow-300 space-y-1">
-              {!speechRecognitionSupported && (
-                <li>• Reconnaissance vocale non supportée par votre navigateur</li>
-              )}
-              {!speechSynthesisSupported && (
-                <li>• Synthèse vocale non supportée par votre navigateur</li>
-              )}
-              {!isOnline && (
-                <li>• Connexion Internet requise</li>
-              )}
-            </ul>
-          </motion.div>
-        )}
-
-        {/* Processing Indicator */}
-        {isProcessing && (
-          <motion.div 
-            className="fixed bottom-4 right-4 p-4 bg-blue-600 rounded-lg shadow-lg"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-          >
-            <div className="flex items-center space-x-2">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+      {/* Header */}
+      <header className="bg-white shadow-sm border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
               <motion.div
                 animate={{ rotate: 360 }}
-                transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
               >
-                <Brain className="w-5 h-5" />
+                <Bot className="w-8 h-8 text-blue-600" />
               </motion.div>
-              <span className="text-sm">IA en réflexion...</span>
+              <h1 className="text-2xl font-bold text-gray-900">
+                Assistant IA Vocal
+              </h1>
+              <div className="flex items-center space-x-2">
+                {isOnline ? (
+                  <Wifi className="w-5 h-5 text-green-500" />
+                ) : (
+                  <WifiOff className="w-5 h-5 text-red-500" />
+                )}
+                <div className={`w-3 h-3 rounded-full ${
+                  apiStatus === 'working' ? 'bg-green-500' : 
+                  apiStatus === 'error' ? 'bg-red-500' : 'bg-yellow-500'
+                }`} />
+              </div>
+            </div>
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={() => setShowSettings(!showSettings)}
+                className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+              >
+                <Settings className="w-6 h-6 text-gray-600" />
+              </button>
+              <button
+                onClick={retryConnection}
+                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
+              >
+                Test API
+              </button>
+              <button
+                onClick={clearHistory}
+                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+              >
+                Effacer
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Error Banner */}
+      {error && (
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 mx-4 mt-4 rounded-lg"
+        >
+          <div className="flex items-center justify-between">
+            <p>{error}</p>
+            <button
+              onClick={() => setError(null)}
+              className="text-red-700 hover:text-red-900"
+            >
+              ✕
+            </button>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Status Banner */}
+      {!isOnline && (
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-orange-100 border border-orange-400 text-orange-700 px-4 py-3 mx-4 mt-4 rounded-lg"
+        >
+          <p>Mode hors ligne - Reconnectez-vous à internet pour utiliser l'IA</p>
+        </motion.div>
+      )}
+
+      {/* Main Content */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* Voice Interface */}
+          <div className="flex flex-col items-center justify-center space-y-8 bg-white rounded-2xl shadow-lg p-8">
+            <VoiceVisualizer
+              isListening={aiState.isListening}
+              isProcessing={aiState.isProcessing}
+              isSpeaking={aiState.isSpeaking}
+            />
+            
+            <VoiceControls
+              isListening={aiState.isListening}
+              isProcessing={aiState.isProcessing}
+              isSpeaking={aiState.isSpeaking}
+              onStartListening={handleStartListening}
+              onStopListening={handleStopListening}
+              onStopSpeaking={handleStopSpeaking}
+            />
+
+            <div className="text-center">
+              <p className="text-gray-600 mb-2">
+                Cliquez sur "Parler" et commencez à parler à votre IA
+              </p>
+              <p className="text-sm text-gray-500">
+                L'IA vous comprend et vous répond vocalement
+              </p>
+              {!isOnline && (
+                <p className="text-sm text-red-500 mt-2">
+                  ⚠️ Connexion internet requise
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Message History */}
+          <div className="bg-white rounded-2xl shadow-lg p-6">
+            <MessageHistory messages={messages} />
+          </div>
+        </div>
+
+        {/* Settings Panel */}
+        {showSettings && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="mt-8 bg-white rounded-2xl shadow-lg p-6"
+          >
+            <h3 className="text-xl font-semibold mb-4">Paramètres Vocaux</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Langue
+                </label>
+                <select
+                  value={voiceSettings.language}
+                  onChange={(e) => setVoiceSettings(prev => ({ 
+                    ...prev, 
+                    language: e.target.value as 'fr-FR' | 'en-US' 
+                  }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="fr-FR">Français</option>
+                  <option value="en-US">Anglais</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Vitesse: {voiceSettings.rate}
+                </label>
+                <input
+                  type="range"
+                  min="0.5"
+                  max="2"
+                  step="0.1"
+                  value={voiceSettings.rate}
+                  onChange={(e) => setVoiceSettings(prev => ({ 
+                    ...prev, 
+                    rate: parseFloat(e.target.value) 
+                  }))}
+                  className="w-full"
+                />
+              </div>
+            </div>
+            
+            <div className="mt-4 p-4 bg-gray-50 rounded-lg">
+              <h4 className="font-medium text-gray-700 mb-2">État du système</h4>
+              <div className="space-y-2 text-sm">
+                <div className="flex items-center justify-between">
+                  <span>Connexion internet:</span>
+                  <span className={isOnline ? 'text-green-600' : 'text-red-600'}>
+                    {isOnline ? 'Connecté' : 'Déconnecté'}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span>API Groq:</span>
+                  <span className={
+                    apiStatus === 'working' ? 'text-green-600' : 
+                    apiStatus === 'error' ? 'text-red-600' : 'text-yellow-600'
+                  }>
+                    {apiStatus === 'working' ? 'Fonctionnel' : 
+                     apiStatus === 'error' ? 'Erreur' : 'Test en cours...'}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span>Reconnaissance vocale:</span>
+                  <span className={speechRecognition.current?.isRecognitionSupported() ? 'text-green-600' : 'text-red-600'}>
+                    {speechRecognition.current?.isRecognitionSupported() ? 'Supportée' : 'Non supportée'}
+                  </span>
+                </div>
+              </div>
             </div>
           </motion.div>
         )}
-      </div>
+      </main>
+
+      {/* Footer */}
+      <footer className="bg-gray-50 border-t border-gray-200 mt-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          <div className="text-center text-gray-600">
+            <p>Assistant IA Vocal propulsé par Groq API</p>
+            <p className="text-sm mt-2">
+              Parlez naturellement et l'IA vous répondra vocalement
+            </p>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
 
-export default ChatVoice;
+export default App;
