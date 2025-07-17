@@ -258,13 +258,6 @@ class ExerciseViewSet(viewsets.ReadOnlyModelViewSet):
         total = step.exercises.count()
         completed = step.exercises.filter(completed=True).count()
 
-        if completed == total:
-            send_notification(
-                request.user,
-                f"🏁 Vous avez terminé l'étape « {step.title} ». Continuez comme ça !",
-                "success",
-            )
-
         # ✅ Mettre à jour les progrès utilisateur
         user_progress, created = UserProgress.objects.get_or_create(user=request.user)
         user_progress.total_exercises_completed += 1
@@ -275,7 +268,13 @@ class ExerciseViewSet(viewsets.ReadOnlyModelViewSet):
             total_points = request.user.profile.points
         except Exception:
             total_points = 0  # fallback si le profil n'existe pas
-
+        
+        if completed == total:
+            send_notification(
+                request.user,
+                f"🏁 Vous avez terminé l'étape « {step.title} ». Continuez comme ça !",
+                "success",
+            )
         return Response(
             {
                 "message": "Exercice terminé avec succès",
