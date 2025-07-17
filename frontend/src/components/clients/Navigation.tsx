@@ -1,15 +1,11 @@
 "use client";
 
 import {
-  Brain,
   BotMessageSquare,
   MessageCircle,
   Trophy,
-  CheckCircle,
-  TrendingUp,
   Sparkles,
   Search,
-  Filter,
   Gauge,
   LogOut,
 } from "lucide-react";
