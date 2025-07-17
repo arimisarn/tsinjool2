@@ -534,6 +534,28 @@ def plan_exercise(request):
         return Response({"error": "Exercice non trouvé"}, status=404)
 
 
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def check_scheduled_exercises(request):
+    user = request.user
+    now = timezone.now()
+
+    plans = PlannedExercise.objects.filter(
+        user=user, planned_datetime__lte=now, notified=False
+    )
+
+    count = 0
+    for plan in plans:
+        send_notification(
+            user, f"C'est l'heure de faire : {plan.exercise.title}", notif_type="info"
+        )
+        plan.notified = True
+        plan.save()
+        count += 1
+
+    return Response({"checked": True, "notifications_sent": count})
+
+
 # class ScheduleExerciseView(APIView):
 #     permission_classes = [IsAuthenticated]
 
