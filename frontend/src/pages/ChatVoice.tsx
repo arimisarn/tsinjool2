@@ -1,14 +1,16 @@
-import { useState, useEffect, useRef } from 'react';
-import { motion } from 'framer-motion';
-import { Bot, Settings, Wifi, WifiOff } from 'lucide-react';
-import VoiceVisualizer from '@/components/clients/VoiceVisualizer';
+import { useState, useEffect, useRef } from "react";
+import { motion } from "framer-motion";
+import { Bot, Settings, Wifi, WifiOff } from "lucide-react";
+import VoiceVisualizer from "@/components/clients/VoiceVisualizer";
 import { sendToGroq, testGroqConnection } from "@/utils/groq";
 import VoiceControls from "@/components/clients/VoiceControls";
 import MessageHistory from "@/components/clients/MessageHistory";
-import { SpeechRecognitionService, SpeechSynthesisService } from "@/utils/speech";
+import {
+  SpeechRecognitionService,
+  SpeechSynthesisService,
+} from "@/utils/speech";
 import { type Message, type AIState, type VoiceSettings } from "@/types";
-
-
+import mirana from "../assets/fitenylogo-removebg-preview.png";
 
 function App() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -19,7 +21,7 @@ function App() {
     isIdle: true,
   });
   const [voiceSettings, setVoiceSettings] = useState<VoiceSettings>({
-    language: 'fr-FR',
+    language: "fr-FR",
     voice: null,
     rate: 1,
     pitch: 1,
@@ -27,7 +29,9 @@ function App() {
   const [showSettings, setShowSettings] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
-  const [apiStatus, setApiStatus] = useState<'unknown' | 'working' | 'error'>('unknown');
+  const [apiStatus, setApiStatus] = useState<"unknown" | "working" | "error">(
+    "unknown"
+  );
 
   const speechRecognition = useRef<SpeechRecognitionService | null>(null);
   const speechSynthesis = useRef<SpeechSynthesisService | null>(null);
@@ -37,27 +41,29 @@ function App() {
     speechSynthesis.current = new SpeechSynthesisService();
 
     if (!speechRecognition.current.isRecognitionSupported()) {
-      setError('Reconnaissance vocale non supportée par votre navigateur. Utilisez Chrome ou Edge.');
+      setError(
+        "Reconnaissance vocale non supportée par votre navigateur. Utilisez Chrome ou Edge."
+      );
     }
 
     // Test de la connexion API au démarrage
-    testGroqConnection().then(isWorking => {
-      setApiStatus(isWorking ? 'working' : 'error');
+    testGroqConnection().then((isWorking) => {
+      setApiStatus(isWorking ? "working" : "error");
     });
 
     // Écouter les changements de connexion
     const handleOnline = () => setIsOnline(true);
     const handleOffline = () => setIsOnline(false);
-    
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
+
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
 
     return () => {
       if (speechSynthesis.current) {
         speechSynthesis.current.stop();
       }
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
     };
   }, []);
 
@@ -68,15 +74,15 @@ function App() {
       isUser,
       timestamp: new Date(),
     };
-    setMessages(prev => [...prev, newMessage]);
+    setMessages((prev) => [...prev, newMessage]);
     return newMessage;
   };
 
   const handleStartListening = () => {
     if (!speechRecognition.current) return;
-    
+
     if (!isOnline) {
-      setError('Pas de connexion internet. Vérifiez votre connexion.');
+      setError("Pas de connexion internet. Vérifiez votre connexion.");
       return;
     }
 
@@ -90,8 +96,8 @@ function App() {
 
     speechRecognition.current.startListening(
       async (transcript) => {
-        console.log('Transcript reçu:', transcript);
-        
+        console.log("Transcript reçu:", transcript);
+
         setAiState({
           isListening: false,
           isProcessing: true,
@@ -103,7 +109,7 @@ function App() {
 
         try {
           const aiResponse = await sendToGroq(transcript);
-          
+
           setAiState({
             isListening: false,
             isProcessing: false,
@@ -116,17 +122,17 @@ function App() {
           if (speechSynthesis.current) {
             await speechSynthesis.current.speak(aiResponse, voiceSettings);
           }
-          
-          setApiStatus('working');
+
+          setApiStatus("working");
         } catch (error) {
-          console.error('Erreur IA:', error);
-          setApiStatus('error');
-          
-          let errorMessage = 'Erreur lors de la communication avec l\'IA';
+          console.error("Erreur IA:", error);
+          setApiStatus("error");
+
+          let errorMessage = "Erreur lors de la communication avec l'IA";
           if (error instanceof Error) {
             errorMessage = error.message;
           }
-          
+
           setError(errorMessage);
           addMessage(`Erreur: ${errorMessage}`, false);
         }
@@ -139,7 +145,7 @@ function App() {
         });
       },
       (error) => {
-        console.error('Erreur reconnaissance:', error);
+        console.error("Erreur reconnaissance:", error);
         setError(error);
         setAiState({
           isListening: false,
@@ -183,9 +189,11 @@ function App() {
   const retryConnection = async () => {
     setError(null);
     const isWorking = await testGroqConnection();
-    setApiStatus(isWorking ? 'working' : 'error');
+    setApiStatus(isWorking ? "working" : "error");
     if (!isWorking) {
-      setError('Impossible de se connecter à l\'API Groq. Vérifiez votre clé API.');
+      setError(
+        "Impossible de se connecter à l'API Groq. Vérifiez votre clé API."
+      );
     }
   };
 
@@ -196,14 +204,9 @@ function App() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-              >
-                <Bot className="w-8 h-8 text-blue-600" />
-              </motion.div>
+              <img src={mirana} alt="Mirana" className="w-10 h-10" />
               <h1 className="text-2xl font-bold text-gray-900">
-                Assistant IA Vocal
+                Mirana Assistant IA Vocal
               </h1>
               <div className="flex items-center space-x-2">
                 {isOnline ? (
@@ -211,10 +214,15 @@ function App() {
                 ) : (
                   <WifiOff className="w-5 h-5 text-red-500" />
                 )}
-                <div className={`w-3 h-3 rounded-full ${
-                  apiStatus === 'working' ? 'bg-green-500' : 
-                  apiStatus === 'error' ? 'bg-red-500' : 'bg-yellow-500'
-                }`} />
+                <div
+                  className={`w-3 h-3 rounded-full ${
+                    apiStatus === "working"
+                      ? "bg-green-500"
+                      : apiStatus === "error"
+                      ? "bg-red-500"
+                      : "bg-yellow-500"
+                  }`}
+                />
               </div>
             </div>
             <div className="flex items-center space-x-4">
@@ -267,7 +275,9 @@ function App() {
           animate={{ opacity: 1, y: 0 }}
           className="bg-orange-100 border border-orange-400 text-orange-700 px-4 py-3 mx-4 mt-4 rounded-lg"
         >
-          <p>Mode hors ligne - Reconnectez-vous à internet pour utiliser l'IA</p>
+          <p>
+            Mode hors ligne - Reconnectez-vous à internet pour utiliser l'IA
+          </p>
         </motion.div>
       )}
 
@@ -281,7 +291,7 @@ function App() {
               isProcessing={aiState.isProcessing}
               isSpeaking={aiState.isSpeaking}
             />
-            
+
             <VoiceControls
               isListening={aiState.isListening}
               isProcessing={aiState.isProcessing}
@@ -327,10 +337,12 @@ function App() {
                 </label>
                 <select
                   value={voiceSettings.language}
-                  onChange={(e) => setVoiceSettings(prev => ({ 
-                    ...prev, 
-                    language: e.target.value as 'fr-FR' | 'en-US' 
-                  }))}
+                  onChange={(e) =>
+                    setVoiceSettings((prev) => ({
+                      ...prev,
+                      language: e.target.value as "fr-FR" | "en-US",
+                    }))
+                  }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="fr-FR">Français</option>
@@ -347,38 +359,60 @@ function App() {
                   max="2"
                   step="0.1"
                   value={voiceSettings.rate}
-                  onChange={(e) => setVoiceSettings(prev => ({ 
-                    ...prev, 
-                    rate: parseFloat(e.target.value) 
-                  }))}
+                  onChange={(e) =>
+                    setVoiceSettings((prev) => ({
+                      ...prev,
+                      rate: parseFloat(e.target.value),
+                    }))
+                  }
                   className="w-full"
                 />
               </div>
             </div>
-            
+
             <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-              <h4 className="font-medium text-gray-700 mb-2">État du système</h4>
+              <h4 className="font-medium text-gray-700 mb-2">
+                État du système
+              </h4>
               <div className="space-y-2 text-sm">
                 <div className="flex items-center justify-between">
                   <span>Connexion internet:</span>
-                  <span className={isOnline ? 'text-green-600' : 'text-red-600'}>
-                    {isOnline ? 'Connecté' : 'Déconnecté'}
+                  <span
+                    className={isOnline ? "text-green-600" : "text-red-600"}
+                  >
+                    {isOnline ? "Connecté" : "Déconnecté"}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span>API Groq:</span>
-                  <span className={
-                    apiStatus === 'working' ? 'text-green-600' : 
-                    apiStatus === 'error' ? 'text-red-600' : 'text-yellow-600'
-                  }>
-                    {apiStatus === 'working' ? 'Fonctionnel' : 
-                     apiStatus === 'error' ? 'Erreur' : 'Test en cours...'}
+                  <span
+                    className={
+                      apiStatus === "working"
+                        ? "text-green-600"
+                        : apiStatus === "error"
+                        ? "text-red-600"
+                        : "text-yellow-600"
+                    }
+                  >
+                    {apiStatus === "working"
+                      ? "Fonctionnel"
+                      : apiStatus === "error"
+                      ? "Erreur"
+                      : "Test en cours..."}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span>Reconnaissance vocale:</span>
-                  <span className={speechRecognition.current?.isRecognitionSupported() ? 'text-green-600' : 'text-red-600'}>
-                    {speechRecognition.current?.isRecognitionSupported() ? 'Supportée' : 'Non supportée'}
+                  <span
+                    className={
+                      speechRecognition.current?.isRecognitionSupported()
+                        ? "text-green-600"
+                        : "text-red-600"
+                    }
+                  >
+                    {speechRecognition.current?.isRecognitionSupported()
+                      ? "Supportée"
+                      : "Non supportée"}
                   </span>
                 </div>
               </div>
