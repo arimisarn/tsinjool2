@@ -11,6 +11,8 @@ import {
   CheckCircle,
   Play,
   Settings,
+  Sun,
+  Moon,
 } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
@@ -46,6 +48,21 @@ interface UserProfile {
 export default function Dashboard() {
   const navigate = useNavigate();
   const location = useLocation();
+
+  const [isDark, setIsDark] = useState(() => {
+    if (typeof window !== "undefined") {
+      return document.documentElement.classList.contains("dark");
+    }
+    return false;
+  });
+
+  useEffect(() => {
+    if (isDark) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, [isDark]);
 
   const [steps, setSteps] = useState<Step[]>([]);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
@@ -145,7 +162,7 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:bg-zinc-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-gray-100 to-blue-100 dark:from-zinc-950 dark:to-zinc-900 flex items-center justify-center transition-colors duration-300">
         <div className="text-center">
           <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-blue-600 rounded-full flex items-center justify-center mb-4 mx-auto animate-pulse">
             <Brain className="w-8 h-8 text-white" />
@@ -160,7 +177,7 @@ export default function Dashboard() {
 
   if (generatingPath) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:bg-gray-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-gray-100 to-blue-100 dark:from-zinc-950 dark:to-zinc-900 flex items-center justify-center transition-colors duration-300">
         <div className="text-center max-w-md">
           <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-blue-600 rounded-full flex items-center justify-center mb-6 mx-auto animate-spin">
             <Brain className="w-10 h-10 text-white" />
@@ -178,21 +195,32 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 dark:from-zinc-950 dark:to-zinc-900">
+    <div className="min-h-screen bg-gradient-to-br from-gray-100 to-blue-100 dark:from-zinc-950 dark:to-zinc-900 transition-colors duration-300">
+      {/* Toggle Dark Mode */}
+      <div className="flex justify-end p-6">
+        <button
+          aria-label="Basculer mode clair/sombre"
+          onClick={() => setIsDark(!isDark)}
+          className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 transition-colors duration-200"
+        >
+          {isDark ? <Sun className="w-6 h-6" /> : <Moon className="w-6 h-6" />}
+        </button>
+      </div>
+
       {/* Main Content */}
-      <div className="w-full px-4 py-8">
-        <div className="mb-8">
-          <p className="text-gray-600 dark:text-gray-300">
+      <div className="w-full px-6 sm:px-8 py-10 max-w-[1280px] mx-auto">
+        <div className="mb-10">
+          <p className="text-gray-600 dark:text-gray-300 text-lg">
             Voici votre parcours personnalisé de{" "}
             {getCoachingTypeLabel(userProfile?.coaching_type || "")}
           </p>
         </div>
 
         {/* Progress Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white dark:bg-zinc-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-zinc-700">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-12 h-12 bg-blue-50 dark:bg-blue-900/30 rounded-xl flex items-center justify-center">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+          <div className="bg-white dark:bg-zinc-800 rounded-xl p-6 shadow-sm">
+            <div className="flex items-center gap-4 mb-2">
+              <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center">
                 <Target className="w-6 h-6 text-blue-600 dark:text-blue-400" />
               </div>
               <div>
@@ -206,9 +234,9 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-zinc-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-zinc-700">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-12 h-12 bg-green-50 dark:bg-green-900/30 rounded-xl flex items-center justify-center">
+          <div className="bg-white dark:bg-zinc-800 rounded-xl p-6 shadow-sm">
+            <div className="flex items-center gap-4 mb-2">
+              <div className="w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg flex items-center justify-center">
                 <Trophy className="w-6 h-6 text-green-600 dark:text-green-400" />
               </div>
               <div>
@@ -226,9 +254,9 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-zinc-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-zinc-700">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="w-12 h-12 bg-purple-50 dark:bg-purple-900/30 rounded-xl flex items-center justify-center">
+          <div className="bg-white dark:bg-zinc-800 rounded-xl p-6 shadow-sm">
+            <div className="flex items-center gap-4 mb-2">
+              <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900 rounded-lg flex items-center justify-center">
                 <Clock className="w-6 h-6 text-purple-600 dark:text-purple-400" />
               </div>
               <div>
@@ -254,7 +282,7 @@ export default function Dashboard() {
         </div>
 
         {/* Coaching Steps */}
-        <div className="mb-8">
+        <div className="mb-10">
           <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">
             Votre parcours de coaching
           </h3>
@@ -264,15 +292,15 @@ export default function Dashboard() {
               <div
                 key={step.id}
                 onClick={() => handleStepClick(step)}
-                className="bg-white dark:bg-zinc-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-zinc-700 hover:shadow-md hover:border-purple-200 dark:hover:border-purple-600 transition-all duration-200 cursor-pointer group"
+                className="bg-white dark:bg-zinc-800 rounded-xl p-6 shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer group border-2 border-transparent hover:border-purple-200 dark:hover:border-purple-600"
               >
                 <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-4">
                     <div
                       className={`w-12 h-12 rounded-lg flex items-center justify-center ${
                         step.completed
-                          ? "bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400"
-                          : "bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400"
+                          ? "bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400"
+                          : "bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-400"
                       }`}
                     >
                       {step.completed ? (
@@ -298,15 +326,14 @@ export default function Dashboard() {
                   {step.description}
                 </p>
 
-                {/* Progress Bar */}
                 <div className="mb-3">
-                  <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400 mb-2">
+                  <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400 mb-1">
                     <span>Progression</span>
                     <span>{Math.round(step.progress)}%</span>
                   </div>
-                  <div className="w-full bg-gray-200 dark:bg-zinc-700 rounded-full h-2">
+                  <div className="w-full bg-gray-200 dark:bg-zinc-700 rounded-full h-2.5">
                     <div
-                      className={`h-2 rounded-full transition-all duration-300 ${
+                      className={`h-2.5 rounded-full transition-all duration-300 ${
                         step.completed ? "bg-green-500" : "bg-purple-500"
                       }`}
                       style={{ width: `${step.progress}%` }}
@@ -314,7 +341,6 @@ export default function Dashboard() {
                   </div>
                 </div>
 
-                {/* Exercise Preview */}
                 <div className="flex gap-2">
                   {step.exercises
                     .slice(0, 3)
@@ -323,7 +349,7 @@ export default function Dashboard() {
                         key={exercise.id}
                         className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-medium ${
                           exercise.completed
-                            ? "bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400"
+                            ? "bg-green-100 dark:bg-green-900 text-green-600 dark:text-green-400"
                             : "bg-gray-100 dark:bg-zinc-700 text-gray-600 dark:text-gray-400"
                         }`}
                       >
@@ -341,7 +367,7 @@ export default function Dashboard() {
         </div>
 
         {/* Quick Actions */}
-        <div className="bg-white dark:bg-zinc-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-zinc-700">
+        <div className="bg-white dark:bg-zinc-800 rounded-xl p-6 shadow-sm">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
             Actions rapides
           </h3>
@@ -372,7 +398,7 @@ export default function Dashboard() {
 
             <button
               onClick={() => navigate("/progress")}
-              className="flex items-center gap-3 p-4 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-800/50 rounded-xl transition-colors"
+              className="flex items-center gap-3 p-4 bg-blue-50 dark:bg-blue-900 hover:bg-blue-100 dark:hover:bg-blue-800 rounded-lg transition-colors"
             >
               <Trophy className="w-5 h-5 text-blue-600 dark:text-blue-400" />
               <span className="font-medium text-blue-900 dark:text-blue-300">
@@ -382,7 +408,7 @@ export default function Dashboard() {
 
             <button
               onClick={() => navigate("/profile-setup")}
-              className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-zinc-700 hover:bg-gray-100 dark:hover:bg-zinc-600 rounded-xl transition-colors"
+              className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-zinc-800 hover:bg-gray-100 dark:hover:bg-zinc-700 rounded-lg transition-colors"
             >
               <Settings className="w-5 h-5 text-gray-600 dark:text-gray-400" />
               <span className="font-medium text-gray-900 dark:text-gray-300">

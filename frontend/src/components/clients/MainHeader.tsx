@@ -3,7 +3,6 @@ import { Calendar, User, LogOut, Settings } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import pic from "../../assets/avatar.jpg";
-import DarkMode from "../theme/DarkMode";
 import logo from "../../assets/logoRond.png";
 import NotificationDropdown from "./NotificationDropdown";
 
@@ -54,7 +53,6 @@ const MainHeader: React.FC = () => {
     loadPhoto();
   }, []);
 
-  // Fermer dropdown si clic en dehors
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -75,13 +73,13 @@ const MainHeader: React.FC = () => {
   }, [dropdownOpen]);
 
   return (
-    <header className="bg-slate-100 dark:bg-zinc-900 border-b border-slate-200 dark:border-zinc-800 px-6 py-4 sticky top-0 z-50 shadow-sm">
-      <div className="flex items-center justify-between flex-wrap gap-4 max-w-[1280px] mx-auto">
+    <header className="bg-gray-50 dark:bg-zinc-900 border-b border-gray-200 dark:border-zinc-800 px-6 sm:px-8 py-6 sticky top-0 z-50 shadow-sm transition-colors duration-300">
+      <div className="flex items-center justify-between flex-wrap gap-6 max-w-[1280px] mx-auto">
         {/* Logo */}
-        <div className="flex items-center gap-3 flex-shrink-0">
-          <img src={logo} alt="" className="w-10 h-10"/>
+        <div className="flex items-center gap-4 flex-shrink-0">
+          <img src={logo} alt="logo" className="w-12 h-12" />
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">
               Tsinjool
             </h1>
             <p className="text-sm text-gray-600 dark:text-gray-400 hidden sm:block">
@@ -91,59 +89,71 @@ const MainHeader: React.FC = () => {
         </div>
 
         {/* Actions */}
-        <div className="flex items-center gap-4 flex-shrink-0">
-          <DarkMode />
-
+        <div className="flex items-center gap-6 flex-shrink-0">
           {/* Date */}
-          <div className="hidden sm:flex items-center gap-2 text-gray-700 dark:text-gray-300 text-sm whitespace-nowrap">
-            <Calendar className="w-4 h-4" />
+          <div className="hidden sm:flex items-center gap-3 text-gray-700 dark:text-gray-300 text-sm whitespace-nowrap">
+            <Calendar className="w-5 h-5" />
             {formatDate}
           </div>
 
           {/* Notifications */}
-          <NotificationDropdown />
+          <div className="relative">
+            <NotificationDropdown />
+          </div>
 
           {/* Avatar + Dropdown */}
           <div className="relative" ref={dropdownRef}>
             <button
               onClick={() => setDropdownOpen(!dropdownOpen)}
-              className="focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 rounded-full"
+              aria-haspopup="true"
+              aria-expanded={dropdownOpen}
+              aria-label="Menu utilisateur"
+              className="focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 rounded-full"
             >
               <img
                 src={profilePhoto}
                 alt="Profil utilisateur"
-                className="w-9 h-9 rounded-full border-2 border-purple-300 dark:border-purple-500 cursor-pointer hover:scale-105 transition-transform duration-200"
+                className="w-10 h-10 rounded-full border-2 border-gray-300 dark:border-gray-200 cursor-pointer hover:scale-105 transition-transform duration-200"
               />
             </button>
 
-            {/* Dropdown menu */}
             {dropdownOpen && (
-              <div className="absolute right-0 mt-2 w-72 bg-white dark:bg-zinc-800 rounded-xl shadow-lg border border-gray-200 dark:border-zinc-700 overflow-hidden z-50 animate-fadeIn">
-                {/* Header */}
+              <div className="absolute right-0 mt-3 w-72 bg-white dark:bg-zinc-800 rounded-lg shadow-lg border border-gray-200 dark:border-zinc-700 overflow-hidden z-50 animate-fadeIn">
                 <div className="flex items-center gap-3 p-4 border-b border-gray-200 dark:border-zinc-700">
                   <img
                     src={profilePhoto}
                     alt="Photo de profil"
-                    className="w-12 h-12 rounded-full border-2 border-purple-300 dark:border-purple-500"
+                    className="w-12 h-12 rounded-full border-2 border-gray-300 dark:border-gray-200"
                   />
                   <div className="flex flex-col overflow-hidden">
-                    <span className="font-semibold text-gray-900 dark:text-white truncate">
-                      {user?.name}
+                    <span className="font-semibold text-gray-900 dark:text-gray-100 truncate">
+                      {user?.name || "Utilisateur"}
                     </span>
-                    <span className="text-sm text-gray-500 dark:text-gray-400 truncate">
-                      {user?.email}
+                    <span className="text-sm text-gray-600 dark:text-gray-400 truncate">
+                      {user?.email || "email@example.com"}
                     </span>
                   </div>
                 </div>
 
-                {/* Actions */}
                 <div className="flex flex-col py-2">
-                  <button className="flex items-center gap-2 px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-zinc-700 transition-colors">
+                  <button
+                    onClick={() => {
+                      navigate("/profile");
+                      setDropdownOpen(false);
+                    }}
+                    className="flex items-center gap-2 px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-zinc-700 transition-colors"
+                  >
                     <User className="w-5 h-5" />
                     Voir profil
                   </button>
 
-                  <button className="flex items-center gap-2 px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-zinc-700 transition-colors">
+                  <button
+                    onClick={() => {
+                      navigate("/profile-setup");
+                      setDropdownOpen(false);
+                    }}
+                    className="flex items-center gap-2 px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-zinc-700 transition-colors"
+                  >
                     <Settings className="w-5 h-5" />
                     Modifier profil
                   </button>
@@ -161,8 +171,7 @@ const MainHeader: React.FC = () => {
                   </button>
                 </div>
 
-                {/* Footer */}
-                <div className="text-center text-xs text-gray-400 dark:text-gray-500 py-2 border-t border-gray-200 dark:border-zinc-700 select-none">
+                <div className="text-center text-xs text-gray-400 dark:text-gray-500 py-3 border-t border-gray-200 dark:border-zinc-700 select-none">
                   © Tsinjool 2025
                 </div>
               </div>
@@ -185,15 +194,3 @@ const MainHeader: React.FC = () => {
 };
 
 export default MainHeader;
-
-// <button
-//                   onClick={() => {
-//                     localStorage.removeItem("token");
-//                     setDropdownOpen(false);
-//                     navigate("/login");
-//                   }}
-//                   className="flex items-center gap-2 px-4 py-3 text-red-600 hover:bg-red-100 dark:hover:bg-red-800 transition-colors font-semibold"
-//                 >
-//                   <LogOut className="w-5 h-5" />
-//                   Déconnexion
-//                 </button>
