@@ -179,9 +179,7 @@ export default function ExercisePage() {
             </div>
             <div className="absolute inset-0 w-20 h-20 bg-gradient-to-br from-indigo-400 via-purple-400 to-pink-400 rounded-full animate-ping opacity-75 mx-auto"></div>
           </div>
-          <p className="text-gray-700 dark:text-gray-300 font-medium text-lg">
-            Chargement de votre session IA...
-          </p>
+          <p className="text-gray-700 dark:text-gray-300 font-medium text-lg">Chargement de votre session IA...</p>
         </div>
       </div>
     );
@@ -365,7 +363,10 @@ export default function ExercisePage() {
                         strokeLinecap="round"
                         strokeDasharray={`${2 * Math.PI * 70}`}
                         strokeDashoffset={`${
-                          2 * Math.PI * 70 * (1 - getProgressPercentage() / 100)
+                          2 *
+                          Math.PI *
+                          70 *
+                          (1 - getProgressPercentage() / 100)
                         }`}
                         className="transition-all duration-1000 ease-out"
                       />
@@ -541,9 +542,7 @@ export default function ExercisePage() {
                 </p>
                 <div className="mt-4 flex items-center gap-2 text-sm text-indigo-600 dark:text-indigo-400">
                   <Brain className="w-4 h-4" />
-                  <span className="font-medium">
-                    Exercice optimisé par intelligence artificielle
-                  </span>
+                  <span className="font-medium">Exercice optimisé par intelligence artificielle</span>
                 </div>
               </div>
             </div>
