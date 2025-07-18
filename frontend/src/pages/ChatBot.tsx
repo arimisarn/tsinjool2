@@ -320,7 +320,7 @@ export default function ChatBot() {
                     {/* Si IA, avatar à gauche */}
                     {!isUser && (
                       <img
-                        src="/images/ia-avatar.png"
+                        src={IA}
                         alt="avatar ia"
                         className="w-8 h-8 rounded-full object-cover self-end"
                       />
