@@ -328,7 +328,7 @@ export default function ChatBot() {
 
                     {/* Bulle de message */}
                     <div
-                      className={`w-fit max-w-[90%] sm:max-w-[75%] md:max-w-[60%] rounded-lg px-4 py-2 whitespace-pre-wrap ${
+                      className={`max-w-xl rounded-lg px-4 py-2 whitespace-pre-wrap ${
                         isUser
                           ? "bg-gradient-to-br from-purple-500 to-blue-600 text-white rounded-br-none"
                           : "bg-gray-200 dark:bg-zinc-700 text-gray-900 dark:text-white rounded-bl-none"
