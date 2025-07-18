@@ -12,7 +12,7 @@ import {
 import { type Message, type AIState, type VoiceSettings } from "@/types";
 import mirana from "../assets/fitenylogo-removebg-preview.png";
 
-function App() {
+function ChatVoice() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [aiState, setAiState] = useState<AIState>({
     isListening: false,
@@ -186,17 +186,6 @@ function App() {
     setError(null);
   };
 
-  const retryConnection = async () => {
-    setError(null);
-    const isWorking = await testGroqConnection();
-    setApiStatus(isWorking ? "working" : "error");
-    if (!isWorking) {
-      setError(
-        "Impossible de se connecter à l'API Groq. Vérifiez votre clé API."
-      );
-    }
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       {/* Header */}
@@ -204,7 +193,7 @@ function App() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <img src={mirana} alt="Mirana" className="w-10 h-10" />
+              <img src={mirana} alt="Mirana" className="w-12 h-12" />
               <h1 className="text-2xl font-bold text-gray-900">
                 Mirana Assistant IA Vocal
               </h1>
@@ -231,12 +220,6 @@ function App() {
                 className="p-2 rounded-full hover:bg-gray-100 transition-colors"
               >
                 <Settings className="w-6 h-6 text-gray-600" />
-              </button>
-              <button
-                onClick={retryConnection}
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
-              >
-                Test API
               </button>
               <button
                 onClick={clearHistory}
@@ -420,20 +403,8 @@ function App() {
           </motion.div>
         )}
       </main>
-
-      {/* Footer */}
-      <footer className="bg-gray-50 border-t border-gray-200 mt-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="text-center text-gray-600">
-            <p>Assistant IA Vocal propulsé par Groq API</p>
-            <p className="text-sm mt-2">
-              Parlez naturellement et l'IA vous répondra vocalement
-            </p>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }
 
-export default App;
+export default ChatVoice;
