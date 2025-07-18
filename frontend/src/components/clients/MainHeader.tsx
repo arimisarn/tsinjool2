@@ -45,8 +45,8 @@ const MainHeader: React.FC = () => {
         }
 
         setUser({
-          name: res.data.nom_utilisateur,
-          email: res.data.email,
+          name: res.data.user.nom_utilisateur,
+          email: res.data.user.email,
         });
       } catch (err: any) {
         console.error("Erreur chargement photo", err);
