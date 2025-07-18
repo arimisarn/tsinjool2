@@ -24,35 +24,15 @@ import {
 
 const Navigation = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
   const toggleMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
 
   return (
-    <nav className="bg-slate-50 dark:bg-zinc-800 border-b border-slate-200 dark:border-zinc-700 shadow-sm z-40 px-6 py-3">
-      <div className="flex items-center justify-between max-w-[1280px] mx-auto">
-        <Link
-          to="/dashboard"
-          className="text-gray-900 dark:text-white text-lg font-bold"
-        >
-          Tsinjool
-        </Link>
-
-        {/* Bouton menu hamburger mobile */}
-        <button
-          className="md:hidden text-gray-900 dark:text-white"
-          onClick={toggleMenu}
-          aria-label="Toggle menu"
-        >
-          {isMobileMenuOpen ? (
-            <X className="w-6 h-6" />
-          ) : (
-            <Menu className="w-6 h-6" />
-          )}
-        </button>
-
-        {/* Menu principal pour écrans moyens et plus */}
-        <NavigationMenu className="hidden md:flex text-gray-900 dark:text-white">
+    <nav className="bg-slate-50 dark:bg-zinc-800 border-b border-slate-200 dark:border-zinc-700 shadow-sm z-40 px-6 py-3 relative">
+      {/* Grand écran : menu centré */}
+      <div className="hidden md:flex justify-center">
+        <NavigationMenu className="text-gray-900 dark:text-white">
           <NavigationMenuList className="flex gap-6">
+            {/* Dashboard */}
             <NavigationMenuItem>
               <Link to="/dashboard">
                 <NavigationMenuLink
@@ -136,6 +116,7 @@ const Navigation = () => {
               </NavigationMenuContent>
             </NavigationMenuItem>
 
+            {/* Mes Progrès */}
             <NavigationMenuItem>
               <Link to="/progress">
                 <NavigationMenuLink
@@ -147,6 +128,7 @@ const Navigation = () => {
               </Link>
             </NavigationMenuItem>
 
+            {/* Support */}
             <NavigationMenuItem>
               <Link to="/profile">
                 <NavigationMenuLink
@@ -161,7 +143,22 @@ const Navigation = () => {
         </NavigationMenu>
       </div>
 
-      {/* Menu mobile (dropdown ou latéral) */}
+      {/* Petit écran : menu hamburger */}
+      <div className="md:hidden flex justify-between items-center">
+        <div></div> {/* Espace vide à gauche pour l'équilibre */}
+        <button
+          className="text-gray-900 dark:text-white"
+          onClick={toggleMenu}
+          aria-label="Toggle menu"
+        >
+          {isMobileMenuOpen ? (
+            <X className="w-6 h-6" />
+          ) : (
+            <Menu className="w-6 h-6" />
+          )}
+        </button>
+      </div>
+
       {isMobileMenuOpen && (
         <div className="md:hidden mt-4 space-y-3 px-2 pb-4">
           <Link
@@ -170,35 +167,30 @@ const Navigation = () => {
           >
             <Gauge className="w-5 h-5" /> Dashboard
           </Link>
-
           <Link
             to="/coach-tsinjo"
             className="flex items-center gap-2 px-4 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-zinc-700 text-gray-900 dark:text-white"
           >
             <Sparkles className="w-5 h-5" /> Coach IA
           </Link>
-
           <Link
             to="/assistant-vocal"
             className="flex items-center gap-2 px-4 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-zinc-700 text-gray-900 dark:text-white"
           >
             <MessageCircle className="w-5 h-5" /> Assistant Vocal
           </Link>
-
           <Link
             to="/coach-visuel"
             className="flex items-center gap-2 px-4 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-zinc-700 text-gray-900 dark:text-white"
           >
             <Search className="w-5 h-5" /> Coach Visuel
           </Link>
-
           <Link
             to="/progress"
             className="flex items-center gap-2 px-4 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-zinc-700 text-gray-900 dark:text-white"
           >
             <Trophy className="w-5 h-5" /> Mes Progrès
           </Link>
-
           <Link
             to="/profile"
             className="flex items-center gap-2 px-4 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-zinc-700 text-gray-900 dark:text-white"
