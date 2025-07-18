@@ -179,6 +179,17 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 dark:from-zinc-950 dark:to-zinc-900">
+      <button
+        onClick={() => {
+          toast.info("Test notification !");
+          const audio = new Audio("/sounds/notification.mp3");
+          audio.play();
+        }}
+        className="mt-4 px-4 py-2 bg-blue-600 text-white rounded"
+      >
+        Tester notification + son
+      </button>
+
       {/* Main Content */}
       <div className="w-full px-4 py-8">
         <div className="mb-8">

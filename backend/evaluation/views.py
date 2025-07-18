@@ -621,3 +621,13 @@ class PlannedExerciseListView(generics.ListAPIView):
         return PlannedExercise.objects.filter(user=self.request.user).order_by(
             "planned_datetime"
         )
+
+
+class UnreadNotificationsView(generics.ListAPIView):
+    serializer_class = NotificationSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return Notification.objects.filter(
+            user=self.request.user, is_read=False
+        ).order_by("-created_at")

@@ -34,4 +34,9 @@ urlpatterns = [
         views.PlannedExerciseListView.as_view(),
         name="planned-exercises",
     ),
+    path(
+        "notifications/unread/",
+        views.UnreadNotificationsView.as_view(),
+        name="notifications-unread",
+    ),
 ]

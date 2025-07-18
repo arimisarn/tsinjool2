@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
+import notificationSoundFile from "../../public/notifications.mp3"; // adapte le chemin
 
 interface Notification {
   id: number;
@@ -50,6 +51,28 @@ export default function NotificationDropdown() {
       toast.error("Erreur lors de la mise à jour");
     }
   };
+  const notificationSound = new Audio(notificationSoundFile);
+  useEffect(() => {
+    const unread = notifications.filter((n) => !n.is_read);
+
+    unread.forEach((notif) => {
+      const shownKey = `shown-notif-${notif.id}`;
+      if (!sessionStorage.getItem(shownKey)) {
+        if (notif.type === "alert") {
+          toast.error(notif.message);
+          notificationSound.play();
+        } else if (notif.type === "success") {
+          toast.success(notif.message);
+          notificationSound.play();
+        } else {
+          toast.info(notif.message);
+          notificationSound.play();
+        }
+
+        sessionStorage.setItem(shownKey, "true");
+      }
+    });
+  }, [notifications]);
 
   // ✅ Récupération au montage
   useEffect(() => {
