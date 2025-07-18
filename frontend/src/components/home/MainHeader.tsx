@@ -5,7 +5,7 @@ import DarkMode from "../theme/DarkMode";
 
 const MainHeader = () => {
   return (
-    <div className="bg-white dark:bg-zinc-900 border-b border-gray-200 dark:border-zinc-700 px-4 sm:px-6 py-4 transition-colors duration-500 w-full">
+    <div className="bg-white dark:bg-zinc-900/50 border-b border-gray-200 dark:border-zinc-700 px-4 sm:px-6 py-4 transition-colors duration-500 w-full">
       <div className="flex flex-wrap items-center justify-between gap-4">
         {/* Logo + Titre */}
         <div className="flex items-center gap-3 min-w-0">
