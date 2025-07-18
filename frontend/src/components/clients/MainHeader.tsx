@@ -142,11 +142,12 @@ const MainHeader: React.FC = () => {
                   </div>
                 </div>
                 <div className="flex flex-col py-2">
-                  <Link to="/profile">
-                    <button className="flex items-center gap-2 px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-zinc-700 transition-colors">
-                      <User className="w-5 h-5" />
-                      Voir profil
-                    </button>
+                  <Link
+                    to="/profile"
+                    className="flex items-center gap-2 px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-zinc-700 transition-colors"
+                  >
+                    <User className="w-5 h-5" />
+                    Voir profil
                   </Link>
 
                   <button className="flex items-center gap-2 px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-zinc-700 transition-colors">
