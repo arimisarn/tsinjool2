@@ -144,7 +144,7 @@ export default function StepDetail() {
         }
       );
 
-      toast.success("Exercice planifié avec succès !");
+      toast.info("Exercice planifié avec succès !");
       setShowScheduler(false);
       setScheduledDate(undefined);
       setScheduledTime("09:00");
