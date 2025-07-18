@@ -1,18 +1,13 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Brain, Eye, Play, Pause } from "lucide-react";
-// import { WebcamCapture } from "./components/WebcamCapture";
-// import { FaceDetection } from "./components/FaceDetection";
-// import { AICoach } from "./components/AICoach";
-// import { initializeFaceAPI } from "./utils/faceDetection";
-// import { EmotionData } from "./types";
 import { WebcamCapture } from "@/components/clients/WebcamCapture";
 import { FaceDetection } from "@/components/clients/FaceDetection";
 import { AICoach } from "@/components/clients/AICoach";
 import { initializeFaceAPI } from "@/utils/faceDetection";
 import { type EmotionData } from "../types/index";
 
-function App() {
+function CoachVisuel() {
   const [isInitialized, setIsInitialized] = useState(false);
   const [currentVideo, setCurrentVideo] = useState<HTMLVideoElement | null>(
     null
@@ -231,4 +226,4 @@ function App() {
   );
 }
 
-export default App;
+export default CoachVisuel;
