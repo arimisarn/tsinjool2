@@ -1,512 +1,707 @@
-"use client";
+// "use client";
 
-import { useState, useEffect } from "react";
-import {
-  ArrowLeft,
-  Play,
-  CheckCircle,
-  Clock,
-  Target,
-  BookOpen,
-  Lightbulb,
-} from "lucide-react";
-import { useNavigate, useLocation, useParams } from "react-router-dom";
-import axios from "axios";
-import { toast } from "sonner";
-import { Calendar } from "@/components/ui/calendar";
+// import { useState, useEffect, useRef } from "react";
+// import {
+//   ArrowLeft,
+//   Play,
+//   Pause,
+//   RotateCcw,
+//   CheckCircle,
+//   Star,
+//   Trophy,
+//   Heart,
+//   Sparkles,
+// } from "lucide-react";
+// import { useNavigate, useLocation, useParams } from "react-router-dom";
+// import axios from "axios";
+// import { toast } from "sonner";
 
-interface Exercise {
-  id: number;
-  title: string;
-  description: string;
-  duration: number;
-  type: string;
-  completed: boolean;
-  instructions: string[];
-  animation_character: string;
-  recommended_videos?: string[];
-}
+// interface Exercise {
+//   id: number;
+//   title: string;
+//   description: string;
+//   duration: number;
+//   type: string;
+//   completed: boolean;
+//   instructions: string[];
+//   animation_character: string;
+//   recommended_videos?: string[];
+//   image_url?: string;
+// }
 
-interface Step {
-  id: number;
-  title: string;
-  description: string;
-  exercises: Exercise[];
-  completed: boolean;
-  progress: number;
-}
+// export default function ExercisePage() {
+//   const navigate = useNavigate();
+//   const location = useLocation();
+//   const { exerciseId } = useParams();
+//   const [exercise, setExercise] = useState<Exercise | null>(null);
+//   const [timeLeft, setTimeLeft] = useState(0);
+//   const [isRunning, setIsRunning] = useState(false);
+//   const [isCompleted, setIsCompleted] = useState(false);
+//   const [showCelebration, setShowCelebration] = useState(false);
+//   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+//   console.log(exerciseId);
 
-export default function StepDetail() {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { stepId } = useParams();
-  const [step, setStep] = useState<Step | null>(null);
-  const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(
-    null
-  );
-  const [loading, setLoading] = useState(true);
+//   useEffect(() => {
+//     document.title = "Tsinjool - Exercice en cours";
 
-  const [showScheduler, setShowScheduler] = useState(false);
-  const [scheduledDate, setScheduledDate] = useState<Date | undefined>(
-    undefined
-  );
-  const [scheduledTime, setScheduledTime] = useState("09:00");
+//     // Récupérer l'exercice depuis location.state
+//     if (location.state?.exercise) {
+//       const exerciseData = location.state.exercise;
+//       setExercise(exerciseData);
+//       setTimeLeft(exerciseData.duration * 60); // Convertir en secondes
+//     } else {
+//       toast.error("Exercice non trouvé.");
+//       navigate("/dashboard");
+//     }
 
-  useEffect(() => {
-    document.title = "Tsinjool - Détail de l'étape";
-    loadStepData();
-  }, [stepId]);
+//     return () => {
+//       if (intervalRef.current) {
+//         clearInterval(intervalRef.current);
+//       }
+//     };
+//   }, [location.state, navigate]);
 
-  const loadStepData = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        toast.error("Veuillez vous connecter.");
-        navigate("/login");
-        return;
-      }
+//   useEffect(() => {
+//     if (isRunning && timeLeft > 0) {
+//       intervalRef.current = setInterval(() => {
+//         setTimeLeft((prev) => {
+//           if (prev <= 1) {
+//             setIsRunning(false);
+//             handleExerciseComplete();
+//             return 0;
+//           }
+//           return prev - 1;
+//         });
+//       }, 1000);
+//     } else {
+//       if (intervalRef.current) {
+//         clearInterval(intervalRef.current);
+//       }
+//     }
 
-      // Utiliser les données passées via location.state si disponibles
-      if (location.state?.step) {
-        setStep(location.state.step);
-        setLoading(false);
-        return;
-      }
+//     return () => {
+//       if (intervalRef.current) {
+//         clearInterval(intervalRef.current);
+//       }
+//     };
+//   }, [isRunning, timeLeft]);
 
-      // Sinon, charger depuis l'API
-      const response = await axios.get(
-        `https://tsinjool-backend.onrender.com/api/steps/${stepId}/`,
-        {
-          headers: { Authorization: `Token ${token}` },
-        }
-      );
-      setStep(response.data);
-    } catch (error: any) {
-      console.error(error);
-      toast.error("Erreur lors du chargement de l'étape.");
-      window.dispatchEvent(new Event("refresh-notifications"));
-      navigate("/dashboard");
-    } finally {
-      setLoading(false);
-    }
-  };
+//   const handleStart = () => {
+//     setIsRunning(true);
+//   };
 
-  const handleExerciseSelect = (exercise: Exercise) => {
-    setSelectedExercise(exercise);
-  };
+//   const handlePause = () => {
+//     setIsRunning(false);
+//   };
 
-  const handleStartExercise = (exercise: Exercise) => {
-    navigate(`/exercise/${exercise.id}`, {
-      state: {
-        exercise,
-        stepId: step?.id,
-        stepTitle: step?.title,
-      },
-    });
-  };
-  // Fonction pour planifier l'exercice (appel API)
-  const handleScheduleExercise = async () => {
-    if (!scheduledDate) {
-      toast.error("Veuillez choisir une date.");
-      return;
-    }
+//   const handleReset = () => {
+//     setIsRunning(false);
+//     setTimeLeft(exercise ? exercise.duration * 60 : 0);
+//     setIsCompleted(false);
+//   };
 
-    if (!selectedExercise) {
-      toast.error("Aucun exercice sélectionné.");
-      return;
-    }
+//   const handleExerciseComplete = async () => {
+//     if (intervalRef.current) {
+//       clearInterval(intervalRef.current); // ⛔️ Arrête le timer
+//     }
 
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        toast.error("Veuillez vous connecter.");
-        navigate("/login");
-        return;
-      }
+//     setIsRunning(false);
+//     setTimeLeft(0); // 🕒 Force 00:00
+//     setIsCompleted(true);
+//     setShowCelebration(true);
 
-      // ✅ Construire une datetime locale sans UTC (ex: "2025-07-18 18:30:00")
-      const year = scheduledDate.getFullYear();
-      const month = String(scheduledDate.getMonth() + 1).padStart(2, "0");
-      const day = String(scheduledDate.getDate()).padStart(2, "0");
+//     try {
+//       const token = localStorage.getItem("token");
+//       await axios.post(
+//         `https://tsinjool-backend.onrender.com/api/exercises/${exercise?.id}/complete/`,
+//         {},
+//         {
+//           headers: { Authorization: `Token ${token}` },
+//         }
+//       );
 
-      const plannedDatetime = `${year}-${month}-${day} ${scheduledTime}:00`;
+//       toast.success("Félicitations ! Exercice terminé avec succès !");
+//       window.dispatchEvent(new Event("refresh-notifications"));
+//     } catch (error: any) {
+//       console.error(error);
+//       toast.error("Erreur lors de l'enregistrement de la progression.");
+//     }
 
-      await axios.post(
-        "https://tsinjool-backend.onrender.com/api/plan-exercise/",
-        {
-          exercise_id: selectedExercise.id,
-          planned_datetime: plannedDatetime,
-        },
-        {
-          headers: {
-            Authorization: `Token ${token}`,
-          },
-        }
-      );
+//     // 🎉 Masquer la célébration après 3 secondes
+//     setTimeout(() => {
+//       setShowCelebration(false);
+//     }, 3000);
+//   };
 
-      toast.success("Exercice planifié avec succès !");
-      setShowScheduler(false);
-      setScheduledDate(undefined);
-      setScheduledTime("09:00");
+//   const formatTime = (seconds: number) => {
+//     const mins = Math.floor(seconds / 60);
+//     const secs = seconds % 60;
+//     return `${mins.toString().padStart(2, "0")}:${secs
+//       .toString()
+//       .padStart(2, "0")}`;
+//   };
 
-      window.dispatchEvent(new Event("refresh-notifications"));
-    } catch (error) {
-      console.error("Erreur planification exercice", error);
-      toast.error("Erreur lors de la planification.");
-    }
-  };
+//   const getProgressPercentage = () => {
+//     if (!exercise) return 0;
+//     const totalSeconds = exercise.duration * 60;
+//     return ((totalSeconds - timeLeft) / totalSeconds) * 100;
+//   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-blue-600 rounded-full flex items-center justify-center mb-4 mx-auto animate-pulse">
-            <Target className="w-8 h-8 text-white" />
-          </div>
-          <p className="text-gray-600">Chargement de l'étape...</p>
-        </div>
-      </div>
-    );
-  }
+//   const getCharacterAnimation = () => {
+//     if (isCompleted) return "🎉";
+//     if (isRunning) return "🧘‍♀️";
+//     return exercise?.animation_character || "🤖";
+//   };
 
-  if (!step) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-gray-600">Étape non trouvée.</p>
-          <button
-            onClick={() => navigate("/dashboard")}
-            className="mt-4 px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
-          >
-            Retour au tableau de bord
-          </button>
-        </div>
-      </div>
-    );
-  }
+//   const getEncouragementMessage = () => {
+//     const progress = getProgressPercentage();
+//     if (isCompleted) return "Fantastique ! Vous avez terminé l'exercice !";
+//     if (progress > 75) return "Presque fini ! Continuez comme ça !";
+//     if (progress > 50) return "Excellent travail ! Vous êtes à mi-chemin !";
+//     if (progress > 25) return "Très bien ! Restez concentré(e) !";
+//     if (isRunning) return "C'est parti ! Prenez votre temps et respirez.";
+//     return "Prêt(e) à commencer ? Cliquez sur play !";
+//   };
 
-  const getExerciseIcon = (type: string) => {
-    switch (type) {
-      case "meditation":
-        return <Target className="w-5 h-5" />;
-      case "reflection":
-        return <BookOpen className="w-5 h-5" />;
-      case "practice":
-        return <Lightbulb className="w-5 h-5" />;
-      default:
-        return <Play className="w-5 h-5" />;
-    }
-  };
+//   if (!exercise) {
+//     return (
+//       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
+//         <div className="text-center">
+//           <p className="text-gray-600">Chargement de l'exercice...</p>
+//         </div>
+//       </div>
+//     );
+//   }
 
-  const getExerciseColor = (type: string) => {
-    switch (type) {
-      case "meditation":
-        return "from-green-400 to-teal-500";
-      case "reflection":
-        return "from-blue-400 to-indigo-500";
-      case "practice":
-        return "from-purple-400 to-pink-500";
-      default:
-        return "from-gray-400 to-gray-500";
-    }
-  };
+//   return (
+//     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+//       {/* Celebration Overlay */}
+//       {showCelebration && (
+//         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+//           <div className="bg-white rounded-3xl p-8 text-center max-w-md mx-4 animate-bounce">
+//             <div className="text-6xl mb-4">🎉</div>
+//             <h2 className="text-2xl font-bold text-gray-900 mb-2">
+//               Félicitations !
+//             </h2>
+//             <p className="text-gray-600 mb-4">
+//               Vous avez terminé l'exercice avec succès !
+//             </p>
+//             <div className="flex justify-center gap-2">
+//               <Star className="w-6 h-6 text-yellow-500 fill-current" />
+//               <Star className="w-6 h-6 text-yellow-500 fill-current" />
+//               <Star className="w-6 h-6 text-yellow-500 fill-current" />
+//             </div>
+//           </div>
+//         </div>
+//       )}
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-zinc-900 dark:to-zinc-950">
-      {/* Header */}
-      <div className="bg-white dark:bg-zinc-800 shadow-sm border-b border-gray-200 dark:border-zinc-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between py-4">
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => navigate("/dashboard")}
-                className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-zinc-700 rounded-lg transition-colors"
-              >
-                <ArrowLeft className="w-5 h-5" />
-              </button>
-              <div>
-                <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">
-                  {step.title}
-                </h1>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  {step.exercises.length} exercices disponibles
-                </p>
-              </div>
-            </div>
+//       {/* Header */}
+//       <div className="bg-white shadow-sm border-b">
+//         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+//           <div className="flex items-center justify-between py-4">
+//             <div className="flex items-center gap-4">
+//               <button
+//                 onClick={() => navigate(-1)}
+//                 className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+//               >
+//                 <ArrowLeft className="w-5 h-5" />
+//               </button>
+//               <div>
+//                 <h1 className="text-xl font-bold text-gray-900">
+//                   {exercise.title}
+//                 </h1>
+//                 <p className="text-sm text-gray-600">
+//                   {location.state?.stepTitle &&
+//                     `${location.state.stepTitle} • `}
+//                   {exercise.duration} minutes
+//                 </p>
+//               </div>
+//             </div>
 
-            <div className="flex items-center gap-4">
-              <div className="text-right">
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  Progression
-                </p>
-                <p className="text-lg font-bold text-purple-600 dark:text-purple-400">
-                  {Math.round(step.progress)}%
-                </p>
-              </div>
+//             {isCompleted && (
+//               <div className="flex items-center gap-2 text-green-600">
+//                 <CheckCircle className="w-5 h-5" />
+//                 <span className="font-medium">Terminé</span>
+//               </div>
+//             )}
+//           </div>
+//         </div>
+//       </div>
 
-              <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-600 rounded-lg flex items-center justify-center">
-                {step.completed ? (
-                  <CheckCircle className="w-6 h-6 text-white" />
-                ) : (
-                  <Target className="w-6 h-6 text-white" />
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+//       {/* Main Content */}
+//       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+//         <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
+//           {/* Character and Timer Section */}
+//           <div className="bg-gradient-to-br from-purple-500 via-blue-500 to-indigo-600 p-8 text-white text-center relative overflow-hidden">
+//             {/* Image de l'exercice */}
+//             {exercise.image_url && (
+//               <div className="mt-8">
+//                 <img
+//                   src={exercise.image_url}
+//                   alt={`Illustration pour ${exercise.title}`}
+//                   className="rounded-2xl shadow-xl mx-auto max-h-80 object-cover border-4 border-white"
+//                 />
+//                 <p className="mt-2 text-sm text-white/80 italic">
+//                   Image illustrative générée automatiquement
+//                 </p>
+//               </div>
+//             )}
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Exercise List */}
-          <div className="lg:col-span-1">
-            <div className="bg-white dark:bg-zinc-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-zinc-700">
-              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-                Exercices
-              </h2>
+//             {/* Background Animation */}
+//             <div className="absolute inset-0 opacity-20">
+//               <div className="absolute top-10 left-10 w-20 h-20 bg-white/10 rounded-full animate-pulse" />
+//               <div className="absolute top-1/3 right-16 w-16 h-16 bg-white/5 rounded-full animate-pulse delay-300" />
+//               <div className="absolute bottom-1/4 left-1/3 w-12 h-12 bg-white/15 rounded-full animate-pulse delay-700" />
+//             </div>
 
-              <div className="space-y-3">
-                {step.exercises.map((exercise, index) => (
-                  <div
-                    key={exercise.id}
-                    onClick={() => handleExerciseSelect(exercise)}
-                    className={`p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 ${
-                      selectedExercise?.id === exercise.id
-                        ? "border-purple-500 bg-purple-50 dark:bg-purple-900/30"
-                        : exercise.completed
-                        ? "border-green-200 bg-green-50 dark:bg-green-900/30"
-                        : "border-gray-200 dark:border-zinc-700 hover:bg-gray-50 dark:hover:bg-zinc-700"
-                    }`}
-                  >
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-3">
-                        <div
-                          className={`w-8 h-8 rounded-lg bg-gradient-to-br ${getExerciseColor(
-                            exercise.type
-                          )} flex items-center justify-center text-white`}
-                        >
-                          {exercise.completed ? (
-                            <CheckCircle className="w-4 h-4" />
-                          ) : (
-                            getExerciseIcon(exercise.type)
-                          )}
-                        </div>
-                        <div>
-                          <h3 className="font-medium text-gray-900 dark:text-gray-100">
-                            Exercice {index + 1}
-                          </h3>
-                          <p className="text-sm text-gray-600 dark:text-gray-400">
-                            {exercise.title}
-                          </p>
-                        </div>
-                      </div>
+//             <div className="relative z-10">
+//               {/* Character */}
+//               <div className="text-8xl mb-4 animate-bounce">
+//                 {getCharacterAnimation()}
+//               </div>
 
-                      <div className="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400">
-                        <Clock className="w-4 h-4" />
-                        {exercise.duration}min
-                      </div>
-                    </div>
+//               {/* Timer */}
+//               <div className="mb-6">
+//                 <div className="text-6xl font-bold mb-2">
+//                   {formatTime(timeLeft)}
+//                 </div>
+//                 <p className="text-xl opacity-90">
+//                   {getEncouragementMessage()}
+//                 </p>
+//               </div>
 
-                    <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
-                      {exercise.description}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+//               {/* Progress Circle */}
+//               <div className="relative w-32 h-32 mx-auto mb-6">
+//                 <svg
+//                   className="w-32 h-32 transform -rotate-90"
+//                   viewBox="0 0 120 120"
+//                 >
+//                   <circle
+//                     cx="60"
+//                     cy="60"
+//                     r="50"
+//                     stroke="rgba(255,255,255,0.2)"
+//                     strokeWidth="8"
+//                     fill="none"
+//                   />
+//                   <circle
+//                     cx="60"
+//                     cy="60"
+//                     r="50"
+//                     stroke="white"
+//                     strokeWidth="8"
+//                     fill="none"
+//                     strokeLinecap="round"
+//                     strokeDasharray={`${2 * Math.PI * 50}`}
+//                     strokeDashoffset={`${
+//                       2 * Math.PI * 50 * (1 - getProgressPercentage() / 100)
+//                     }`}
+//                     className="transition-all duration-1000"
+//                   />
+//                 </svg>
+//                 <div className="absolute inset-0 flex items-center justify-center">
+//                   <span className="text-2xl font-bold">
+//                     {Math.round(getProgressPercentage())}%
+//                   </span>
+//                 </div>
+//               </div>
 
-          {/* Exercise Detail */}
-          <div className="lg:col-span-2">
-            {selectedExercise ? (
-              <div className="bg-white dark:bg-zinc-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-zinc-700">
-                <div className="flex items-center justify-between mb-6">
-                  <div>
-                    <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
-                      {selectedExercise.title}
-                    </h2>
-                    <p className="text-gray-600 dark:text-gray-400">
-                      {selectedExercise.description}
-                    </p>
-                  </div>
+//               {/* Control Buttons */}
+//               <div className="flex justify-center gap-4">
+//                 {!isCompleted && (
+//                   <>
+//                     {!isRunning ? (
+//                       <button
+//                         onClick={handleStart}
+//                         className="flex items-center gap-2 px-8 py-4 bg-white text-purple-600 rounded-xl font-medium hover:bg-gray-50 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+//                       >
+//                         <Play className="w-5 h-5" />
+//                         {timeLeft === exercise.duration * 60
+//                           ? "Commencer"
+//                           : "Reprendre"}
+//                       </button>
+//                     ) : (
+//                       <button
+//                         onClick={handlePause}
+//                         className="flex items-center gap-2 px-8 py-4 bg-white text-purple-600 rounded-xl font-medium hover:bg-gray-50 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+//                       >
+//                         <Pause className="w-5 h-5" />
+//                         Pause
+//                       </button>
+//                     )}
 
-                  <div className="text-right">
-                    <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 mb-1">
-                      <Clock className="w-4 h-4" />
-                      {selectedExercise.duration} minutes
-                    </div>
-                    {selectedExercise.completed && (
-                      <div className="flex items-center gap-1 text-green-600 dark:text-green-400">
-                        <CheckCircle className="w-4 h-4" />
-                        <span className="text-sm font-medium">Terminé</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
+//                     <button
+//                       onClick={handleReset}
+//                       className="flex items-center gap-2 px-6 py-4 bg-white/20 text-white rounded-xl font-medium hover:bg-white/30 transition-all duration-200"
+//                     >
+//                       <RotateCcw className="w-5 h-5" />
+//                       Reset
+//                     </button>
+//                   </>
+//                 )}
+//                 <button
+//                   onClick={handleExerciseComplete}
+//                   className="flex items-center gap-2 px-6 py-4 bg-green-600 text-white rounded-xl font-medium hover:bg-green-700 transition-all duration-200"
+//                 >
+//                   <CheckCircle className="w-5 h-5" />
+//                   Terminer maintenant
+//                 </button>
+//                 {isCompleted && (
+//                   <button
+//                     onClick={() => navigate(-1)}
+//                     className="flex items-center gap-2 px-8 py-4 bg-white text-purple-600 rounded-xl font-medium hover:bg-gray-50 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+//                   >
+//                     <Trophy className="w-5 h-5" />
+//                     Retour aux exercices
+//                   </button>
+//                 )}
+//               </div>
+//             </div>
+//           </div>
 
-                {/* Character Animation Preview */}
-                <div className="bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/30 rounded-xl p-8 mb-6 text-center">
-                  <div className="w-24 h-24 bg-gradient-to-br from-purple-400 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <span className="text-3xl">
-                      {selectedExercise.animation_character}
-                    </span>
-                  </div>
-                  <p className="text-gray-600 dark:text-gray-400">
-                    Votre coach virtuel vous guidera pendant cet exercice
-                  </p>
-                </div>
+//           {/* Instructions Section */}
+//           <div className="p-8">
+//             <h3 className="text-2xl font-bold text-gray-900 mb-6">
+//               Instructions
+//             </h3>
 
-                {/* Instructions */}
-                {selectedExercise.instructions &&
-                  selectedExercise.instructions.length > 0 && (
-                    <div className="mb-6">
-                      <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">
-                        Instructions
-                      </h3>
-                      <div className="space-y-2">
-                        {selectedExercise.instructions.map(
-                          (instruction, index) => (
-                            <div key={index} className="flex items-start gap-3">
-                              <div className="w-6 h-6 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                                <span className="text-xs font-medium text-purple-600 dark:text-purple-400">
-                                  {index + 1}
-                                </span>
-                              </div>
-                              <p className="text-gray-700 dark:text-gray-300">
-                                {instruction}
-                              </p>
-                            </div>
-                          )
-                        )}
-                      </div>
-                    </div>
-                  )}
+//             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+//               <div>
+//                 <h4 className="text-lg font-semibold text-gray-900 mb-4">
+//                   Étapes à suivre
+//                 </h4>
+//                 <div className="space-y-3">
+//                   {exercise.instructions.map((instruction, index) => (
+//                     <div key={index} className="flex items-start gap-3">
+//                       <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
+//                         <span className="text-sm font-medium text-purple-600">
+//                           {index + 1}
+//                         </span>
+//                       </div>
+//                       <p className="text-gray-700">{instruction}</p>
+//                     </div>
+//                   ))}
+//                 </div>
+//               </div>
 
-                {/* Recommended Videos */}
-                {selectedExercise.recommended_videos &&
-                  selectedExercise.recommended_videos.length > 0 && (
-                    <div className="mb-6">
-                      <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">
-                        Vidéos recommandées
-                      </h3>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {selectedExercise.recommended_videos.map(
-                          (url, index) => {
-                            const videoId = new URL(url).searchParams.get("v");
-                            return (
-                              <div
-                                key={index}
-                                className="aspect-video rounded-xl overflow-hidden shadow"
-                              >
-                                <iframe
-                                  width="100%"
-                                  height="100%"
-                                  src={`https://www.youtube.com/embed/${videoId}`}
-                                  title={`Vidéo ${index + 1}`}
-                                  frameBorder="0"
-                                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                  allowFullScreen
-                                ></iframe>
-                              </div>
-                            );
-                          }
-                        )}
-                        <div className="flex justify-center mt-6">
-                          <button
-                            onClick={() => setShowScheduler(true)}
-                            className="px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-medium shadow-md hover:shadow-lg transition"
-                          >
-                            Planifier cet exercice
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  )}
+//               <div>
+//                 <h4 className="text-lg font-semibold text-gray-900 mb-4">
+//                   Conseils
+//                 </h4>
+//                 <div className="space-y-3">
+//                   <div className="flex items-start gap-3">
+//                     <Heart className="w-5 h-5 text-red-500 mt-0.5" />
+//                     <p className="text-gray-700">
+//                       Respirez profondément et restez détendu(e)
+//                     </p>
+//                   </div>
+//                   <div className="flex items-start gap-3">
+//                     <Sparkles className="w-5 h-5 text-yellow-500 mt-0.5" />
+//                     <p className="text-gray-700">
+//                       Concentrez-vous sur le moment présent
+//                     </p>
+//                   </div>
+//                   <div className="flex items-start gap-3">
+//                     <Trophy className="w-5 h-5 text-blue-500 mt-0.5" />
+//                     <p className="text-gray-700">Chaque petit progrès compte</p>
+//                   </div>
+//                 </div>
+//               </div>
+//             </div>
 
-                {/* Action Button */}
-                <div className="flex justify-center">
-                  <button
-                    onClick={() => handleStartExercise(selectedExercise)}
-                    disabled={selectedExercise.completed}
-                    className={`flex items-center gap-3 px-8 py-4 rounded-xl font-medium transition-all duration-200 ${
-                      selectedExercise.completed
-                        ? "bg-green-100 text-green-700 cursor-not-allowed dark:bg-green-900/30 dark:text-green-400"
-                        : "bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-600 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-                    }`}
-                  >
-                    {selectedExercise.completed ? (
-                      <>
-                        <CheckCircle className="w-5 h-5" />
-                        Exercice terminé
-                      </>
-                    ) : (
-                      <>
-                        <Play className="w-5 h-5" />
-                        Commencer l'exercice
-                      </>
-                    )}
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <div className="bg-white dark:bg-zinc-800 rounded-xl shadow-sm p-8 text-center border border-gray-100 dark:border-zinc-700">
-                <div className="w-16 h-16 bg-gray-100 dark:bg-zinc-700 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Target className="w-8 h-8 text-gray-400 dark:text-zinc-400" />
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
-                  Sélectionnez un exercice
-                </h3>
-                <p className="text-gray-600 dark:text-gray-400">
-                  Choisissez un exercice dans la liste pour voir les détails et
-                  commencer
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
+//             {/* Description */}
+//             <div className="bg-gray-50 rounded-xl p-6">
+//               <h4 className="text-lg font-semibold text-gray-900 mb-3">
+//                 À propos de cet exercice
+//               </h4>
+//               <p className="text-gray-700 leading-relaxed">
+//                 {exercise.description}
+//               </p>
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
 
-        {showScheduler && (
-          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
-            <div className="bg-white dark:bg-zinc-800 rounded-xl p-6 w-[90%] max-w-md shadow-xl border border-gray-200 dark:border-zinc-700">
-              <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
-                Planifier l'exercice
-              </h2>
 
-              <Calendar
-                mode="single"
-                selected={scheduledDate}
-                onSelect={setScheduledDate}
-                className="mb-4"
-              />
 
-              <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
-                Heure :
-              </label>
-              <input
-                type="time"
-                value={scheduledTime}
-                onChange={(e) => setScheduledTime(e.target.value)}
-                className="w-full mb-4 border border-gray-300 dark:border-zinc-600 rounded-lg shadow-sm bg-white dark:bg-zinc-900 text-gray-900 dark:text-gray-100"
-              />
 
-              <div className="flex justify-between mt-6">
-                <button
-                  onClick={() => setShowScheduler(false)}
-                  className="text-sm px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-red-500"
-                >
-                  Annuler
-                </button>
-                <button
-                  onClick={handleScheduleExercise}
-                  className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow"
-                >
-                  Planifier
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// "use client";
+
+// import { useState, useEffect, useRef } from "react";
+// import { Play, Pause, RotateCcw, Trophy, Heart, Sparkles } from "lucide-react";
+// import { useNavigate, useLocation, useParams } from "react-router-dom";
+// import axios from "axios";
+// import { toast } from "sonner";
+// import { motion } from "framer-motion";
+
+// interface Exercise {
+//   id: number;
+//   title: string;
+//   description: string;
+//   duration: number;
+//   type: string;
+//   completed: boolean;
+//   instructions: string[];
+//   animation_character: string;
+//   recommended_videos?: string[];
+//   image_url?: string;
+// }
+
+// export default function ExercisePage() {
+//   const navigate = useNavigate();
+//   const location = useLocation();
+//   const { exerciseId } = useParams();
+//   const [exercise, setExercise] = useState<Exercise | null>(null);
+//   const [timeLeft, setTimeLeft] = useState(0);
+//   const [isRunning, setIsRunning] = useState(false);
+//   const [isCompleted, setIsCompleted] = useState(false);
+//   const [showCelebration, setShowCelebration] = useState(false);
+//   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+//   console.log(showCelebration, exerciseId);
+
+//   useEffect(() => {
+//     document.title = "Tsinjool - Exercice en cours";
+
+//     if (location.state?.exercise) {
+//       const exerciseData = location.state.exercise;
+//       setExercise(exerciseData);
+//       setTimeLeft(exerciseData.duration * 60);
+//     } else {
+//       toast.error("Exercice non trouvé.");
+//       navigate("/dashboard");
+//     }
+
+//     return () => {
+//       if (intervalRef.current) clearInterval(intervalRef.current);
+//     };
+//   }, [location.state, navigate]);
+
+//   useEffect(() => {
+//     if (isRunning && timeLeft > 0) {
+//       intervalRef.current = setInterval(() => {
+//         setTimeLeft((prev) => {
+//           if (prev <= 1) {
+//             setIsRunning(false);
+//             handleExerciseComplete();
+//             return 0;
+//           }
+//           return prev - 1;
+//         });
+//       }, 1000);
+//     } else {
+//       if (intervalRef.current) clearInterval(intervalRef.current);
+//     }
+
+//     return () => {
+//       if (intervalRef.current) clearInterval(intervalRef.current);
+//     };
+//   }, [isRunning, timeLeft]);
+
+//   const handleStart = () => setIsRunning(true);
+//   const handlePause = () => setIsRunning(false);
+//   const handleReset = () => {
+//     setIsRunning(false);
+//     setTimeLeft(exercise ? exercise.duration * 60 : 0);
+//     setIsCompleted(false);
+//   };
+
+//   const handleExerciseComplete = async () => {
+//     if (intervalRef.current) clearInterval(intervalRef.current);
+
+//     setIsRunning(false);
+//     setTimeLeft(0);
+//     setIsCompleted(true);
+//     setShowCelebration(true);
+
+//     try {
+//       const token = localStorage.getItem("token");
+//       await axios.post(
+//         `https://tsinjool-backend.onrender.com/api/exercises/${exercise?.id}/complete/`,
+//         {},
+//         { headers: { Authorization: `Token ${token}` } }
+//       );
+//       toast.success("Félicitations ! Exercice terminé avec succès !");
+//       window.dispatchEvent(new Event("refresh-notifications"));
+//     } catch (error) {
+//       console.error(error);
+//       toast.error("Erreur lors de l'enregistrement.");
+//     }
+
+//     setTimeout(() => {
+//       setShowCelebration(false);
+//     }, 3000);
+//   };
+
+//   const formatTime = (seconds: number) => {
+//     const mins = Math.floor(seconds / 60);
+//     const secs = seconds % 60;
+//     return `${mins.toString().padStart(2, "0")}:${secs
+//       .toString()
+//       .padStart(2, "0")}`;
+//   };
+
+//   const getProgressPercentage = () => {
+//     if (!exercise) return 0;
+//     const totalSeconds = exercise.duration * 60;
+//     return ((totalSeconds - timeLeft) / totalSeconds) * 100;
+//   };
+
+//   const getCharacterAnimation = () => {
+//     if (isCompleted) return "🎉";
+//     if (isRunning) return "🧘‍♀️";
+//     return exercise?.animation_character || "🤖";
+//   };
+
+//   const getEncouragementMessage = () => {
+//     const progress = getProgressPercentage();
+//     if (isCompleted) return "Fantastique ! Vous avez terminé l'exercice !";
+//     if (progress > 75) return "Presque fini ! Continuez comme ça !";
+//     if (progress > 50) return "Excellent travail ! Vous êtes à mi-chemin !";
+//     if (progress > 25) return "Très bien ! Restez concentré(e) !";
+//     if (isRunning) return "C'est parti ! Prenez votre temps et respirez.";
+//     return "Prêt(e) à commencer ? Cliquez sur play !";
+//   };
+
+//   if (!exercise) {
+//     return (
+//       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-zinc-950 dark:to-zinc-900 flex items-center justify-center">
+//         <p className="text-gray-600 dark:text-gray-300">Chargement...</p>
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-zinc-950 dark:to-zinc-900 text-gray-900 dark:text-gray-100 p-4 grid grid-cols-1 md:grid-cols-2 gap-6 max-w-6xl mx-auto">
+//       {/* Image animée */}
+//       <motion.div
+//         initial={{ scale: 0.9 }}
+//         animate={{ scale: [1, 1.05, 1] }}
+//         transition={{ repeat: Infinity, duration: 4 }}
+//         className="bg-white dark:bg-zinc-800 rounded-2xl shadow-xl overflow-hidden"
+//       >
+//         {exercise.image_url && (
+//           <img
+//             src={exercise.image_url}
+//             alt="Exercice"
+//             className="w-full h-80 object-cover"
+//           />
+//         )}
+//       </motion.div>
+
+//       {/* Timer et Animation */}
+//       <div className="bg-white dark:bg-zinc-800 rounded-2xl shadow-xl p-6 flex flex-col items-center justify-center">
+//         <div className="text-6xl mb-2">{getCharacterAnimation()}</div>
+//         <div className="text-5xl font-bold mb-2">{formatTime(timeLeft)}</div>
+//         <p className="text-lg mb-4 text-center">{getEncouragementMessage()}</p>
+//         <div className="flex flex-wrap justify-center gap-4">
+//           {!isCompleted &&
+//             (!isRunning ? (
+//               <button
+//                 onClick={handleStart}
+//                 className="bg-indigo-600 text-white px-4 py-2 rounded-xl"
+//               >
+//                 <Play className="inline w-4 h-4 mr-1" /> Commencer
+//               </button>
+//             ) : (
+//               <button
+//                 onClick={handlePause}
+//                 className="bg-yellow-500 text-white px-4 py-2 rounded-xl"
+//               >
+//                 <Pause className="inline w-4 h-4 mr-1" /> Pause
+//               </button>
+//             ))}
+//           <button
+//             onClick={handleReset}
+//             className="bg-gray-300 px-4 py-2 rounded-xl"
+//           >
+//             <RotateCcw className="inline w-4 h-4 mr-1" /> Reset
+//           </button>
+//           {isCompleted && (
+//             <button
+//               onClick={() => navigate(-1)}
+//               className="bg-green-600 text-white px-4 py-2 rounded-xl"
+//             >
+//               <Trophy className="inline w-4 h-4 mr-1" /> Retour
+//             </button>
+//           )}
+//         </div>
+//       </div>
+
+//       {/* Instructions + Conseils */}
+//       <div className="bg-white dark:bg-zinc-800 rounded-2xl shadow-xl p-6 space-y-4">
+//         <h3 className="text-xl font-semibold">Étapes à suivre</h3>
+//         <ul className="space-y-2">
+//           {exercise.instructions.map((inst, idx) => (
+//             <li key={idx} className="text-gray-700 dark:text-gray-300">
+//               {idx + 1}. {inst}
+//             </li>
+//           ))}
+//         </ul>
+//         <hr className="my-4" />
+//         <h4 className="text-lg font-medium">Conseils</h4>
+//         <ul className="space-y-2">
+//           <li>
+//             <Heart className="inline w-4 h-4 text-red-500 mr-1" /> Respirez
+//             profondément
+//           </li>
+//           <li>
+//             <Sparkles className="inline w-4 h-4 text-yellow-500 mr-1" /> Soyez
+//             présent(e)
+//           </li>
+//           <li>
+//             <Trophy className="inline w-4 h-4 text-blue-500 mr-1" /> Petit à
+//             petit
+//           </li>
+//         </ul>
+//       </div>
+
+//       {/* Vidéos recommandées */}
+//       <div className="bg-white dark:bg-zinc-800 rounded-2xl shadow-xl p-6 space-y-4">
+//         <h3 className="text-xl font-semibold">Vidéos recommandées</h3>
+//         <div className="space-y-4">
+//           {exercise.recommended_videos?.length ? (
+//             exercise.recommended_videos.map((url, idx) => (
+//               <div key={idx} className="aspect-video">
+//                 <iframe
+//                   src={url.replace("watch?v=", "embed/")}
+//                   title={`video-${idx}`}
+//                   className="w-full h-full rounded-xl"
+//                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+//                   allowFullScreen
+//                 ></iframe>
+//               </div>
+//             ))
+//           ) : (
+//             <p className="text-gray-500">Aucune vidéo recommandée.</p>
+//           )}
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
