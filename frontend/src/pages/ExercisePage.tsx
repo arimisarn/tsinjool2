@@ -288,7 +288,7 @@ export default function ExercisePage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 min-h-[calc(100vh-200px)]">
             {/* Left Column - Timer & Character */}
             <div className="flex flex-col">
-              <div className="flex-1 bg-white/70 dark:bg-gray-800/70 backdrop-blur-lg border border-white/20 dark:border-gray-700/50 rounded-3xl p-8 text-center relative overflow-hidden shadow-xl">
+              <div className="flex-1 bg-white/70 dark:bg-gray-900 border dark:border-gray-800 border-white/20 dark:border-gray-700/50 rounded-3xl p-8 text-center relative overflow-hidden shadow-xl">
                 {/* Background Pattern */}
                 <div className="absolute inset-0 opacity-5">
                   <div
@@ -454,7 +454,7 @@ export default function ExercisePage() {
             {/* Right Column - Instructions */}
             <div className="flex flex-col gap-6">
               {/* Instructions Section */}
-              <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-lg border border-white/20 dark:border-gray-700/50 rounded-3xl p-8 flex-1 shadow-xl">
+              <div className="bg-white/70 dark:bg-gray-900 dark:border-gray-800 border border-white/20 dark:border-gray-700/50 rounded-3xl p-8 flex-1 shadow-xl">
                 <h3 className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-8 flex items-center gap-3">
                   <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center">
                     <Zap className="w-6 h-6 text-white" />
@@ -529,7 +529,7 @@ export default function ExercisePage() {
               </div>
 
               {/* Description */}
-              <div className="bg-white/70 dark:bg-gray-800/70 backdrop-blur-lg border border-white/20 dark:border-gray-700/50 rounded-3xl p-8 shadow-xl">
+              <div className="bg-white/70 dark:bg-gray-900 dark:border-gray-800 border border-white/20 dark:border-gray-700/50 rounded-3xl p-8 shadow-xl">
                 <h4 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
                   <div className="w-6 h-6 bg-gradient-to-br from-pink-500 to-rose-500 rounded-lg flex items-center justify-center">
                     <Heart className="w-4 h-4 text-white" />
