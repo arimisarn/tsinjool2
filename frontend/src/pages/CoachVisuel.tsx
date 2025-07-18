@@ -62,7 +62,7 @@ function CoachVisuel() {
 
   if (isLoading || !isInitialized) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:bg-gray-900  flex items-center justify-center">
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -81,9 +81,9 @@ function CoachVisuel() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:bg-gray-900 ">
       {/* Header */}
-      <header className="bg-black/20 backdrop-blur-md border-b border-white/10 sticky top-0 z-50">
+      <header className="bg-black/20 backdrop-blur-md border-b border-white/10 top-0 z-50">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <motion.div
