@@ -3,6 +3,7 @@ import { Brain, ArrowLeft, CheckCircle } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import { toast } from "sonner";
+import { Input } from "@/components/ui/input";
 
 export default function ConfirmEmailPage() {
   useEffect(() => {
@@ -17,8 +18,10 @@ export default function ConfirmEmailPage() {
     "";
 
   const [email, setEmail] = useState(initialEmail);
-  const [code, setCode] = useState("");
+  const [codeDigits, setCodeDigits] = useState<string[]>(Array(6).fill(""));
   const [loading, setLoading] = useState(false);
+
+  const code = codeDigits.join("");
 
   const handleConfirm = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,7 +62,6 @@ export default function ConfirmEmailPage() {
       toast.success("Connecté automatiquement !");
       navigate("/profile-setup");
     } catch (error: unknown) {
-      // Typage safe pour axios error
       let msg = "Erreur lors de la confirmation.";
       if (axios.isAxiosError(error)) {
         if (error.response?.data) {
@@ -76,12 +78,21 @@ export default function ConfirmEmailPage() {
     }
   };
 
+  const handleDigitChange = (value: string, index: number) => {
+    if (/^\d?$/.test(value)) {
+      const newDigits = [...codeDigits];
+      newDigits[index] = value;
+      setCodeDigits(newDigits);
+      // auto focus next
+      const nextInput = document.getElementById(`code-${index + 1}`);
+      if (value && nextInput) nextInput.focus();
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-zinc-950 dark:to-zinc-900 flex items-center justify-center p-2 sm:p-4">
       <div className="w-full max-w-4xl bg-white dark:bg-zinc-900 rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col lg:flex-row min-h-[500px]">
-        {/* Section formulaire */}
         <div className="w-full lg:w-3/5 flex flex-col relative">
-          {/* Header avec logo */}
           <div className="flex justify-between items-center p-4 sm:p-6 lg:p-8">
             <div className="flex items-center gap-2 sm:gap-3">
               <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-purple-500 to-blue-600 rounded-lg flex items-center justify-center">
@@ -98,7 +109,6 @@ export default function ConfirmEmailPage() {
             </div>
           </div>
 
-          {/* Formulaire */}
           <form
             onSubmit={handleConfirm}
             className="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-8"
@@ -119,7 +129,6 @@ export default function ConfirmEmailPage() {
               </div>
 
               <div className="space-y-6">
-                {/* Email */}
                 <div>
                   <label
                     htmlFor="email"
@@ -140,29 +149,27 @@ export default function ConfirmEmailPage() {
                   />
                 </div>
 
-                {/* Code */}
                 <div>
-                  <label
-                    htmlFor="code"
-                    className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-                  >
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                     Code de confirmation
                   </label>
-                  <input
-                    id="code"
-                    name="code"
-                    type="text"
-                    value={code}
-                    onChange={(e) => setCode(e.target.value)}
-                    placeholder="Entrez le code"
-                    required
-                    maxLength={6}
-                    style={{ letterSpacing: "0.3em" }}
-                    className="w-full px-4 py-3 border border-gray-300 dark:border-zinc-700 rounded-xl bg-gray-50 dark:bg-zinc-800 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:border-blue-600 text-gray-900 dark:text-white font-mono text-center tracking-widest text-xl"
-                  />
+                  <div className="flex gap-2 justify-center">
+                    {codeDigits.map((digit, idx) => (
+                      <Input
+                        key={idx}
+                        id={`code-${idx}`}
+                        value={digit}
+                        onChange={(e) => handleDigitChange(e.target.value, idx)}
+                        className="w-10 h-12 text-xl text-center font-mono rounded-lg border border-gray-300 dark:border-zinc-700 bg-gray-50 dark:bg-zinc-800 text-gray-900 dark:text-white placeholder-transparent focus:ring-2 focus:ring-blue-600"
+                        maxLength={1}
+                        type="text"
+                        inputMode="numeric"
+                        autoComplete="one-time-code"
+                      />
+                    ))}
+                  </div>
                 </div>
 
-                {/* Boutons */}
                 <div className="flex flex-col sm:flex-row gap-3 pt-4">
                   <button
                     type="button"
@@ -188,18 +195,13 @@ export default function ConfirmEmailPage() {
         {/* Section décorative */}
         <div className="w-full lg:w-2/5 relative overflow-hidden min-h-[250px] sm:min-h-[300px] lg:min-h-full">
           <div className="w-full h-full bg-gradient-to-br from-purple-500 via-blue-500 to-indigo-600 relative">
-            {/* Image de fond */}
             <div
               className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-20"
               style={{
                 backgroundImage: `url(https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&h=600&fit=crop)`,
               }}
             />
-
-            {/* Overlay décoratif */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-
-            {/* Contenu */}
             <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 sm:px-8 text-white">
               <div className="mb-6 sm:mb-8">
                 <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white/20 rounded-full flex items-center justify-center mb-4 mx-auto">
@@ -212,8 +214,6 @@ export default function ConfirmEmailPage() {
                   Entrez le code pour activer votre compte Tsinjool.
                 </p>
               </div>
-
-              {/* Étapes */}
               <div className="flex items-center space-x-2 sm:space-x-4 mb-6 sm:mb-8">
                 <div className="flex items-center">
                   <div className="w-6 h-6 sm:w-8 sm:h-8 bg-white rounded-full flex items-center justify-center">
@@ -236,8 +236,6 @@ export default function ConfirmEmailPage() {
                 </div>
               </div>
             </div>
-
-            {/* Éléments décoratifs animés */}
             <div className="absolute top-4 sm:top-8 left-4 sm:left-8 w-12 h-12 sm:w-16 sm:h-16 bg-white/10 rounded-full blur-sm animate-pulse"></div>
             <div className="absolute top-1/4 right-6 sm:right-12 w-16 h-16 sm:w-24 sm:h-24 bg-white/5 rounded-full blur-lg animate-pulse delay-300"></div>
             <div className="absolute bottom-1/4 left-6 sm:left-12 w-14 h-14 sm:w-20 sm:h-20 bg-white/15 rounded-full blur-md animate-pulse delay-700"></div>

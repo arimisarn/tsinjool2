@@ -1,145 +1,249 @@
-// "use client";
+// import React, { useEffect, useState } from "react";
+// import { Brain, ArrowLeft, CheckCircle } from "lucide-react";
+// import { useNavigate, useLocation } from "react-router-dom";
+// import axios from "axios";
+// import { toast } from "sonner";
 
-// import {
-//   BotMessageSquare,
-//   MessageCircle,
-//   Trophy,
-//   Sparkles,
-//   Search,
-//   Gauge,
-// } from "lucide-react";
+// export default function ConfirmEmailPage() {
+//   useEffect(() => {
+//     document.title = "Tsinjool - Confirmation Email";
+//   }, []);
+//   const navigate = useNavigate();
+//   const location = useLocation();
 
-// import {
-//   NavigationMenu,
-//   NavigationMenuContent,
-//   NavigationMenuItem,
-//   NavigationMenuLink,
-//   NavigationMenuList,
-//   NavigationMenuTrigger,
-//   navigationMenuTriggerStyle,
-// } from "@/components/ui/navigation-menu";
+//   const initialEmail =
+//     (location.state as { email?: string })?.email ||
+//     sessionStorage.getItem("pendingEmail") ||
+//     "";
 
-// import { Link } from "react-router-dom";
+//   const [email, setEmail] = useState(initialEmail);
+//   const [code, setCode] = useState("");
+//   const [loading, setLoading] = useState(false);
 
-// const Navigation = () => {
+//   const handleConfirm = async (e: React.FormEvent) => {
+//     e.preventDefault();
+
+//     if (!email || !code) {
+//       toast.error("Veuillez renseigner l'email et le code.");
+//       return;
+//     }
+//     setLoading(true);
+//     try {
+//       await axios.post(
+//         "https://tsinjool-backend.onrender.com/api/confirm-email/",
+//         { email, code }
+//       );
+//       toast.success("Email confirmé avec succès !");
+
+//       const password = sessionStorage.getItem("pendingPassword");
+//       const username = sessionStorage.getItem("pendingUsername");
+
+//       if (!username || !password) {
+//         toast.error(
+//           "Identifiants manquants. Veuillez vous connecter manuellement."
+//         );
+//         navigate("/login");
+//         return;
+//       }
+
+//       const loginRes = await axios.post(
+//         "https://tsinjool-backend.onrender.com/api/login/",
+//         { username: username, password }
+//       );
+//       const token = loginRes.data.token;
+//       localStorage.setItem("token", token);
+//       sessionStorage.removeItem("pendingPassword");
+//       sessionStorage.removeItem("pendingUsername");
+//       sessionStorage.removeItem("pendingEmail");
+
+//       toast.success("Connecté automatiquement !");
+//       navigate("/profile-setup");
+//     } catch (error: unknown) {
+//       // Typage safe pour axios error
+//       let msg = "Erreur lors de la confirmation.";
+//       if (axios.isAxiosError(error)) {
+//         if (error.response?.data) {
+//           const data = error.response.data as Record<string, any>;
+//           if (data.error) msg = data.error;
+//           else if (typeof data === "string") msg = data;
+//           else if (Array.isArray(data)) msg = data.join(", ");
+//           else msg = JSON.stringify(data);
+//         }
+//       }
+//       toast.error(msg);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
 //   return (
-//     <nav className="bg-slate-50 dark:bg-zinc-800 border-b border-slate-200 dark:border-zinc-700 shadow-sm top-[64px] z-40 px-6 py-3">
-//       <NavigationMenu className="text-gray-900 dark:text-white max-w-[1280px] mx-auto">
-//         <NavigationMenuList className="flex flex-wrap sm:flex-nowrap gap-2 sm:gap-6">
-//           <NavigationMenuItem>
-//             <Link to="/dashboard">
-//               <NavigationMenuLink
-//                 className={`${navigationMenuTriggerStyle()} text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-zinc-700 rounded-lg px-3 py-2 flex items-center`}
-//               >
-//                 <Gauge className="w-5 h-5 mr-2" />
-//                 Dashboard
-//               </NavigationMenuLink>
-//             </Link>
-//           </NavigationMenuItem>
+//     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-zinc-950 dark:to-zinc-900 flex items-center justify-center p-2 sm:p-4">
+//       <div className="w-full max-w-4xl bg-white dark:bg-zinc-900 rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col lg:flex-row min-h-[500px]">
+//         {/* Section formulaire */}
+//         <div className="w-full lg:w-3/5 flex flex-col relative">
+//           {/* Header avec logo */}
+//           <div className="flex justify-between items-center p-4 sm:p-6 lg:p-8">
+//             <div className="flex items-center gap-2 sm:gap-3">
+//               <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-purple-500 to-blue-600 rounded-lg flex items-center justify-center">
+//                 <Brain className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
+//               </div>
+//               <div>
+//                 <h1 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white">
+//                   Tsinjool
+//                 </h1>
+//                 <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
+//                   Votre coach personnel intelligent
+//                 </p>
+//               </div>
+//             </div>
+//           </div>
 
-//           <NavigationMenuItem>
-//             <NavigationMenuTrigger className="text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-zinc-700 rounded-lg px-3 py-2 flex items-center">
-//               <BotMessageSquare className="w-5 h-5 mr-2" />
-//               Discuter avec l'IA
-//             </NavigationMenuTrigger>
-//             <NavigationMenuContent className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 rounded-xl shadow-lg p-4 w-full md:w-[500px] lg:w-[600px]">
-//               <ul className="grid gap-4 lg:grid-cols-[.75fr_1fr]">
-//                 <li className="row-span-3">
-//                   <NavigationMenuLink asChild>
-//                     <a
-//                       className="flex h-full w-full flex-col justify-end rounded-xl p-6 no-underline outline-none transition-colors
-//                         bg-gradient-to-b from-purple-50 to-purple-100
-//                         dark:from-purple-800/50 dark:to-purple-900
-//                         hover:from-purple-100 hover:to-purple-200
-//                         dark:hover:from-purple-700/70 dark:hover:to-purple-800"
-//                     >
-//                       <BotMessageSquare className="h-8 w-8 text-purple-600 dark:text-purple-400" />
-//                       <div className="mb-2 mt-4 text-lg font-semibold text-gray-900 dark:text-white">
-//                         Discuter avec l'IA
-//                       </div>
-//                       <p className="text-sm leading-tight text-gray-600 dark:text-gray-300">
-//                         Vous pouvez discuter avec nos différentes IA
-//                       </p>
-//                     </a>
-//                   </NavigationMenuLink>
-//                 </li>
+//           {/* Formulaire */}
+//           <form
+//             onSubmit={handleConfirm}
+//             className="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-8"
+//             noValidate
+//           >
+//             <div className="w-full max-w-md">
+//               <div className="mb-6 sm:mb-8">
+//                 <p className="text-xs uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-2">
+//                   ÉTAPE 1 SUR 2
+//                 </p>
+//                 <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-3">
+//                   Confirmez votre email
+//                   <span className="text-purple-500">.</span>
+//                 </h1>
+//                 <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
+//                   Entrez le code reçu par email pour activer votre compte.
+//                 </p>
+//               </div>
 
-//                 {[
-//                   {
-//                     title: "Tsinjo (Coach IA)",
-//                     icon: (
-//                       <Sparkles className="w-4 h-4 text-purple-600 dark:text-purple-400 mr-2" />
-//                     ),
-//                     description: "Votre assistant IA personnel disponible 24/7",
-//                     path: "/coach-tsinjo",
-//                   },
-//                   {
-//                     title: "Assistant Vocal IA",
-//                     icon: (
-//                       <MessageCircle className="w-4 h-4 text-cyan-600 dark:text-cyan-400 mr-2" />
-//                     ),
-//                     description:
-//                       "Discutez oralement avec l'IA comme un vrai coach",
-//                     path: "/assistant-vocal",
-//                   },
-//                   {
-//                     title: "SenseAI (Coach Visuel)",
-//                     icon: (
-//                       <Search className="w-4 h-4 text-blue-600 dark:text-blue-400 mr-2" />
-//                     ),
-//                     description:
-//                       "L'IA qui vous comprend par votre expression visuelle",
-//                     path: "/coach-visuel",
-//                   },
-//                 ].map((item, i) => (
-//                   <li key={i}>
-//                     <NavigationMenuLink asChild>
-//                       <Link
-//                         to={item.path}
-//                         className="block space-y-1 rounded-lg p-3 transition-colors
-//                           hover:bg-gray-100 dark:hover:bg-zinc-700
-//                           focus:bg-gray-100 dark:focus:bg-zinc-700"
-//                       >
-//                         <div className="text-sm font-semibold flex items-center text-gray-900 dark:text-white">
-//                           {item.icon}
-//                           {item.title}
-//                         </div>
-//                         <p className="text-sm text-gray-600 dark:text-gray-400">
-//                           {item.description}
-//                         </p>
-//                       </Link>
-//                     </NavigationMenuLink>
-//                   </li>
-//                 ))}
-//               </ul>
-//             </NavigationMenuContent>
-//           </NavigationMenuItem>
+//               <div className="space-y-6">
+//                 {/* Email */}
+//                 <div>
+//                   <label
+//                     htmlFor="email"
+//                     className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+//                   >
+//                     Email
+//                   </label>
+//                   <input
+//                     id="email"
+//                     name="email"
+//                     type="email"
+//                     value={email}
+//                     onChange={(e) => setEmail(e.target.value)}
+//                     placeholder="votre.email@example.com"
+//                     required
+//                     disabled={!!initialEmail}
+//                     className="w-full px-4 py-3 border border-gray-300 dark:border-zinc-700 rounded-xl bg-gray-50 dark:bg-zinc-800 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:border-blue-600 text-gray-900 dark:text-white"
+//                   />
+//                 </div>
 
-//           <NavigationMenuItem>
-//             <Link to="/progress">
-//               <NavigationMenuLink
-//                 className={`${navigationMenuTriggerStyle()} text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-zinc-700 rounded-lg px-3 py-2 flex items-center`}
-//               >
-//                 <Trophy className="w-5 h-5 mr-2" />
-//                 Mes Progrès
-//               </NavigationMenuLink>
-//             </Link>
-//           </NavigationMenuItem>
+//                 {/* Code */}
+//                 <div>
+//                   <label
+//                     htmlFor="code"
+//                     className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+//                   >
+//                     Code de confirmation
+//                   </label>
+//                   <input
+//                     id="code"
+//                     name="code"
+//                     type="text"
+//                     value={code}
+//                     onChange={(e) => setCode(e.target.value)}
+//                     placeholder="Entrez le code"
+//                     required
+//                     maxLength={6}
+//                     style={{ letterSpacing: "0.3em" }}
+//                     className="w-full px-4 py-3 border border-gray-300 dark:border-zinc-700 rounded-xl bg-gray-50 dark:bg-zinc-800 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:border-blue-600 text-gray-900 dark:text-white font-mono text-center tracking-widest text-xl"
+//                   />
+//                 </div>
 
-//           <NavigationMenuItem>
-//             <Link to="/profile">
-//               <NavigationMenuLink
-//                 className={`${navigationMenuTriggerStyle()} text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-zinc-700 rounded-lg px-3 py-2 flex items-center`}
-//               >
-//                 <MessageCircle className="w-5 h-5 mr-2" />
-//                 Support
-//               </NavigationMenuLink>
-//             </Link>
-//           </NavigationMenuItem>
-//         </NavigationMenuList>
-//       </NavigationMenu>
-//     </nav>
+//                 {/* Boutons */}
+//                 <div className="flex flex-col sm:flex-row gap-3 pt-4">
+//                   <button
+//                     type="button"
+//                     onClick={() => navigate(-1)}
+//                     className="flex items-center justify-center gap-2 py-3 px-4 sm:px-6 border border-gray-300 dark:border-zinc-600 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-zinc-700 transition-all duration-200 font-medium group order-2 sm:order-1"
+//                   >
+//                     <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 transform transition-transform duration-300 group-hover:-translate-x-1" />
+//                     <span className="text-sm sm:text-base">Retour</span>
+//                   </button>
+//                   <button
+//                     type="submit"
+//                     disabled={loading}
+//                     className="flex-1 py-3 px-4 sm:px-6 bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-600 hover:to-blue-700 text-white rounded-xl transition-all duration-200 font-medium disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 order-1 sm:order-2"
+//                   >
+//                     {loading ? "Confirmation..." : "Confirmer"}
+//                   </button>
+//                 </div>
+//               </div>
+//             </div>
+//           </form>
+//         </div>
+
+//         {/* Section décorative */}
+//         <div className="w-full lg:w-2/5 relative overflow-hidden min-h-[250px] sm:min-h-[300px] lg:min-h-full">
+//           <div className="w-full h-full bg-gradient-to-br from-purple-500 via-blue-500 to-indigo-600 relative">
+//             {/* Image de fond */}
+//             <div
+//               className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-20"
+//               style={{
+//                 backgroundImage: `url(https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&h=600&fit=crop)`,
+//               }}
+//             />
+
+//             {/* Overlay décoratif */}
+//             <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+
+//             {/* Contenu */}
+//             <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 sm:px-8 text-white">
+//               <div className="mb-6 sm:mb-8">
+//                 <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white/20 rounded-full flex items-center justify-center mb-4 mx-auto">
+//                   <Brain className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
+//                 </div>
+//                 <h3 className="text-2xl sm:text-3xl font-bold mb-4">
+//                   Presque terminé !
+//                 </h3>
+//                 <p className="text-base sm:text-lg font-light max-w-sm">
+//                   Entrez le code pour activer votre compte Tsinjool.
+//                 </p>
+//               </div>
+
+//               {/* Étapes */}
+//               <div className="flex items-center space-x-2 sm:space-x-4 mb-6 sm:mb-8">
+//                 <div className="flex items-center">
+//                   <div className="w-6 h-6 sm:w-8 sm:h-8 bg-white rounded-full flex items-center justify-center">
+//                     <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-purple-500" />
+//                   </div>
+//                   <span className="ml-1 sm:ml-2 text-xs sm:text-sm text-white/90">
+//                     Confirmer Email
+//                   </span>
+//                 </div>
+//                 <div className="w-4 sm:w-8 h-0.5 bg-white/30"></div>
+//                 <div className="flex items-center">
+//                   <div className="w-6 h-6 sm:w-8 sm:h-8 bg-white/30 rounded-full flex items-center justify-center">
+//                     <span className="text-purple-500 font-bold text-xs sm:text-sm">
+//                       2
+//                     </span>
+//                   </div>
+//                   <span className="ml-1 sm:ml-2 text-xs sm:text-sm text-white/70">
+//                     Profil
+//                   </span>
+//                 </div>
+//               </div>
+//             </div>
+
+//             {/* Éléments décoratifs animés */}
+//             <div className="absolute top-4 sm:top-8 left-4 sm:left-8 w-12 h-12 sm:w-16 sm:h-16 bg-white/10 rounded-full blur-sm animate-pulse"></div>
+//             <div className="absolute top-1/4 right-6 sm:right-12 w-16 h-16 sm:w-24 sm:h-24 bg-white/5 rounded-full blur-lg animate-pulse delay-300"></div>
+//             <div className="absolute bottom-1/4 left-6 sm:left-12 w-14 h-14 sm:w-20 sm:h-20 bg-white/15 rounded-full blur-md animate-pulse delay-700"></div>
+//           </div>
+//         </div>
+//       </div>
+//     </div>
 //   );
-// };
-
-// export default Navigation; faites pour que quand cest petit ecran, offiche une barre menu avec  un icone pour montrer la navigation complete, meme principe que "discuter avec l IA"
+// }
