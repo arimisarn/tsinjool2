@@ -133,10 +133,10 @@ export default function NotificationDropdown() {
                 notifications.map((notif) => (
                   <div
                     key={notif.id}
-                    className={`flex items-start gap-2 p-3 rounded-lg mb-2 ${
+                    className={`flex items-start gap-2 p-3 rounded-lg mb-2 transition hover:shadow-sm ${
                       notif.is_read
-                        ? "bg-gray-100 dark:bg-zinc-700"
-                        : "bg-purple-50 dark:bg-purple-900"
+                        ? "bg-white dark:bg-zinc-900"
+                        : "bg-gray-100 dark:bg-zinc-700 border border-gray-300 dark:border-zinc-600"
                     }`}
                   >
                     <div>{getIcon(notif.type)}</div>
