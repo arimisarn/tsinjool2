@@ -150,10 +150,13 @@ const MainHeader: React.FC = () => {
                     Voir profil
                   </Link>
 
-                  <button className="flex items-center gap-2 px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-zinc-700 transition-colors">
+                  <Link
+                    to="/settings"
+                    className="flex items-center gap-2 px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-zinc-700 transition-colors"
+                  >
                     <Settings className="w-5 h-5" />
                     Paramètres
-                  </button>
+                  </Link>
 
                   <button
                     onClick={() => {
