@@ -43,8 +43,8 @@ const MainHeader: React.FC = () => {
         }
 
         setUser({
-          name: res.data?.name || "Utilisateur",
-          email: res.data?.email || "email@example.com",
+          name: res.data.nom_utilisateur,
+          email: res.data.email,
         });
       } catch (err) {
         console.error("Erreur chargement photo", err);
@@ -79,7 +79,7 @@ const MainHeader: React.FC = () => {
       <div className="flex items-center justify-between flex-wrap gap-4 max-w-[1280px] mx-auto">
         {/* Logo */}
         <div className="flex items-center gap-3 flex-shrink-0">
-          <img src={logo} alt="" className="w-10 h-10"/>
+          <img src={logo} alt="" className="w-10 h-10" />
           <div>
             <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
               Tsinjool

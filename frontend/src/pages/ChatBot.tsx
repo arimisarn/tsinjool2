@@ -8,6 +8,16 @@ import { Search, Send, Plus, PanelRight, PanelLeft } from "lucide-react";
 import chatbotGif from "@/public/images/chatbot.gif";
 import { motion, AnimatePresence } from "framer-motion";
 
+
+interface UserProfile {
+  name: string;
+  photo?: string;
+  bio?: string;
+  coaching_type: string;
+  level: number;
+  points: number;
+}
+
 type Message = {
   sender: "user" | "ai";
   content: string;
