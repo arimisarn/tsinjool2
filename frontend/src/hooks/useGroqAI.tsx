@@ -118,5 +118,5 @@ const getToneFromEmotion = (emotion: string): AICoachResponse["tone"] => {
     disgusted: "calming",
     neutral: "motivational",
   };
-  return toneMap[emotion] ?? "supportive"; // fallback si clé inconnue
+  return toneMap[emotion] ?? "supportive";
 };

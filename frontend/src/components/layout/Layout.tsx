@@ -9,21 +9,28 @@ const Layout = () => {
     const token = localStorage.getItem("token");
     if (!token) return;
 
-    axios
-      .get(
-        "https://tsinjool-backend.onrender.com/api/check-scheduled-exercises/",
-        {
-          headers: { Authorization: `Token ${token}` },
+    const checkNotifications = async () => {
+      try {
+        const res = await axios.get(
+          "https://tsinjool-backend.onrender.com/api/check-scheduled-exercises/",
+          {
+            headers: { Authorization: `Token ${token}` },
+          }
+        );
+        if (res.data.notifications_sent > 0) {
+          window.dispatchEvent(new Event("refresh-notifications"));
         }
-      )
-      .then((res) => {
-        console.log("🔔 Notifications planifiées vérifiées :", res.data);
-        window.dispatchEvent(new Event("refresh-notifications"));
-      })
-      .catch((err) => {
-        console.error("❌ Erreur vérification exercices planifiés", err);
-      });
+      } catch (error) {
+        console.error("Erreur vérification notifications", error);
+      }
+    };
+
+    checkNotifications();
+    const interval = setInterval(checkNotifications, 10000);
+
+    return () => clearInterval(interval);
   }, []);
+
   return (
     <>
       <MainHeader />

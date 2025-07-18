@@ -25,6 +25,7 @@ import StepDetail from "./pages/StepDetails";
 import Settings from "./pages/Settings";
 import Progress from "./pages/Progress";
 import ChatVoice from "./pages/ChatVoice";
+import PlannedExercises from "./pages/PlannedExercises";
 // import { AuthProvider } from "./context/AuthContext";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
@@ -141,6 +142,15 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
                   </RequireAuth>
                 }
               />
+                <Route
+                path="/planned-exercice"
+                element={
+                  <RequireAuth>
+                    <PlannedExercises />
+                  </RequireAuth>
+                }
+              />
+              
             </Route>
           </Routes>
           {/* </AuthProvider> */}

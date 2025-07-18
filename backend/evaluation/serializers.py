@@ -3,6 +3,7 @@ from .models import (
     Evaluation,
     CoachingPath,
     Notification,
+    PlannedExercise,
     Step,
     Exercise,
     UserProgress,
@@ -88,3 +89,10 @@ class NotificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Notification
         fields = ["id", "message", "type", "is_read", "created_at"]
+
+class PlannedExerciseSerializer(serializers.ModelSerializer):
+    exercise_title = serializers.CharField(source="exercise.title", read_only=True)
+
+    class Meta:
+        model = PlannedExercise
+        fields = ["id", "exercise_title", "planned_datetime", "notified"]

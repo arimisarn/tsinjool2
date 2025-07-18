@@ -20,6 +20,7 @@ from .serializers import (
     EvaluationSerializer,
     CoachingPathSerializer,
     NotificationSerializer,
+    PlannedExerciseSerializer,
     StepSerializer,
     ExerciseSerializer,
     UserProgressSerializer,
@@ -610,3 +611,13 @@ def check_scheduled_exercises(request):
 #             return Response({
 #                 "error": str(e),
 #             }, status=500)
+
+
+class PlannedExerciseListView(generics.ListAPIView):
+    serializer_class = PlannedExerciseSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return PlannedExercise.objects.filter(user=self.request.user).order_by(
+            "planned_datetime"
+        )

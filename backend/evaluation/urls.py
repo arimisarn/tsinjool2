@@ -29,4 +29,9 @@ urlpatterns = [
     path("weekly-activity/", views.weekly_activity, name="weekly-activity"),
     path("plan-exercise/", views.plan_exercise),
     path("check-scheduled-exercises/", views.check_scheduled_exercises),
+    path(
+        "exercises/planned/",
+        views.PlannedExerciseListView.as_view(),
+        name="planned-exercises",
+    ),
 ]
