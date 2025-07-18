@@ -27,6 +27,7 @@ const MainHeader: React.FC = () => {
   useEffect(() => {
     const loadPhoto = async () => {
       const token = localStorage.getItem("token");
+      console.log("Token actuel :", token);
       if (!token) return;
 
       try {
@@ -36,6 +37,7 @@ const MainHeader: React.FC = () => {
             headers: { Authorization: `Token ${token}` },
           }
         );
+        console.log("Profil reçu :", res.data);
 
         const url = res.data?.photo_url;
         if (url && url.startsWith("http")) {
@@ -46,8 +48,11 @@ const MainHeader: React.FC = () => {
           name: res.data.nom_utilisateur,
           email: res.data.email,
         });
-      } catch (err) {
+      } catch (err: any) {
         console.error("Erreur chargement photo", err);
+        if (err.response) {
+          console.error("Réponse erreur :", err.response.data);
+        }
       }
     };
 
@@ -185,15 +190,3 @@ const MainHeader: React.FC = () => {
 };
 
 export default MainHeader;
-
-// <button
-//                   onClick={() => {
-//                     localStorage.removeItem("token");
-//                     setDropdownOpen(false);
-//                     navigate("/login");
-//                   }}
-//                   className="flex items-center gap-2 px-4 py-3 text-red-600 hover:bg-red-100 dark:hover:bg-red-800 transition-colors font-semibold"
-//                 >
-//                   <LogOut className="w-5 h-5" />
-//                   Déconnexion
-//                 </button>
