@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
-import notificationSoundFile from "../../public/notifications.mp3"; // adapte le chemin
+// import notificationSoundFile from "../../public/notifications.mp3"; // adapte le chemin
 
 interface Notification {
   id: number;
@@ -51,6 +51,7 @@ export default function NotificationDropdown() {
       toast.error("Erreur lors de la mise à jour");
     }
   };
+  const notificationSoundFile = "/notifications.mp3";
   const notificationSound = new Audio(notificationSoundFile);
   useEffect(() => {
     const unread = notifications.filter((n) => !n.is_read);
@@ -134,8 +135,8 @@ export default function NotificationDropdown() {
         {unreadCount > 0 && (
           <span
             className="absolute -top-1 -right-1 text-xs text-white w-5 h-5 rounded-full flex items-center justify-center
-             bg-gradient-to-br from-blue-600 to-purple-600 
-             dark:from-blue-400 dark:to-purple-600 
+             bg-gradient-to-br from-blue-600 to-purple-600
+             dark:from-blue-400 dark:to-purple-600
              shadow-md"
           >
             {unreadCount}
