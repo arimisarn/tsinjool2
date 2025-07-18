@@ -67,7 +67,7 @@ export const AICoach: React.FC<AICoachProps> = ({ emotions, isActive }) => {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20"
+        className="bg-gray-900 rounded-2xl p-6 border border-white/20"
       >
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-xl font-semibold text-white flex items-center space-x-2">
@@ -142,7 +142,7 @@ export const AICoach: React.FC<AICoachProps> = ({ emotions, isActive }) => {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20"
+            className="bg-white/10 rounded-2xl p-6 border border-white/20"
           >
             <h4 className="text-lg font-medium text-white mb-4">
               Paramètres Audio
@@ -216,7 +216,7 @@ export const AICoach: React.FC<AICoachProps> = ({ emotions, isActive }) => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20"
+          className="bg-white/10 rounded-2xl p-6 border border-white/20"
         >
           <h4 className="text-lg font-medium text-white mb-4">Historique</h4>
           <div className="space-y-3 max-h-64 overflow-y-auto">
