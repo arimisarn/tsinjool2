@@ -32,7 +32,7 @@ export const useGroqAI = () => {
           dominantEmotion[0]
         } (${Math.round(dominantEmotion[1] * 100)}%). 
       Contexte: ${context}
-      Donne un conseil bref, bienveillant et actionnable en français (max 50 mots).`;
+      Donne un conseil bref, bienveillant et actionnable en français (max 20 mots).`;
 
         const response = await fetch(
           "https://api.groq.com/openai/v1/chat/completions",
