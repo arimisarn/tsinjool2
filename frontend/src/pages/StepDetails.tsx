@@ -474,30 +474,38 @@ export default function StepDetail() {
 
       {/* Modal planification */}
       {showScheduler && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-zinc-800 rounded-xl p-6 w-[90%] max-w-md shadow-xl border border-gray-200 dark:border-zinc-700">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-white dark:bg-zinc-800 rounded-2xl p-6 w-full max-w-md shadow-2xl border border-gray-200 dark:border-zinc-700 space-y-5">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white text-center">
               Planifier l'exercice
             </h2>
 
-            <Calendar
-              mode="single"
-              selected={scheduledDate}
-              onSelect={setScheduledDate}
-              className="mb-4"
-            />
+            {/* Calendrier stylé */}
+            <div className="rounded-xl border border-gray-200 dark:border-zinc-600 p-3 bg-slate-50 dark:bg-zinc-900 shadow-sm">
+              <Calendar
+                mode="single"
+                selected={scheduledDate}
+                onSelect={setScheduledDate}
+              />
+            </div>
 
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-              Heure
-            </label>
-            <input
-              type="time"
-              value={scheduledTime}
-              onChange={(e) => setScheduledTime(e.target.value)}
-              className="w-full border border-gray-300 dark:border-zinc-600 rounded-lg px-3 py-2 mb-4 bg-white dark:bg-zinc-900 text-gray-900 dark:text-white"
-            />
+            {/* Heure avec label et input stylé */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Heure
+              </label>
+              <div className="relative">
+                <input
+                  type="time"
+                  value={scheduledTime}
+                  onChange={(e) => setScheduledTime(e.target.value)}
+                  className="w-full pl-4 pr-4 py-2 rounded-lg bg-white dark:bg-zinc-900 border border-gray-300 dark:border-zinc-600 text-gray-900 dark:text-white shadow-inner focus:outline-none focus:ring-2 focus:ring-purple-500"
+                />
+              </div>
+            </div>
 
-            <div className="flex justify-end gap-4">
+            {/* Boutons */}
+            <div className="flex justify-end gap-4 pt-2">
               <button
                 onClick={() => setShowScheduler(false)}
                 className="px-4 py-2 rounded-lg border border-gray-300 dark:border-zinc-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-zinc-700 transition"
@@ -506,7 +514,7 @@ export default function StepDetail() {
               </button>
               <button
                 onClick={handleScheduleExercise}
-                className="px-4 py-2 rounded-lg bg-purple-600 text-white hover:bg-purple-700 transition"
+                className="px-4 py-2 rounded-lg bg-purple-600 text-white hover:bg-purple-700 shadow-md transition"
               >
                 Valider
               </button>
