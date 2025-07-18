@@ -77,8 +77,8 @@ export default function ConfirmEmailPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center p-2 sm:p-4">
-      <div className="w-full max-w-4xl bg-white rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col lg:flex-row min-h-[500px]">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-zinc-950 dark:to-zinc-900 flex items-center justify-center p-2 sm:p-4">
+      <div className="w-full max-w-4xl bg-white dark:bg-zinc-900 rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col lg:flex-row min-h-[500px]">
         {/* Section formulaire */}
         <div className="w-full lg:w-3/5 flex flex-col relative">
           {/* Header avec logo */}
@@ -88,10 +88,10 @@ export default function ConfirmEmailPage() {
                 <Brain className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-lg sm:text-2xl font-bold text-gray-900">
+                <h1 className="text-lg sm:text-2xl font-bold text-gray-900 dark:text-white">
                   Tsinjool
                 </h1>
-                <p className="text-xs sm:text-sm text-gray-600">
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                   Votre coach personnel intelligent
                 </p>
               </div>
@@ -106,14 +106,14 @@ export default function ConfirmEmailPage() {
           >
             <div className="w-full max-w-md">
               <div className="mb-6 sm:mb-8">
-                <p className="text-xs uppercase tracking-wide text-gray-400 mb-2">
+                <p className="text-xs uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-2">
                   ÉTAPE 1 SUR 2
                 </p>
-                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-3">
+                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-3">
                   Confirmez votre email
                   <span className="text-purple-500">.</span>
                 </h1>
-                <p className="text-sm sm:text-base text-gray-600">
+                <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
                   Entrez le code reçu par email pour activer votre compte.
                 </p>
               </div>
@@ -123,7 +123,7 @@ export default function ConfirmEmailPage() {
                 <div>
                   <label
                     htmlFor="email"
-                    className="block text-sm font-medium text-gray-700 mb-2"
+                    className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
                   >
                     Email
                   </label>
@@ -136,7 +136,7 @@ export default function ConfirmEmailPage() {
                     placeholder="votre.email@example.com"
                     required
                     disabled={!!initialEmail}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-gray-50 placeholder-gray-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:border-blue-600 text-gray-900"
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-zinc-700 rounded-xl bg-gray-50 dark:bg-zinc-800 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:border-blue-600 text-gray-900 dark:text-white"
                   />
                 </div>
 
@@ -144,7 +144,7 @@ export default function ConfirmEmailPage() {
                 <div>
                   <label
                     htmlFor="code"
-                    className="block text-sm font-medium text-gray-700 mb-2"
+                    className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
                   >
                     Code de confirmation
                   </label>
@@ -158,7 +158,7 @@ export default function ConfirmEmailPage() {
                     required
                     maxLength={6}
                     style={{ letterSpacing: "0.3em" }}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl bg-gray-50 placeholder-gray-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:border-blue-600 text-gray-900 font-mono text-center tracking-widest text-xl"
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-zinc-700 rounded-xl bg-gray-50 dark:bg-zinc-800 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:border-blue-600 text-gray-900 dark:text-white font-mono text-center tracking-widest text-xl"
                   />
                 </div>
 
@@ -167,7 +167,7 @@ export default function ConfirmEmailPage() {
                   <button
                     type="button"
                     onClick={() => navigate(-1)}
-                    className="flex items-center justify-center gap-2 py-3 px-4 sm:px-6 border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-100 transition-all duration-200 font-medium group order-2 sm:order-1"
+                    className="flex items-center justify-center gap-2 py-3 px-4 sm:px-6 border border-gray-300 dark:border-zinc-600 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-zinc-700 transition-all duration-200 font-medium group order-2 sm:order-1"
                   >
                     <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 transform transition-transform duration-300 group-hover:-translate-x-1" />
                     <span className="text-sm sm:text-base">Retour</span>
