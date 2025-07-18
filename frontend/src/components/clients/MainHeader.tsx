@@ -75,7 +75,7 @@ const MainHeader: React.FC = () => {
   }, [dropdownOpen]);
 
   return (
-    <header className="bg-white dark:bg-zinc-900 border-b border-gray-200 dark:border-zinc-700 px-4 sm:px-0 py-4 sticky top-0 z-50 shadow-sm">
+    <header className="bg-white dark:bg-zinc-800 border-b border-gray-200 dark:border-zinc-700 px-4 sm:px-0 py-4 sticky top-0 z-50 shadow-sm">
       <div className="flex items-center justify-between flex-wrap gap-4 max-w-[1280px] mx-auto">
         {/* Logo */}
         <div className="flex items-center gap-3 flex-shrink-0">
