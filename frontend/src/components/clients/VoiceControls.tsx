@@ -1,6 +1,6 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { Mic, MicOff, VolumeX } from 'lucide-react';
+import React from "react";
+import { motion } from "framer-motion";
+import { Mic, MicOff, VolumeX } from "lucide-react";
 
 interface VoiceControlsProps {
   isListening: boolean;
@@ -26,16 +26,14 @@ const VoiceControls: React.FC<VoiceControlsProps> = ({
         whileTap={{ scale: 0.95 }}
         onClick={isListening ? onStopListening : onStartListening}
         disabled={isProcessing}
-        className={`flex items-center space-x-2 px-6 py-3 rounded-full font-medium transition-colors ${
+        className={`flex items-center space-x-2 px-6 py-3 rounded-full font-medium transition-colors shadow-sm ${
           isListening
-            ? 'bg-red-500 hover:bg-red-600 text-white'
-            : 'bg-green-500 hover:bg-green-600 text-white'
-        } ${isProcessing ? 'opacity-50 cursor-not-allowed' : ''}`}
+            ? "bg-red-500 hover:bg-red-600 text-white"
+            : "bg-green-500 hover:bg-green-600 text-white"
+        } ${isProcessing ? "opacity-50 cursor-not-allowed" : ""}`}
       >
         {isListening ? <MicOff size={20} /> : <Mic size={20} />}
-        <span>
-          {isListening ? 'Arrêter' : 'Parler'}
-        </span>
+        <span>{isListening ? "Arrêter" : "Parler"}</span>
       </motion.button>
 
       {isSpeaking && (
@@ -46,7 +44,7 @@ const VoiceControls: React.FC<VoiceControlsProps> = ({
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={onStopSpeaking}
-          className="flex items-center space-x-2 px-6 py-3 rounded-full font-medium bg-orange-500 hover:bg-orange-600 text-white transition-colors"
+          className="flex items-center space-x-2 px-6 py-3 rounded-full font-medium bg-orange-500 hover:bg-orange-600 text-white shadow-sm transition-colors"
         >
           <VolumeX size={20} />
           <span>Stop</span>
