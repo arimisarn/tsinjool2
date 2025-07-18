@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { Bot, Settings, Wifi, WifiOff } from "lucide-react";
+import { Settings, Wifi, WifiOff } from "lucide-react";
 import VoiceVisualizer from "@/components/clients/VoiceVisualizer";
 import { sendToGroq, testGroqConnection } from "@/utils/groq";
 import VoiceControls from "@/components/clients/VoiceControls";
