@@ -21,6 +21,7 @@ import {
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
+import { AnimatePresence, motion } from "framer-motion";
 
 const Navigation = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -146,62 +147,87 @@ const Navigation = () => {
           </NavigationMenuList>
         </NavigationMenu>
       </div>
-      {/* Petit écran : menu hamburger */}
+      {/* Bouton mobile */}
       <div className="md:hidden flex justify-between items-center">
-        <div>Menu</div> {/* Espace vide à gauche pour l'équilibre */}
+        <div className="text-lg font-semibold text-gray-900 dark:text-white">
+          Menu
+        </div>
         <button
-          className="text-gray-900 dark:text-white"
+          className="text-gray-900 dark:text-white relative w-8 h-8"
           onClick={toggleMenu}
           aria-label="Toggle menu"
         >
-          {isMobileMenuOpen ? (
-            <X className="w-6 h-6" />
-          ) : (
-            <Menu className="w-6 h-6" />
-          )}
+          {/* Animation magique entre les deux icônes */}
+          <motion.div
+            key={isMobileMenuOpen ? "close" : "open"}
+            initial={{ rotate: -90, opacity: 0 }}
+            animate={{ rotate: 0, opacity: 1 }}
+            exit={{ rotate: 90, opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="absolute inset-0 flex items-center justify-center"
+          >
+            {isMobileMenuOpen ? (
+              <X className="w-6 h-6" />
+            ) : (
+              <Menu className="w-6 h-6" />
+            )}
+          </motion.div>
         </button>
       </div>
 
-      {isMobileMenuOpen && (
-        <div className="md:hidden mt-4 space-y-3 px-2 pb-4">
-          <Link
-            to="/dashboard"
-            className="flex items-center gap-2 px-4 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-zinc-700 text-gray-900 dark:text-white"
+      {/* Menu mobile animé */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.3 }}
+            className="md:hidden mt-4 space-y-3 px-2 pb-4"
           >
-            <Gauge className="w-5 h-5" /> Dashboard
-          </Link>
-          <Link
-            to="/coach-tsinjo"
-            className="flex items-center gap-2 px-4 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-zinc-700 text-gray-900 dark:text-white"
-          >
-            <Sparkles className="w-5 h-5" /> Coach IA
-          </Link>
-          <Link
-            to="/assistant-vocal"
-            className="flex items-center gap-2 px-4 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-zinc-700 text-gray-900 dark:text-white"
-          >
-            <MessageCircle className="w-5 h-5" /> Assistant Vocal
-          </Link>
-          <Link
-            to="/coach-visuel"
-            className="flex items-center gap-2 px-4 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-zinc-700 text-gray-900 dark:text-white"
-          >
-            <Search className="w-5 h-5" /> Coach Visuel
-          </Link>
-          <Link
-            to="/progress"
-            className="flex items-center gap-2 px-4 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-zinc-700 text-gray-900 dark:text-white"
-          >
-            <Trophy className="w-5 h-5" /> Mes Progrès
-          </Link>
-          <Link
-            to="/profile"
-            className="flex items-center gap-2 px-4 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-zinc-700 text-gray-900 dark:text-white"
-          >
-            <MessageCircle className="w-5 h-5" /> Support
-          </Link>
-        </div>
-      )}
+            {[
+              {
+                to: "/dashboard",
+                icon: <Gauge className="w-5 h-5" />,
+                label: "Dashboard",
+              },
+              {
+                to: "/coach-tsinjo",
+                icon: <Sparkles className="w-5 h-5" />,
+                label: "Coach IA",
+              },
+              {
+                to: "/assistant-vocal",
+                icon: <MessageCircle className="w-5 h-5" />,
+                label: "Assistant Vocal",
+              },
+              {
+                to: "/coach-visuel",
+                icon: <Search className="w-5 h-5" />,
+                label: "Coach Visuel",
+              },
+              {
+                to: "/progress",
+                icon: <Trophy className="w-5 h-5" />,
+                label: "Mes Progrès",
+              },
+              {
+                to: "/profile",
+                icon: <MessageCircle className="w-5 h-5" />,
+                label: "Support",
+              },
+            ].map(({ to, icon, label }) => (
+              <Link
+                key={to}
+                to={to}
+                className="flex items-center gap-2 px-4 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-zinc-700 text-gray-900 dark:text-white"
+              >
+                {icon} {label}
+              </Link>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </nav>
   );
 };
