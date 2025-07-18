@@ -60,48 +60,54 @@ export const WebcamCapture: React.FC<WebcamCaptureProps> = ({
   return (
     <div className="relative">
       <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
+        initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="relative bg-white/10 rounded-2xl p-6 border border-white/20"
+        className="relative bg-white/60 dark:bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-gray-300 dark:border-white/20 shadow-lg"
       >
+        {/* Header */}
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-xl font-semibold text-white">Caméra</h3>
+          <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+            Caméra
+          </h3>
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={onToggle}
             className={`p-3 rounded-full transition-all ${
               isActive
-                ? "bg-red-500 hover:bg-red-600"
-                : "bg-green-500 hover:bg-green-600"
+                ? "bg-red-500 hover:bg-red-600 text-white"
+                : "bg-green-500 hover:bg-green-600 text-white"
             }`}
           >
             {isActive ? <CameraOff size={20} /> : <Camera size={20} />}
           </motion.button>
         </div>
 
+        {/* Vidéo */}
         <div className="relative">
           <video
             ref={videoRef}
             autoPlay
             muted
             playsInline
-            className="w-full h-64 bg-gray-800 rounded-lg object-cover"
+            className="w-full h-64 bg-gray-200 dark:bg-gray-800 rounded-lg object-cover"
           />
 
+          {/* Message d'erreur */}
           {error && (
-            <div className="absolute inset-0 flex items-center justify-center bg-gray-800 rounded-lg">
+            <div className="absolute inset-0 flex items-center justify-center bg-gray-900/80 rounded-lg">
               <div className="text-center text-white">
-                <CameraOff size={48} className="mx-auto mb-2 opacity-50" />
+                <CameraOff size={48} className="mx-auto mb-2 opacity-60" />
                 <p className="text-sm">{error}</p>
               </div>
             </div>
           )}
 
+          {/* Caméra désactivée */}
           {!isActive && !error && (
-            <div className="absolute inset-0 flex items-center justify-center bg-gray-800 rounded-lg">
+            <div className="absolute inset-0 flex items-center justify-center bg-gray-900/80 rounded-lg">
               <div className="text-center text-white">
-                <Camera size={48} className="mx-auto mb-2 opacity-50" />
+                <Camera size={48} className="mx-auto mb-2 opacity-60" />
                 <p className="text-sm">Caméra désactivée</p>
               </div>
             </div>

@@ -64,10 +64,12 @@ export const FaceDetection: React.FC<FaceDetectionProps> = ({
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-white/10 rounded-2xl p-6 border border-white/20"
+      className="bg-white/60 dark:bg-gray-800/60 rounded-2xl p-6 border border-gray-300 dark:border-white/20 shadow-lg"
     >
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-xl font-semibold text-white">Détection Faciale</h3>
+        <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+          Détection Faciale
+        </h3>
         <motion.div
           animate={{ scale: isDetecting ? 1.1 : 1 }}
           className={`w-3 h-3 rounded-full ${
@@ -80,7 +82,7 @@ export const FaceDetection: React.FC<FaceDetectionProps> = ({
         ref={canvasRef}
         width={640}
         height={480}
-        className="w-full h-auto rounded-lg border border-white/10"
+        className="w-full h-auto rounded-lg border border-gray-300 dark:border-white/10 bg-gray-100 dark:bg-gray-900"
       />
 
       <AnimatePresence mode="wait">
@@ -99,16 +101,16 @@ export const FaceDetection: React.FC<FaceDetectionProps> = ({
                 {getEmotionEmoji(currentEmotion)}
               </div>
               <div>
-                <h4 className="font-medium text-white capitalize">
+                <h4 className="font-medium text-gray-900 dark:text-white capitalize">
                   {currentEmotion}
                 </h4>
-                <p className="text-sm text-gray-300">
+                <p className="text-sm text-gray-600 dark:text-gray-300">
                   Confiance: {Math.round(emotionScore * 100)}%
                 </p>
               </div>
             </div>
 
-            <div className="w-full bg-gray-700 rounded-full h-2">
+            <div className="w-full bg-gray-300 dark:bg-gray-700 rounded-full h-2">
               <motion.div
                 initial={{ width: 0 }}
                 animate={{ width: `${emotionScore * 100}%` }}
@@ -121,7 +123,7 @@ export const FaceDetection: React.FC<FaceDetectionProps> = ({
       </AnimatePresence>
 
       {!currentEmotion && isActive && (
-        <div className="text-center py-8 text-gray-400">
+        <div className="text-center py-8 text-gray-500 dark:text-gray-400">
           <p>Recherche de visage...</p>
         </div>
       )}

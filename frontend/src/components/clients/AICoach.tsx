@@ -12,7 +12,8 @@ interface AICoachProps {
 
 export const AICoach: React.FC<AICoachProps> = ({ emotions, isActive }) => {
   const { getCoachingAdvice, isLoading } = useGroqAI();
-  const { speak, stop, isSpeaking, isSupported, settings, setSettings } = useSpeechSynthesis();
+  const { speak, stop, isSpeaking, isSupported, settings, setSettings } =
+    useSpeechSynthesis();
   const [currentAdvice, setCurrentAdvice] = useState<string | null>(null);
   const [sessions, setSessions] = useState<CoachingSession[]>([]);
   const [showSettings, setShowSettings] = useState(false);
@@ -67,7 +68,7 @@ export const AICoach: React.FC<AICoachProps> = ({ emotions, isActive }) => {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-gray-900 rounded-2xl p-6 border border-white/20"
+        className="bg-gray-900 dark:bg-gray-800 rounded-2xl p-6 border border-white/20 shadow-lg"
       >
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-xl font-semibold text-white flex items-center space-x-2">
@@ -92,7 +93,7 @@ export const AICoach: React.FC<AICoachProps> = ({ emotions, isActive }) => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setShowSettings(!showSettings)}
-              className="p-2 rounded-full bg-gray-500 hover:bg-gray-600 transition-all"
+              className="p-2 rounded-full bg-gray-600 hover:bg-gray-700 transition-all"
             >
               <Settings size={20} />
             </motion.button>
@@ -118,7 +119,7 @@ export const AICoach: React.FC<AICoachProps> = ({ emotions, isActive }) => {
               exit={{ opacity: 0, y: -10 }}
               className="space-y-4"
             >
-              <div className="bg-gradient-to-r from-purple-500/20 to-blue-500/20 rounded-lg p-4">
+              <div className="bg-gradient-to-r from-purple-600/30 to-blue-600/30 rounded-lg p-4">
                 <p className="text-white text-lg leading-relaxed">
                   {currentAdvice}
                 </p>
@@ -142,7 +143,7 @@ export const AICoach: React.FC<AICoachProps> = ({ emotions, isActive }) => {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="bg-white/10 rounded-2xl p-6 border border-white/20"
+            className="bg-white/10 dark:bg-gray-800/50 rounded-2xl p-6 border border-white/20 shadow-inner"
           >
             <h4 className="text-lg font-medium text-white mb-4">
               Paramètres Audio
@@ -156,11 +157,11 @@ export const AICoach: React.FC<AICoachProps> = ({ emotions, isActive }) => {
                 <button
                   onClick={() => setAutoSpeak(!autoSpeak)}
                   className={`w-12 h-6 rounded-full transition-all ${
-                    autoSpeak ? "bg-green-500" : "bg-gray-500"
+                    autoSpeak ? "bg-green-500" : "bg-gray-600"
                   }`}
                 >
                   <div
-                    className={`w-5 h-5 rounded-full bg-white transition-all ${
+                    className={`w-5 h-5 rounded-full bg-white transition-transform ${
                       autoSpeak ? "translate-x-6" : "translate-x-1"
                     }`}
                   />
@@ -178,12 +179,12 @@ export const AICoach: React.FC<AICoachProps> = ({ emotions, isActive }) => {
                   step="0.1"
                   value={settings.rate}
                   onChange={(e) =>
-                    setSettings((prev:any) => ({
+                    setSettings((prev: any) => ({
                       ...prev,
                       rate: parseFloat(e.target.value),
                     }))
                   }
-                  className="w-full"
+                  className="w-full accent-purple-600"
                 />
               </div>
 
@@ -198,12 +199,12 @@ export const AICoach: React.FC<AICoachProps> = ({ emotions, isActive }) => {
                   step="0.1"
                   value={settings.volume}
                   onChange={(e) =>
-                    setSettings((prev:any) => ({
+                    setSettings((prev: any) => ({
                       ...prev,
                       volume: parseFloat(e.target.value),
                     }))
                   }
-                  className="w-full"
+                  className="w-full accent-purple-600"
                 />
               </div>
             </div>
@@ -216,14 +217,14 @@ export const AICoach: React.FC<AICoachProps> = ({ emotions, isActive }) => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white/10 rounded-2xl p-6 border border-white/20"
+          className="bg-white/10 dark:bg-gray-800/40 rounded-2xl p-6 border border-white/20 shadow-md"
         >
           <h4 className="text-lg font-medium text-white mb-4">Historique</h4>
           <div className="space-y-3 max-h-64 overflow-y-auto">
             {sessions.map((session) => (
               <div
                 key={session.id}
-                className="bg-white/5 rounded-lg p-3 border border-white/10"
+                className="bg-white/5 dark:bg-gray-700 rounded-lg p-3 border border-white/10"
               >
                 <div className="flex justify-between items-start mb-2">
                   <span className="text-sm text-gray-300 capitalize">

@@ -81,9 +81,9 @@ function CoachVisuel() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:bg-gray-900 ">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-gray-900 dark:to-gray-950 text-gray-900 dark:text-white">
       {/* Header */}
-      <header className="bg-gray-900 border-b border-white/10 top-0 z-50">
+      <header className="bg-white/80 dark:bg-gray-900 border-b border-gray-300 dark:border-white/10 sticky top-0 z-50 backdrop-blur-md shadow">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <motion.div
@@ -91,12 +91,13 @@ function CoachVisuel() {
               animate={{ opacity: 1, x: 0 }}
               className="flex items-center space-x-3"
             >
-              <Brain className="text-purple-400" size={32} />
+              <Brain
+                className="text-purple-500 dark:text-purple-400"
+                size={32}
+              />
               <div>
-                <h1 className="text-2xl font-bold text-white">
-                  IA Coach Visuel
-                </h1>
-                <p className="text-gray-300 text-sm">
+                <h1 className="text-2xl font-bold">IA Coach Visuel</h1>
+                <p className="text-sm text-gray-700 dark:text-gray-300">
                   Coaching intelligent par reconnaissance faciale
                 </p>
               </div>
@@ -127,7 +128,7 @@ function CoachVisuel() {
                 className={`px-4 py-2 rounded-full font-medium transition-all ${
                   isCoachActive
                     ? "bg-orange-500 hover:bg-orange-600 text-white"
-                    : "bg-blue-500 hover:bg-blue-600 text-white disabled:bg-gray-500 disabled:cursor-not-allowed"
+                    : "bg-blue-500 hover:bg-blue-600 text-white disabled:bg-gray-400 dark:disabled:bg-gray-700 disabled:cursor-not-allowed"
                 }`}
               >
                 <div className="flex items-center space-x-2">
@@ -172,7 +173,7 @@ function CoachVisuel() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mt-8 bg-black/20 rounded-2xl p-4 border border-white/10"
+          className="mt-8 bg-white/30 dark:bg-black/20 backdrop-blur-md rounded-2xl p-4 border border-gray-300 dark:border-white/10"
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
@@ -182,7 +183,7 @@ function CoachVisuel() {
                     isWebcamActive ? "bg-green-400" : "bg-gray-400"
                   }`}
                 />
-                <span className="text-white text-sm">
+                <span className="text-sm">
                   Webcam: {isWebcamActive ? "Active" : "Inactive"}
                 </span>
               </div>
@@ -192,12 +193,12 @@ function CoachVisuel() {
                     isCoachActive ? "bg-blue-400" : "bg-gray-400"
                   }`}
                 />
-                <span className="text-white text-sm">
+                <span className="text-sm">
                   Coach: {isCoachActive ? "Actif" : "Inactif"}
                 </span>
               </div>
             </div>
-            <div className="text-gray-300 text-sm">
+            <div className="text-sm text-gray-600 dark:text-gray-300">
               {currentEmotions
                 ? "Émotions détectées"
                 : "En attente de détection"}
