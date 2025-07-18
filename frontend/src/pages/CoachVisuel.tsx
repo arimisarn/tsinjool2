@@ -81,7 +81,7 @@ function CoachVisuel() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:bg-gray-900  text-gray-900 dark:text-white">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-gray-900 dark:to-gray-950 text-gray-900 dark:text-white">
       {/* Header */}
       <header className="bg-white/80 dark:bg-gray-900 border-b border-gray-300 dark:border-white/10 sticky top-0 z-50 backdrop-blur-md shadow">
         <div className="container mx-auto px-4 py-4">
