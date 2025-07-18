@@ -64,7 +64,7 @@ export const FaceDetection: React.FC<FaceDetectionProps> = ({
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20"
+      className="bg-white/10 rounded-2xl p-6 border border-white/20"
     >
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-xl font-semibold text-white">Détection Faciale</h3>

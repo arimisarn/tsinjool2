@@ -62,7 +62,7 @@ export const WebcamCapture: React.FC<WebcamCaptureProps> = ({
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="relative bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20"
+        className="relative bg-white/10 rounded-2xl p-6 border border-white/20"
       >
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-xl font-semibold text-white">Caméra</h3>

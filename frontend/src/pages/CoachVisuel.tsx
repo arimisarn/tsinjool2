@@ -83,7 +83,7 @@ function CoachVisuel() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:bg-gray-900 ">
       {/* Header */}
-      <header className="bg-black/20 backdrop-blur-md border-b border-white/10 top-0 z-50">
+      <header className="bg-gray-900 border-b border-white/10 top-0 z-50">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <motion.div
@@ -172,7 +172,7 @@ function CoachVisuel() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mt-8 bg-black/20 backdrop-blur-md rounded-2xl p-4 border border-white/10"
+          className="mt-8 bg-black/20 rounded-2xl p-4 border border-white/10"
         >
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
