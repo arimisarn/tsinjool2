@@ -187,14 +187,14 @@ function ChatVoice() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-zinc-950 dark:via-zinc-900 dark:to-zinc-900">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b border-gray-200">
+      <header className="bg-white dark:bg-zinc-900 shadow-sm border-b border-gray-200 dark:border-zinc-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <img src={mirana} alt="Mirana" className="w-15 h-15" />
-              <h1 className="text-2xl font-bold text-gray-900">
+              <img src={mirana} alt="Mirana" className="w-12 h-12" />
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
                 Mirana AI
               </h1>
               <div className="flex items-center space-x-2">
@@ -217,9 +217,9 @@ function ChatVoice() {
             <div className="flex items-center space-x-4">
               <button
                 onClick={() => setShowSettings(!showSettings)}
-                className="p-2 rounded-full hover:bg-gray-100 transition-colors"
+                className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-zinc-700 transition-colors"
               >
-                <Settings className="w-6 h-6 text-gray-600" />
+                <Settings className="w-6 h-6 text-gray-600 dark:text-gray-300" />
               </button>
               <button
                 onClick={clearHistory}
@@ -237,13 +237,13 @@ function ChatVoice() {
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 mx-4 mt-4 rounded-lg"
+          className="bg-red-100 dark:bg-red-900 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-300 px-4 py-3 mx-4 mt-4 rounded-lg"
         >
           <div className="flex items-center justify-between">
             <p>{error}</p>
             <button
               onClick={() => setError(null)}
-              className="text-red-700 hover:text-red-900"
+              className="text-red-700 hover:text-red-900 dark:hover:text-red-400"
             >
               ✕
             </button>
@@ -251,12 +251,12 @@ function ChatVoice() {
         </motion.div>
       )}
 
-      {/* Status Banner */}
+      {/* Offline Banner */}
       {!isOnline && (
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-orange-100 border border-orange-400 text-orange-700 px-4 py-3 mx-4 mt-4 rounded-lg"
+          className="bg-orange-100 dark:bg-orange-900 border border-orange-400 dark:border-orange-700 text-orange-700 dark:text-orange-300 px-4 py-3 mx-4 mt-4 rounded-lg"
         >
           <p>
             Mode hors ligne - Reconnectez-vous à internet pour utiliser l'IA
@@ -268,13 +268,12 @@ function ChatVoice() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Voice Interface */}
-          <div className="flex flex-col items-center justify-center space-y-8 bg-white rounded-2xl shadow-lg p-8">
+          <div className="flex flex-col items-center justify-center space-y-8 bg-white dark:bg-zinc-800 rounded-2xl shadow-lg p-8">
             <VoiceVisualizer
               isListening={aiState.isListening}
               isProcessing={aiState.isProcessing}
               isSpeaking={aiState.isSpeaking}
             />
-
             <VoiceControls
               isListening={aiState.isListening}
               isProcessing={aiState.isProcessing}
@@ -283,16 +282,15 @@ function ChatVoice() {
               onStopListening={handleStopListening}
               onStopSpeaking={handleStopSpeaking}
             />
-
             <div className="text-center">
-              <p className="text-gray-600 mb-2">
+              <p className="text-gray-600 dark:text-gray-300 mb-2">
                 Cliquez sur "Parler" et commencez à parler à votre IA
               </p>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-gray-500 dark:text-gray-400">
                 L'IA vous comprend et vous répond vocalement
               </p>
               {!isOnline && (
-                <p className="text-sm text-red-500 mt-2">
+                <p className="text-sm text-red-500 dark:text-red-400 mt-2">
                   ⚠️ Connexion internet requise
                 </p>
               )}
@@ -300,7 +298,7 @@ function ChatVoice() {
           </div>
 
           {/* Message History */}
-          <div className="bg-white rounded-2xl shadow-lg p-6">
+          <div className="bg-white dark:bg-zinc-800 rounded-2xl shadow-lg p-6">
             <MessageHistory messages={messages} />
           </div>
         </div>
@@ -310,12 +308,14 @@ function ChatVoice() {
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="mt-8 bg-white rounded-2xl shadow-lg p-6"
+            className="mt-8 bg-white dark:bg-zinc-800 rounded-2xl shadow-lg p-6"
           >
-            <h3 className="text-xl font-semibold mb-4">Paramètres Vocaux</h3>
+            <h3 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">
+              Paramètres Vocaux
+            </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Langue
                 </label>
                 <select
@@ -326,14 +326,14 @@ function ChatVoice() {
                       language: e.target.value as "fr-FR" | "en-US",
                     }))
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-zinc-700 dark:bg-zinc-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 >
                   <option value="fr-FR">Français</option>
                   <option value="en-US">Anglais</option>
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Vitesse: {voiceSettings.rate}
                 </label>
                 <input
@@ -353,13 +353,15 @@ function ChatVoice() {
               </div>
             </div>
 
-            <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-              <h4 className="font-medium text-gray-700 mb-2">
+            <div className="mt-4 p-4 bg-gray-50 dark:bg-zinc-700 rounded-lg">
+              <h4 className="font-medium text-gray-700 dark:text-gray-200 mb-2">
                 État du système
               </h4>
               <div className="space-y-2 text-sm">
                 <div className="flex items-center justify-between">
-                  <span>Connexion internet:</span>
+                  <span className="dark:text-gray-300">
+                    Connexion internet:
+                  </span>
                   <span
                     className={isOnline ? "text-green-600" : "text-red-600"}
                   >
@@ -367,7 +369,7 @@ function ChatVoice() {
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span>API Groq:</span>
+                  <span className="dark:text-gray-300">API Groq:</span>
                   <span
                     className={
                       apiStatus === "working"
@@ -385,7 +387,9 @@ function ChatVoice() {
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span>Reconnaissance vocale:</span>
+                  <span className="dark:text-gray-300">
+                    Reconnaissance vocale:
+                  </span>
                   <span
                     className={
                       speechRecognition.current?.isRecognitionSupported()

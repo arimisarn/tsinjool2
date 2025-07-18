@@ -73,7 +73,7 @@ function CoachVisuel() {
             Initialisation de l'IA Coach
           </h2>
           <p className="text-gray-300">
-            Chargement des modèles de reconnaissance faciale...
+            Chargement ...
           </p>
         </motion.div>
       </div>
