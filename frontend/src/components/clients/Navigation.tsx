@@ -23,7 +23,7 @@ import { Link } from "react-router-dom";
 
 const Navigation = () => {
   return (
-    <nav className="bg-white dark:bg-zinc-900 border-b border-gray-200 dark:border-zinc-700 shadow-sm top-[64px] z-40 px-4 sm:px-6 py-2">
+    <nav className="bg-white dark:bg-zinc-700 border-b border-gray-200 dark:border-zinc-700 shadow-sm top-[64px] z-40 px-4 sm:px-6 py-2">
       <NavigationMenu className="text-gray-900 dark:text-white max-w-[1280px] mx-auto">
         <NavigationMenuList className="flex flex-wrap sm:flex-nowrap gap-2 sm:gap-6">
           <NavigationMenuItem>
