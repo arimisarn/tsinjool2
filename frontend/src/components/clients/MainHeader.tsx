@@ -159,7 +159,7 @@ const MainHeader: React.FC = () => {
                       setDropdownOpen(false);
                       navigate("/login");
                     }}
-                    className="flex items-center gap-2 px-4 py-3 text-red-600 hover:bg-red-100 dark:hover:bg-red-800 transition-colors font-semibold"
+                    className="flex items-center gap-2 px-4 py-3 text-red-600 hover:bg-red-100 dark:hover:bg-red-400 transition-colors font-semibold"
                   >
                     <LogOut className="w-5 h-5" />
                     Déconnexion
