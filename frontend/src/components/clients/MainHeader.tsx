@@ -6,6 +6,7 @@ import pic from "../../assets/avatar.jpg";
 import DarkMode from "../theme/DarkMode";
 import logo from "../../assets/logoRond.png";
 import NotificationDropdown from "./NotificationDropdown";
+import { Link } from "react-router-dom";
 
 const MainHeader: React.FC = () => {
   const navigate = useNavigate();
@@ -140,17 +141,17 @@ const MainHeader: React.FC = () => {
                     </span>
                   </div>
                 </div>
-
-                {/* Actions */}
                 <div className="flex flex-col py-2">
-                  <button className="flex items-center gap-2 px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-zinc-700 transition-colors">
-                    <User className="w-5 h-5" />
-                    Voir profil
-                  </button>
+                  <Link to="/profile">
+                    <button className="flex items-center gap-2 px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-zinc-700 transition-colors">
+                      <User className="w-5 h-5" />
+                      Voir profil
+                    </button>
+                  </Link>
 
                   <button className="flex items-center gap-2 px-4 py-3 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-zinc-700 transition-colors">
                     <Settings className="w-5 h-5" />
-                    Modifier profil
+                    Paramètres
                   </button>
 
                   <button
@@ -165,7 +166,6 @@ const MainHeader: React.FC = () => {
                     Déconnexion
                   </button>
                 </div>
-
                 {/* Footer */}
                 <div className="text-center text-xs text-gray-400 dark:text-gray-500 py-2 border-t border-gray-200 dark:border-zinc-700 select-none">
                   © Tsinjool 2025
