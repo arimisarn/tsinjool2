@@ -23,13 +23,13 @@ import { Link } from "react-router-dom";
 
 const Navigation = () => {
   return (
-    <nav className="bg-white dark:bg-zinc-800 border-b border-gray-200 dark:border-zinc-700 shadow-sm top-[64px] z-40 px-4 sm:px-6 py-2">
+    <nav className="bg-slate-50 dark:bg-zinc-800 border-b border-slate-200 dark:border-zinc-700 shadow-sm top-[64px] z-40 px-6 py-3">
       <NavigationMenu className="text-gray-900 dark:text-white max-w-[1280px] mx-auto">
         <NavigationMenuList className="flex flex-wrap sm:flex-nowrap gap-2 sm:gap-6">
           <NavigationMenuItem>
             <Link to="/dashboard">
               <NavigationMenuLink
-                className={`${navigationMenuTriggerStyle()} text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-md px-3 py-2 flex items-center`}
+                className={`${navigationMenuTriggerStyle()} text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-zinc-700 rounded-lg px-3 py-2 flex items-center`}
               >
                 <Gauge className="w-5 h-5 mr-2" />
                 Dashboard
@@ -38,16 +38,16 @@ const Navigation = () => {
           </NavigationMenuItem>
 
           <NavigationMenuItem>
-            <NavigationMenuTrigger className="text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-md px-3 py-2 flex items-center">
+            <NavigationMenuTrigger className="text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-zinc-700 rounded-lg px-3 py-2 flex items-center">
               <BotMessageSquare className="w-5 h-5 mr-2" />
               Discuter avec l'IA
             </NavigationMenuTrigger>
-            <NavigationMenuContent className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 rounded-md shadow-lg p-4 w-full md:w-[500px] lg:w-[600px]">
+            <NavigationMenuContent className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 rounded-xl shadow-lg p-4 w-full md:w-[500px] lg:w-[600px]">
               <ul className="grid gap-4 lg:grid-cols-[.75fr_1fr]">
                 <li className="row-span-3">
                   <NavigationMenuLink asChild>
                     <a
-                      className="flex h-full w-full flex-col justify-end rounded-md p-6 no-underline outline-none transition-colors
+                      className="flex h-full w-full flex-col justify-end rounded-xl p-6 no-underline outline-none transition-colors
                         bg-gradient-to-b from-purple-50 to-purple-100
                         dark:from-purple-800/50 dark:to-purple-900
                         hover:from-purple-100 hover:to-purple-200
@@ -79,7 +79,7 @@ const Navigation = () => {
                       <MessageCircle className="w-4 h-4 text-cyan-600 dark:text-cyan-400 mr-2" />
                     ),
                     description:
-                      "Discutez oralement avec l’IA comme un vrai coach",
+                      "Discutez oralement avec l'IA comme un vrai coach",
                     path: "/assistant-vocal",
                   },
                   {
@@ -88,7 +88,7 @@ const Navigation = () => {
                       <Search className="w-4 h-4 text-blue-600 dark:text-blue-400 mr-2" />
                     ),
                     description:
-                      "L’IA qui vous comprend par votre expression visuelle",
+                      "L'IA qui vous comprend par votre expression visuelle",
                     path: "/coach-visuel",
                   },
                 ].map((item, i) => (
@@ -96,7 +96,7 @@ const Navigation = () => {
                     <NavigationMenuLink asChild>
                       <Link
                         to={item.path}
-                        className="block space-y-1 rounded-md p-3 transition-colors
+                        className="block space-y-1 rounded-lg p-3 transition-colors
                           hover:bg-gray-100 dark:hover:bg-zinc-700
                           focus:bg-gray-100 dark:focus:bg-zinc-700"
                       >
@@ -118,7 +118,7 @@ const Navigation = () => {
           <NavigationMenuItem>
             <Link to="/progress">
               <NavigationMenuLink
-                className={`${navigationMenuTriggerStyle()} text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-md px-3 py-2 flex items-center`}
+                className={`${navigationMenuTriggerStyle()} text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-zinc-700 rounded-lg px-3 py-2 flex items-center`}
               >
                 <Trophy className="w-5 h-5 mr-2" />
                 Mes Progrès
@@ -129,7 +129,7 @@ const Navigation = () => {
           <NavigationMenuItem>
             <Link to="/profile">
               <NavigationMenuLink
-                className={`${navigationMenuTriggerStyle()} text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-zinc-800 rounded-md px-3 py-2 flex items-center`}
+                className={`${navigationMenuTriggerStyle()} text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-zinc-700 rounded-lg px-3 py-2 flex items-center`}
               >
                 <MessageCircle className="w-5 h-5 mr-2" />
                 Support
