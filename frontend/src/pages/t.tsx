@@ -1,191 +1,145 @@
+// "use client";
+
+// import {
+//   BotMessageSquare,
+//   MessageCircle,
+//   Trophy,
+//   Sparkles,
+//   Search,
+//   Gauge,
+// } from "lucide-react";
+
+// import {
+//   NavigationMenu,
+//   NavigationMenuContent,
+//   NavigationMenuItem,
+//   NavigationMenuLink,
+//   NavigationMenuList,
+//   NavigationMenuTrigger,
+//   navigationMenuTriggerStyle,
+// } from "@/components/ui/navigation-menu";
+
+// import { Link } from "react-router-dom";
+
+// const Navigation = () => {
 //   return (
-//     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 dark:from-zinc-950 dark:to-zinc-900">
-//       {/* Header avec toggle dark mode */}
-//       <div className="flex justify-end p-6">
-//         <button
-//           onClick={toggleDarkMode}
-//           className="p-2 rounded-lg bg-white dark:bg-zinc-800 shadow-sm border border-gray-200 dark:border-zinc-700 hover:bg-gray-50 dark:hover:bg-zinc-700 transition-colors"
-//         >
-//           {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-//         </button>
-//       </div>
+//     <nav className="bg-slate-50 dark:bg-zinc-800 border-b border-slate-200 dark:border-zinc-700 shadow-sm top-[64px] z-40 px-6 py-3">
+//       <NavigationMenu className="text-gray-900 dark:text-white max-w-[1280px] mx-auto">
+//         <NavigationMenuList className="flex flex-wrap sm:flex-nowrap gap-2 sm:gap-6">
+//           <NavigationMenuItem>
+//             <Link to="/dashboard">
+//               <NavigationMenuLink
+//                 className={`${navigationMenuTriggerStyle()} text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-zinc-700 rounded-lg px-3 py-2 flex items-center`}
+//               >
+//                 <Gauge className="w-5 h-5 mr-2" />
+//                 Dashboard
+//               </NavigationMenuLink>
+//             </Link>
+//           </NavigationMenuItem>
 
-//       {/* Main Content */}
-//       <div className="px-6 pb-8">
-//         <div className="max-w-[1280px] mx-auto">
-//           {/* Titre et description */}
-//           <div className="mb-8">
-//             <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-//               Tableau de bord
-//             </h1>
-//             <p className="text-gray-600 dark:text-gray-300">
-//               Voici votre parcours personnalisé de {getCoachingTypeLabel(userProfile?.coaching_type)}
-//             </p>
-//           </div>
-
-//           {/* Progress Overview */}
-//           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-//             <div className="bg-white dark:bg-zinc-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-zinc-700">
-//               <div className="flex items-center gap-3 mb-2">
-//                 <div className="w-12 h-12 bg-blue-50 dark:bg-blue-900/30 rounded-xl flex items-center justify-center">
-//                   <Target className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-//                 </div>
-//                 <div>
-//                   <p className="text-sm text-gray-600 dark:text-gray-400">
-//                     Étapes complétées
-//                   </p>
-//                   <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-//                     {steps.filter((s) => s.completed).length}/{steps.length}
-//                   </p>
-//                 </div>
-//               </div>
-//             </div>
-
-//             <div className="bg-white dark:bg-zinc-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-zinc-700">
-//               <div className="flex items-center gap-3 mb-2">
-//                 <div className="w-12 h-12 bg-green-50 dark:bg-green-900/30 rounded-xl flex items-center justify-center">
-//                   <Trophy className="w-6 h-6 text-green-600 dark:text-green-400" />
-//                 </div>
-//                 <div>
-//                   <p className="text-sm text-gray-600 dark:text-gray-400">
-//                     Exercices réalisés
-//                   </p>
-//                   <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-//                     {steps.reduce((acc, step) => acc + step.exercises.filter((e) => e.completed).length, 0)}
-//                   </p>
-//                 </div>
-//               </div>
-//             </div>
-
-//             <div className="bg-white dark:bg-zinc-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-zinc-700">
-//               <div className="flex items-center gap-3 mb-2">
-//                 <div className="w-12 h-12 bg-purple-50 dark:bg-purple-900/30 rounded-xl flex items-center justify-center">
-//                   <Clock className="w-6 h-6 text-purple-600 dark:text-purple-400" />
-//                 </div>
-//                 <div>
-//                   <p className="text-sm text-gray-600 dark:text-gray-400">
-//                     Temps total
-//                   </p>
-//                   <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-//                     {steps.reduce((acc, step) => acc + step.exercises.reduce((exerciseAcc, exercise) => exerciseAcc + exercise.duration, 0), 0)} min
-//                   </p>
-//                 </div>
-//               </div>
-//             </div>
-//           </div>
-
-//           {/* Coaching Steps */}
-//           <div className="mb-8">
-//             <h3 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">
-//               Votre parcours de coaching
-//             </h3>
-
-//             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-//               {steps.map((step, index) => (
-//                 <div
-//                   key={step.id}
-//                   className="bg-white dark:bg-zinc-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-zinc-700 hover:shadow-md hover:border-purple-200 dark:hover:border-purple-600 transition-all duration-200 cursor-pointer group"
-//                 >
-//                   <div className="flex items-start justify-between mb-4">
-//                     <div className="flex items-center gap-3">
-//                       <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
-//                         step.completed
-//                           ? "bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400"
-//                           : "bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400"
-//                       }`}
-//                       >
-//                         {step.completed ? (
-//                           <CheckCircle className="w-6 h-6" />
-//                         ) : (
-//                           getStepIcon(index)
-//                         )}
+//           <NavigationMenuItem>
+//             <NavigationMenuTrigger className="text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-zinc-700 rounded-lg px-3 py-2 flex items-center">
+//               <BotMessageSquare className="w-5 h-5 mr-2" />
+//               Discuter avec l'IA
+//             </NavigationMenuTrigger>
+//             <NavigationMenuContent className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 rounded-xl shadow-lg p-4 w-full md:w-[500px] lg:w-[600px]">
+//               <ul className="grid gap-4 lg:grid-cols-[.75fr_1fr]">
+//                 <li className="row-span-3">
+//                   <NavigationMenuLink asChild>
+//                     <a
+//                       className="flex h-full w-full flex-col justify-end rounded-xl p-6 no-underline outline-none transition-colors
+//                         bg-gradient-to-b from-purple-50 to-purple-100
+//                         dark:from-purple-800/50 dark:to-purple-900
+//                         hover:from-purple-100 hover:to-purple-200
+//                         dark:hover:from-purple-700/70 dark:hover:to-purple-800"
+//                     >
+//                       <BotMessageSquare className="h-8 w-8 text-purple-600 dark:text-purple-400" />
+//                       <div className="mb-2 mt-4 text-lg font-semibold text-gray-900 dark:text-white">
+//                         Discuter avec l'IA
 //                       </div>
-//                       <div>
-//                         <h4 className="text-lg font-semibold text-gray-900 dark:text-gray-100 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
-//                           {step.title}
-//                         </h4>
+//                       <p className="text-sm leading-tight text-gray-600 dark:text-gray-300">
+//                         Vous pouvez discuter avec nos différentes IA
+//                       </p>
+//                     </a>
+//                   </NavigationMenuLink>
+//                 </li>
+
+//                 {[
+//                   {
+//                     title: "Tsinjo (Coach IA)",
+//                     icon: (
+//                       <Sparkles className="w-4 h-4 text-purple-600 dark:text-purple-400 mr-2" />
+//                     ),
+//                     description: "Votre assistant IA personnel disponible 24/7",
+//                     path: "/coach-tsinjo",
+//                   },
+//                   {
+//                     title: "Assistant Vocal IA",
+//                     icon: (
+//                       <MessageCircle className="w-4 h-4 text-cyan-600 dark:text-cyan-400 mr-2" />
+//                     ),
+//                     description:
+//                       "Discutez oralement avec l'IA comme un vrai coach",
+//                     path: "/assistant-vocal",
+//                   },
+//                   {
+//                     title: "SenseAI (Coach Visuel)",
+//                     icon: (
+//                       <Search className="w-4 h-4 text-blue-600 dark:text-blue-400 mr-2" />
+//                     ),
+//                     description:
+//                       "L'IA qui vous comprend par votre expression visuelle",
+//                     path: "/coach-visuel",
+//                   },
+//                 ].map((item, i) => (
+//                   <li key={i}>
+//                     <NavigationMenuLink asChild>
+//                       <Link
+//                         to={item.path}
+//                         className="block space-y-1 rounded-lg p-3 transition-colors
+//                           hover:bg-gray-100 dark:hover:bg-zinc-700
+//                           focus:bg-gray-100 dark:focus:bg-zinc-700"
+//                       >
+//                         <div className="text-sm font-semibold flex items-center text-gray-900 dark:text-white">
+//                           {item.icon}
+//                           {item.title}
+//                         </div>
 //                         <p className="text-sm text-gray-600 dark:text-gray-400">
-//                           {step.exercises.length} exercices
+//                           {item.description}
 //                         </p>
-//                       </div>
-//                     </div>
-//                     <ArrowRight className="w-5 h-5 text-gray-400 dark:text-gray-500 group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors" />
-//                   </div>
+//                       </Link>
+//                     </NavigationMenuLink>
+//                   </li>
+//                 ))}
+//               </ul>
+//             </NavigationMenuContent>
+//           </NavigationMenuItem>
 
-//                   <p className="text-gray-600 dark:text-gray-400 mb-4">
-//                     {step.description}
-//                   </p>
+//           <NavigationMenuItem>
+//             <Link to="/progress">
+//               <NavigationMenuLink
+//                 className={`${navigationMenuTriggerStyle()} text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-zinc-700 rounded-lg px-3 py-2 flex items-center`}
+//               >
+//                 <Trophy className="w-5 h-5 mr-2" />
+//                 Mes Progrès
+//               </NavigationMenuLink>
+//             </Link>
+//           </NavigationMenuItem>
 
-//                   {/* Progress Bar */}
-//                   <div className="mb-4">
-//                     <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400 mb-2">
-//                       <span>Progression</span>
-//                       <span>{Math.round(step.progress)}%</span>
-//                     </div>
-//                     <div className="w-full bg-gray-200 dark:bg-zinc-700 rounded-full h-2">
-//                       <div
-//                         className={`h-2 rounded-full transition-all duration-300 ${
-//                           step.completed ? "bg-green-500" : "bg-purple-500"
-//                         }`}
-//                         style={{ width: `${step.progress}%` }}
-//                       />
-//                     </div>
-//                   </div>
-
-//                   {/* Exercise Preview */}
-//                   <div className="flex gap-2">
-//                     {step.exercises.slice(0, 3).map((exercise) => (
-//                       <div
-//                         key={exercise.id}
-//                         className={`w-8 h-8 rounded-lg flex items-center justify-center text-xs font-medium ${
-//                           exercise.completed
-//                             ? "bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400"
-//                             : "bg-gray-100 dark:bg-zinc-700 text-gray-600 dark:text-gray-400"
-//                         }`}
-//                       >
-//                         {exercise.completed ? (
-//                           <CheckCircle className="w-4 h-4" />
-//                         ) : (
-//                           <Play className="w-3 h-3" />
-//                         )}
-//                       </div>
-//                     ))}
-//                   </div>
-//                 </div>
-//               ))}
-//             </div>
-//           </div>
-
-//           {/* Quick Actions */}
-//           <div className="bg-white dark:bg-zinc-800 rounded-xl p-6 shadow-sm border border-gray-100 dark:border-zinc-700">
-//             <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
-//               Actions rapides
-//             </h3>
-//             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-//               <button className="flex items-center gap-3 p-4 bg-purple-50 dark:bg-purple-900/30 hover:bg-purple-100 dark:hover:bg-purple-800/50 rounded-xl transition-colors">
-//                 <Play className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-//                 <span className="font-medium text-purple-900 dark:text-purple-300">
-//                   Continuer le parcours
-//                 </span>
-//               </button>
-
-//               <button className="flex items-center gap-3 p-4 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-800/50 rounded-xl transition-colors">
-//                 <Trophy className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-//                 <span className="font-medium text-blue-900 dark:text-blue-300">
-//                   Voir mes progrès
-//                 </span>
-//               </button>
-
-//               <button className="flex items-center gap-3 p-4 bg-gray-50 dark:bg-zinc-700 hover:bg-gray-100 dark:hover:bg-zinc-600 rounded-xl transition-colors">
-//                 <Settings className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-//                 <span className="font-medium text-gray-900 dark:text-gray-300">
-//                   Modifier le profil
-//                 </span>
-//               </button>
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
+//           <NavigationMenuItem>
+//             <Link to="/profile">
+//               <NavigationMenuLink
+//                 className={`${navigationMenuTriggerStyle()} text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-zinc-700 rounded-lg px-3 py-2 flex items-center`}
+//               >
+//                 <MessageCircle className="w-5 h-5 mr-2" />
+//                 Support
+//               </NavigationMenuLink>
+//             </Link>
+//           </NavigationMenuItem>
+//         </NavigationMenuList>
+//       </NavigationMenu>
+//     </nav>
 //   );
 // };
+
+// export default Navigation; faites pour que quand cest petit ecran, offiche une barre menu avec  un icone pour montrer la navigation complete, meme principe que "discuter avec l IA"

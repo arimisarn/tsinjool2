@@ -28,11 +28,10 @@ const Navigation = () => {
 
   return (
     <nav className="bg-slate-50 dark:bg-zinc-800 border-b border-slate-200 dark:border-zinc-700 shadow-sm z-40 px-6 py-3 relative">
-      {/* Grand écran : menu centré */}
-      <div className="hidden md:flex justify-center">
-        <NavigationMenu className="text-gray-900 dark:text-white">
-          <NavigationMenuList className="flex gap-6">
-            {/* Dashboard */}
+      <div className="hidden md:flex">
+        {/* Grand écran : menu centré */}
+        <NavigationMenu className="text-gray-900 dark:text-white max-w-[1280px] mx-auto">
+          <NavigationMenuList className="flex flex-wrap sm:flex-nowrap gap-2 sm:gap-6">
             <NavigationMenuItem>
               <Link to="/dashboard">
                 <NavigationMenuLink
@@ -44,17 +43,22 @@ const Navigation = () => {
               </Link>
             </NavigationMenuItem>
 
-            {/* Discuter avec l'IA */}
             <NavigationMenuItem>
               <NavigationMenuTrigger className="text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-zinc-700 rounded-lg px-3 py-2 flex items-center">
                 <BotMessageSquare className="w-5 h-5 mr-2" />
                 Discuter avec l'IA
               </NavigationMenuTrigger>
-              <NavigationMenuContent className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 rounded-xl shadow-lg p-4 w-[600px]">
+              <NavigationMenuContent className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-700 rounded-xl shadow-lg p-4 w-full md:w-[500px] lg:w-[600px]">
                 <ul className="grid gap-4 lg:grid-cols-[.75fr_1fr]">
                   <li className="row-span-3">
                     <NavigationMenuLink asChild>
-                      <a className="flex h-full w-full flex-col justify-end rounded-xl p-6 bg-gradient-to-b from-purple-50 to-purple-100 dark:from-purple-800/50 dark:to-purple-900 hover:from-purple-100 hover:to-purple-200 dark:hover:from-purple-700/70 dark:hover:to-purple-800">
+                      <a
+                        className="flex h-full w-full flex-col justify-end rounded-xl p-6 no-underline outline-none transition-colors
+                        bg-gradient-to-b from-purple-50 to-purple-100
+                        dark:from-purple-800/50 dark:to-purple-900
+                        hover:from-purple-100 hover:to-purple-200
+                        dark:hover:from-purple-700/70 dark:hover:to-purple-800"
+                      >
                         <BotMessageSquare className="h-8 w-8 text-purple-600 dark:text-purple-400" />
                         <div className="mb-2 mt-4 text-lg font-semibold text-gray-900 dark:text-white">
                           Discuter avec l'IA
@@ -99,7 +103,9 @@ const Navigation = () => {
                       <NavigationMenuLink asChild>
                         <Link
                           to={item.path}
-                          className="block space-y-1 rounded-lg p-3 hover:bg-gray-100 dark:hover:bg-zinc-700"
+                          className="block space-y-1 rounded-lg p-3 transition-colors
+                          hover:bg-gray-100 dark:hover:bg-zinc-700
+                          focus:bg-gray-100 dark:focus:bg-zinc-700"
                         >
                           <div className="text-sm font-semibold flex items-center text-gray-900 dark:text-white">
                             {item.icon}
@@ -116,7 +122,6 @@ const Navigation = () => {
               </NavigationMenuContent>
             </NavigationMenuItem>
 
-            {/* Mes Progrès */}
             <NavigationMenuItem>
               <Link to="/progress">
                 <NavigationMenuLink
@@ -128,7 +133,6 @@ const Navigation = () => {
               </Link>
             </NavigationMenuItem>
 
-            {/* Support */}
             <NavigationMenuItem>
               <Link to="/profile">
                 <NavigationMenuLink
@@ -142,10 +146,9 @@ const Navigation = () => {
           </NavigationMenuList>
         </NavigationMenu>
       </div>
-
       {/* Petit écran : menu hamburger */}
       <div className="md:hidden flex justify-between items-center">
-        <div></div> {/* Espace vide à gauche pour l'équilibre */}
+        <div>Menu</div> {/* Espace vide à gauche pour l'équilibre */}
         <button
           className="text-gray-900 dark:text-white"
           onClick={toggleMenu}
@@ -161,9 +164,6 @@ const Navigation = () => {
 
       {isMobileMenuOpen && (
         <div className="md:hidden mt-4 space-y-3 px-2 pb-4">
-          <div>
-            Menu
-          </div>
           <Link
             to="/dashboard"
             className="flex items-center gap-2 px-4 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-zinc-700 text-gray-900 dark:text-white"
