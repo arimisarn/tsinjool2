@@ -308,46 +308,54 @@ export default function ChatBot() {
             </div>
           ) : (
             <div className="p-4 space-y-4">
-              {messages.map((msg, i) => (
-                <div
-                  key={i}
-                  className={`flex items-end gap-2 mb-2 ${
-                    msg.sender === "user"
-                      ? "self-end flex-row-reverse"
-                      : "justify-start"
-                  }`}
-                >
-                  {/* Avatar aligné bas */}
-                  <img
-                    src={
-                      msg.sender === "user"
-                        ? userPhoto || "/default-avatar.png"
-                        : IA
-                    }
-                    alt="avatar"
-                    className="w-8 h-8 rounded-full object-cover"
-                  />
-
-                  {/* Bulle de message */}
+              {messages.map((msg, i) => {
+                const isUser = msg.sender === "user";
+                return (
                   <div
-                    className={`max-w-xl rounded-lg px-4 py-2 whitespace-pre-wrap ${
-                      msg.sender === "user"
-                        ? "bg-gradient-to-br from-purple-500 to-blue-600 text-white rounded-br-none"
-                        : "bg-gray-200 dark:bg-zinc-700 text-gray-900 dark:text-white rounded-bl-none"
+                    key={i}
+                    className={`flex gap-2 mb-2 ${
+                      isUser ? "justify-end" : "justify-start"
                     }`}
                   >
-                    {msg.content}
-                    {msg.timestamp && (
-                      <div className="text-xs opacity-70 mt-1 text-right">
-                        {new Date(msg.timestamp).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </div>
+                    {/* Si IA, avatar à gauche */}
+                    {!isUser && (
+                      <img
+                        src="/images/ia-avatar.png"
+                        alt="avatar ia"
+                        className="w-8 h-8 rounded-full object-cover self-end"
+                      />
+                    )}
+
+                    {/* Bulle de message */}
+                    <div
+                      className={`max-w-xl rounded-lg px-4 py-2 whitespace-pre-wrap ${
+                        isUser
+                          ? "bg-gradient-to-br from-purple-500 to-blue-600 text-white rounded-br-none"
+                          : "bg-gray-200 dark:bg-zinc-700 text-gray-900 dark:text-white rounded-bl-none"
+                      }`}
+                    >
+                      {msg.content}
+                      {msg.timestamp && (
+                        <div className="text-xs opacity-70 mt-1 text-right">
+                          {new Date(msg.timestamp).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Si USER, avatar à droite */}
+                    {isUser && (
+                      <img
+                        src={userPhoto || "/default-avatar.png"}
+                        alt="avatar user"
+                        className="w-8 h-8 rounded-full object-cover self-end"
+                      />
                     )}
                   </div>
-                </div>
-              ))}
+                );
+              })}
 
               {isTyping && (
                 <div className="flex justify-start">
