@@ -200,7 +200,7 @@ export default function ChatBot() {
             <div className="p-2">
               <Button
                 onClick={handleNewChat}
-                className="w-full gap-2 border dark:border-zinc-600 dark:hover:bg-zinc-700"
+                className="w-full gap-2 border dark:text-white text-gray-900 dark:bg-zinc-900 bg-gray-50 border-gray-400  hover:bg-gray-100 dark:border-zinc-600  "
               >
                 <Plus size={16} /> Nouveau chat
               </Button>
