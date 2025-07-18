@@ -7,16 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Search, Send, Plus, PanelRight, PanelLeft } from "lucide-react";
 import chatbotGif from "@/public/images/chatbot.gif";
 import { motion, AnimatePresence } from "framer-motion";
-
-
-// interface UserProfile {
-//   name: string;
-//   photo?: string;
-//   bio?: string;
-//   coaching_type: string;
-//   level: number;
-//   points: number;
-// }
+import IA from "../assets/tsinjo-removebg-preview.png";
 
 type Message = {
   sender: "user" | "ai";
@@ -31,6 +22,30 @@ type Conversation = {
 };
 
 export default function ChatBot() {
+  const [userPhoto, setUserPhoto] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) return;
+
+        const res = await axios.get(
+          "https://tsinjool-backend.onrender.com/api/profile/",
+          {
+            headers: { Authorization: `Token ${token}` },
+          }
+        );
+
+        setUserPhoto(res.data.photo_url); // ou res.data.user.photo selon ton backend
+      } catch (error) {
+        console.error("Erreur lors du chargement du profil utilisateur", error);
+      }
+    };
+
+    fetchUserProfile();
+  }, []);
+
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [conversationId, setConversationId] = useState<number | null>(null);
@@ -301,21 +316,42 @@ export default function ChatBot() {
                   }`}
                 >
                   <div
-                    className={`max-w-xl rounded-lg px-4 py-2 whitespace-pre-wrap ${
+                    key={i}
+                    className={`flex items-start gap-2 ${
                       msg.sender === "user"
-                        ? "bg-gradient-to-br from-purple-500 to-blue-600 text-white rounded-br-none"
-                        : "bg-gray-200 dark:bg-zinc-700 text-gray-900 dark:text-white rounded-bl-none"
+                        ? "justify-end flex-row-reverse"
+                        : "justify-start"
                     }`}
                   >
-                    {msg.content}
-                    {msg.timestamp && (
-                      <div className="text-xs opacity-70 mt-1 text-right">
-                        {new Date(msg.timestamp).toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </div>
-                    )}
+                    {/* Avatar */}
+                    <img
+                      src={
+                        msg.sender === "user"
+                          ? userPhoto || "/default-avatar.png"
+                          : IA
+                      }
+                      alt="avatar"
+                      className="w-8 h-8 rounded-full object-cover mt-1"
+                    />
+
+                    {/* Message Bubble */}
+                    <div
+                      className={`max-w-xl rounded-lg px-4 py-2 whitespace-pre-wrap ${
+                        msg.sender === "user"
+                          ? "bg-gradient-to-br from-purple-500 to-blue-600 text-white rounded-br-none"
+                          : "bg-gray-200 dark:bg-zinc-700 text-gray-900 dark:text-white rounded-bl-none"
+                      }`}
+                    >
+                      {msg.content}
+                      {msg.timestamp && (
+                        <div className="text-xs opacity-70 mt-1 text-right">
+                          {new Date(msg.timestamp).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               ))}
