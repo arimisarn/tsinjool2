@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react";
 import type { AICoachResponse, EmotionData } from "../types/index";
 
-const GROQ_API_KEY = "YOUR_GROQ_API_KEY"; // À remplacer par votre clé API
+const GROQ_API_KEY = import.meta.env.VITE_GROQ_API_KEY;
 
 export const useGroqAI = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -12,7 +12,7 @@ export const useGroqAI = () => {
       emotions: EmotionData,
       context: string = ""
     ): Promise<AICoachResponse | null> => {
-      if (!GROQ_API_KEY || GROQ_API_KEY === "YOUR_GROQ_API_KEY") {
+      if (!GROQ_API_KEY) {
         // Mode simulation pour la démonstration
         return simulateAIResponse(emotions);
       }
