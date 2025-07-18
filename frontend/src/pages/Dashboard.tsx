@@ -196,7 +196,8 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-indigo-900">
+    // <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-indigo-900">
+    <div className="min-h-screen bg-gradient-to-br from-white via-blue-100 to-indigo-200 dark:from-gray-900 dark:via-gray-800 dark:to-black">
       {/* Toggle Dark Mode */}
       <div className="flex justify-end p-4">
         <button
