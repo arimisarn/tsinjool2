@@ -18,17 +18,23 @@ type CoachingType = "life" | "career" | "health";
 
 export default function ProfileSetup() {
   const navigate = useNavigate();
+
+  // Étape de l'animation / formulaire
   const [step, setStep] = useState<"welcome" | "transition" | "form">(
     "welcome"
   );
-  const [username, setUsername] = useState();
 
+  // Données utilisateur
+  const [username, setUsername] = useState<string | undefined>();
+
+  // Champs du formulaire
   const [bio, setBio] = useState("");
   const [coachingType, setCoachingType] = useState<CoachingType | "">("");
   const [photo, setPhoto] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
+  // Options de coaching
   const coachingOptions = [
     {
       value: "life",
@@ -53,7 +59,7 @@ export default function ProfileSetup() {
     },
   ];
 
-  // Effet de bienvenue et chargement du profil
+  // Charger le profil utilisateur et gérer les étapes de transition
   useEffect(() => {
     document.title = "Tsinjool - Configuration de profil";
 
@@ -70,6 +76,9 @@ export default function ProfileSetup() {
       })
       .then((res) => {
         setUsername(res.data.user?.nom_utilisateur);
+      })
+      .catch(() => {
+        toast.error("Erreur lors du chargement du profil.");
       });
 
     const timeout1 = setTimeout(() => setStep("transition"), 5000);
@@ -81,6 +90,7 @@ export default function ProfileSetup() {
     };
   }, [navigate]);
 
+  // Gérer l'aperçu photo quand elle change
   useEffect(() => {
     if (!photo) {
       setPreview(null);
@@ -88,15 +98,17 @@ export default function ProfileSetup() {
     }
     const objectUrl = URL.createObjectURL(photo);
     setPreview(objectUrl);
+
     return () => URL.revokeObjectURL(objectUrl);
   }, [photo]);
 
+  // Gestion du changement de photo
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] ?? null;
     setPhoto(file);
   };
-  console.log(handlePhotoChange);
 
+  // Soumission du formulaire
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -111,6 +123,7 @@ export default function ProfileSetup() {
     }
 
     setLoading(true);
+
     const formData = new FormData();
     formData.append("bio", bio);
     formData.append("coaching_type", coachingType);
@@ -145,10 +158,9 @@ export default function ProfileSetup() {
       setLoading(false);
     }
   };
-  console.log(handleSubmit);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-blue-900 flex items-center justify-center p-4">
       <AnimatePresence mode="wait">
         {step !== "form" ? (
           <motion.div
@@ -162,19 +174,19 @@ export default function ProfileSetup() {
             <img src={gif} alt="Welcome" className="w-40 h-40 object-contain" />
             {step === "welcome" ? (
               <>
-                <h1 className="text-3xl font-bold text-gray-800">
+                <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-100">
                   Bonjour {username} 👋
                 </h1>
-                <p className="text-gray-600 text-sm">
+                <p className="text-gray-600 dark:text-gray-300 text-sm">
                   Bienvenue sur <strong>Tsinjool</strong> !
                 </p>
               </>
             ) : (
               <>
-                <h2 className="text-2xl font-semibold text-gray-800">
+                <h2 className="text-2xl font-semibold text-gray-800 dark:text-gray-100">
                   Nous allons passer à la configuration de votre profil.
                 </h2>
-                <p className="text-gray-500 text-sm">
+                <p className="text-gray-500 dark:text-gray-400 text-sm">
                   Quelques étapes pour personnaliser votre parcours.
                 </p>
               </>
@@ -187,9 +199,9 @@ export default function ProfileSetup() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.8 }}
-            className="w-full max-w-4xl bg-white rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col lg:flex-row min-h-[600px]"
+            className="w-full max-w-4xl bg-white dark:bg-gray-900 rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col lg:flex-row min-h-[600px]"
           >
-            <div className="w-full max-w-4xl bg-white rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col lg:flex-row min-h-[600px]">
+            <div className="w-full max-w-4xl bg-white dark:bg-gray-900 rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden flex flex-col lg:flex-row min-h-[600px]">
               {/* SECTION FORMULAIRE */}
               <div className="w-full lg:w-3/5 flex flex-col">
                 <div className="flex justify-between items-center p-4 sm:p-6 lg:p-8">
@@ -198,10 +210,10 @@ export default function ProfileSetup() {
                       <Brain className="w-6 h-6 text-white" />
                     </div>
                     <div>
-                      <h1 className="text-2xl font-bold text-gray-900">
+                      <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                         Tsinjool
                       </h1>
-                      <p className="text-sm text-gray-600">
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
                         Coach personnel intelligent
                       </p>
                     </div>
@@ -214,14 +226,14 @@ export default function ProfileSetup() {
                     className="w-full max-w-md space-y-6"
                   >
                     <div>
-                      <p className="text-xs uppercase tracking-wide text-gray-400 mb-2">
+                      <p className="text-xs uppercase tracking-wide text-gray-400 dark:text-gray-500 mb-2">
                         ÉTAPE 2 SUR 2
                       </p>
-                      <h1 className="text-3xl font-bold text-gray-900 mb-1">
+                      <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-1">
                         Configurez votre profil
                         <span className="text-purple-500">.</span>
                       </h1>
-                      <p className="text-sm text-gray-600">
+                      <p className="text-sm text-gray-600 dark:text-gray-400">
                         Personnalisez votre expérience de coaching
                       </p>
                     </div>
@@ -254,7 +266,7 @@ export default function ProfileSetup() {
                         </label>
                       </div>
                       {photo && (
-                        <p className="text-xs text-blue-600 font-medium">
+                        <p className="text-xs text-blue-600 dark:text-blue-400 font-medium">
                           Photo sélectionnée: {photo.name}
                         </p>
                       )}
@@ -262,25 +274,25 @@ export default function ProfileSetup() {
 
                     {/* BIO */}
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Présentez-vous
                       </label>
                       <textarea
                         value={bio}
                         onChange={(e) => setBio(e.target.value)}
                         placeholder="Vos objectifs, motivations..."
-                        className="w-full px-4 py-3 border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all duration-200 outline-none resize-none"
+                        className="w-full px-4 py-3 border border-gray-200 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-800 focus:bg-white dark:focus:bg-gray-900 focus:border-blue-500 dark:focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 transition-all duration-200 outline-none resize-none text-gray-900 dark:text-gray-100"
                         rows={4}
                         maxLength={500}
                       />
-                      <p className="text-xs text-gray-400 mt-1">
+                      <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
                         {bio.length} / 500
                       </p>
                     </div>
 
                     {/* TYPE DE COACHING */}
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                         Type de coaching souhaité
                       </label>
                       <div className="space-y-2">
@@ -301,8 +313,8 @@ export default function ProfileSetup() {
                               htmlFor={option.value}
                               className={`flex items-center p-4 rounded-xl border-2 transition-all duration-200 cursor-pointer ${
                                 coachingType === option.value
-                                  ? "border-blue-500 bg-blue-50 shadow-sm"
-                                  : "border-gray-200 hover:bg-gray-50"
+                                  ? "border-blue-500 bg-blue-50 dark:bg-blue-900 shadow-sm"
+                                  : "border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
                               }`}
                             >
                               <div
@@ -311,10 +323,10 @@ export default function ProfileSetup() {
                                 {option.icon}
                               </div>
                               <div className="flex-1">
-                                <h3 className="font-semibold text-gray-900">
+                                <h3 className="font-semibold text-gray-900 dark:text-gray-100">
                                   {option.label}
                                 </h3>
-                                <p className="text-sm text-gray-600">
+                                <p className="text-sm text-gray-600 dark:text-gray-400">
                                   {option.description}
                                 </p>
                               </div>
@@ -332,7 +344,7 @@ export default function ProfileSetup() {
                       <button
                         type="button"
                         onClick={() => navigate(-1)}
-                        className="flex items-center gap-2 px-4 py-3 border border-gray-300 rounded-xl text-gray-700 hover:bg-gray-100 transition duration-200"
+                        className="flex items-center gap-2 px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition duration-200"
                         disabled={loading}
                       >
                         <ArrowLeft className="w-5 h-5" />
