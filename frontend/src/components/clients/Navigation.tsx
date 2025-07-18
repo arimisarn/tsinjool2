@@ -161,6 +161,9 @@ const Navigation = () => {
 
       {isMobileMenuOpen && (
         <div className="md:hidden mt-4 space-y-3 px-2 pb-4">
+          <div>
+            Menu
+          </div>
           <Link
             to="/dashboard"
             className="flex items-center gap-2 px-4 py-2 rounded-md hover:bg-gray-100 dark:hover:bg-zinc-700 text-gray-900 dark:text-white"
