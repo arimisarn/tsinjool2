@@ -144,7 +144,7 @@ export default function StepDetail() {
         }
       );
 
-      toast.info("Exercice planifié avec succès !");
+      toast.success("Exercice planifié avec succès !");
       setShowScheduler(false);
       setScheduledDate(undefined);
       setScheduledTime("09:00");
@@ -212,23 +212,23 @@ export default function StepDetail() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-zinc-900 dark:to-zinc-950">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b">
+      <div className="bg-white dark:bg-zinc-800 shadow-sm border-b border-gray-200 dark:border-zinc-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between py-4">
             <div className="flex items-center gap-4">
               <button
                 onClick={() => navigate("/dashboard")}
-                className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+                className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-zinc-700 rounded-lg transition-colors"
               >
                 <ArrowLeft className="w-5 h-5" />
               </button>
               <div>
-                <h1 className="text-xl font-bold text-gray-900">
+                <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">
                   {step.title}
                 </h1>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
                   {step.exercises.length} exercices disponibles
                 </p>
               </div>
@@ -236,8 +236,10 @@ export default function StepDetail() {
 
             <div className="flex items-center gap-4">
               <div className="text-right">
-                <p className="text-sm text-gray-600">Progression</p>
-                <p className="text-lg font-bold text-purple-600">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Progression
+                </p>
+                <p className="text-lg font-bold text-purple-600 dark:text-purple-400">
                   {Math.round(step.progress)}%
                 </p>
               </div>
@@ -258,8 +260,8 @@ export default function StepDetail() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Exercise List */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-xl shadow-sm p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">
+            <div className="bg-white dark:bg-zinc-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-zinc-700">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
                 Exercices
               </h2>
 
@@ -270,10 +272,10 @@ export default function StepDetail() {
                     onClick={() => handleExerciseSelect(exercise)}
                     className={`p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 ${
                       selectedExercise?.id === exercise.id
-                        ? "border-purple-500 bg-purple-50"
+                        ? "border-purple-500 bg-purple-50 dark:bg-purple-900/30"
                         : exercise.completed
-                        ? "border-green-200 bg-green-50"
-                        : "border-gray-200 hover:bg-gray-50"
+                        ? "border-green-200 bg-green-50 dark:bg-green-900/30"
+                        : "border-gray-200 dark:border-zinc-700 hover:bg-gray-50 dark:hover:bg-zinc-700"
                     }`}
                   >
                     <div className="flex items-center justify-between mb-2">
@@ -290,22 +292,22 @@ export default function StepDetail() {
                           )}
                         </div>
                         <div>
-                          <h3 className="font-medium text-gray-900">
+                          <h3 className="font-medium text-gray-900 dark:text-gray-100">
                             Exercice {index + 1}
                           </h3>
-                          <p className="text-sm text-gray-600">
+                          <p className="text-sm text-gray-600 dark:text-gray-400">
                             {exercise.title}
                           </p>
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-1 text-sm text-gray-500">
+                      <div className="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400">
                         <Clock className="w-4 h-4" />
                         {exercise.duration}min
                       </div>
                     </div>
 
-                    <p className="text-sm text-gray-600 line-clamp-2">
+                    <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
                       {exercise.description}
                     </p>
                   </div>
@@ -317,24 +319,24 @@ export default function StepDetail() {
           {/* Exercise Detail */}
           <div className="lg:col-span-2">
             {selectedExercise ? (
-              <div className="bg-white rounded-xl shadow-sm p-6">
+              <div className="bg-white dark:bg-zinc-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-zinc-700">
                 <div className="flex items-center justify-between mb-6">
                   <div>
-                    <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                    <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
                       {selectedExercise.title}
                     </h2>
-                    <p className="text-gray-600">
+                    <p className="text-gray-600 dark:text-gray-400">
                       {selectedExercise.description}
                     </p>
                   </div>
 
                   <div className="text-right">
-                    <div className="flex items-center gap-2 text-sm text-gray-600 mb-1">
+                    <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 mb-1">
                       <Clock className="w-4 h-4" />
                       {selectedExercise.duration} minutes
                     </div>
                     {selectedExercise.completed && (
-                      <div className="flex items-center gap-1 text-green-600">
+                      <div className="flex items-center gap-1 text-green-600 dark:text-green-400">
                         <CheckCircle className="w-4 h-4" />
                         <span className="text-sm font-medium">Terminé</span>
                       </div>
@@ -343,13 +345,13 @@ export default function StepDetail() {
                 </div>
 
                 {/* Character Animation Preview */}
-                <div className="bg-gradient-to-br from-purple-50 to-blue-50 rounded-xl p-8 mb-6 text-center">
+                <div className="bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/30 rounded-xl p-8 mb-6 text-center">
                   <div className="w-24 h-24 bg-gradient-to-br from-purple-400 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
                     <span className="text-3xl">
                       {selectedExercise.animation_character}
                     </span>
                   </div>
-                  <p className="text-gray-600">
+                  <p className="text-gray-600 dark:text-gray-400">
                     Votre coach virtuel vous guidera pendant cet exercice
                   </p>
                 </div>
@@ -358,19 +360,21 @@ export default function StepDetail() {
                 {selectedExercise.instructions &&
                   selectedExercise.instructions.length > 0 && (
                     <div className="mb-6">
-                      <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">
                         Instructions
                       </h3>
                       <div className="space-y-2">
                         {selectedExercise.instructions.map(
                           (instruction, index) => (
                             <div key={index} className="flex items-start gap-3">
-                              <div className="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
-                                <span className="text-xs font-medium text-purple-600">
+                              <div className="w-6 h-6 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                                <span className="text-xs font-medium text-purple-600 dark:text-purple-400">
                                   {index + 1}
                                 </span>
                               </div>
-                              <p className="text-gray-700">{instruction}</p>
+                              <p className="text-gray-700 dark:text-gray-300">
+                                {instruction}
+                              </p>
                             </div>
                           )
                         )}
@@ -382,7 +386,7 @@ export default function StepDetail() {
                 {selectedExercise.recommended_videos &&
                   selectedExercise.recommended_videos.length > 0 && (
                     <div className="mb-6">
-                      <h3 className="text-lg font-semibold text-gray-900 mb-3">
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">
                         Vidéos recommandées
                       </h3>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -426,7 +430,7 @@ export default function StepDetail() {
                     disabled={selectedExercise.completed}
                     className={`flex items-center gap-3 px-8 py-4 rounded-xl font-medium transition-all duration-200 ${
                       selectedExercise.completed
-                        ? "bg-green-100 text-green-700 cursor-not-allowed"
+                        ? "bg-green-100 text-green-700 cursor-not-allowed dark:bg-green-900/30 dark:text-green-400"
                         : "bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-600 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                     }`}
                   >
@@ -445,14 +449,14 @@ export default function StepDetail() {
                 </div>
               </div>
             ) : (
-              <div className="bg-white rounded-xl shadow-sm p-8 text-center">
-                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Target className="w-8 h-8 text-gray-400" />
+              <div className="bg-white dark:bg-zinc-800 rounded-xl shadow-sm p-8 text-center border border-gray-100 dark:border-zinc-700">
+                <div className="w-16 h-16 bg-gray-100 dark:bg-zinc-700 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Target className="w-8 h-8 text-gray-400 dark:text-zinc-400" />
                 </div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
                   Sélectionnez un exercice
                 </h3>
-                <p className="text-gray-600">
+                <p className="text-gray-600 dark:text-gray-400">
                   Choisissez un exercice dans la liste pour voir les détails et
                   commencer
                 </p>
@@ -463,8 +467,8 @@ export default function StepDetail() {
 
         {showScheduler && (
           <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
-            <div className="bg-white rounded-xl p-6 w-[90%] max-w-md shadow-xl">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">
+            <div className="bg-white dark:bg-zinc-800 rounded-xl p-6 w-[90%] max-w-md shadow-xl border border-gray-200 dark:border-zinc-700">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
                 Planifier l'exercice
               </h2>
 
@@ -475,26 +479,26 @@ export default function StepDetail() {
                 className="mb-4"
               />
 
-              <label className="block mb-2 text-sm font-medium text-gray-700">
+              <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">
                 Heure :
               </label>
               <input
                 type="time"
                 value={scheduledTime}
                 onChange={(e) => setScheduledTime(e.target.value)}
-                className="w-full mb-4 border-gray-300 rounded-lg shadow-sm"
+                className="w-full mb-4 border border-gray-300 dark:border-zinc-600 rounded-lg shadow-sm bg-white dark:bg-zinc-900 text-gray-900 dark:text-gray-100"
               />
 
               <div className="flex justify-between mt-6">
                 <button
                   onClick={() => setShowScheduler(false)}
-                  className="text-sm px-4 py-2 text-gray-600 hover:text-red-500"
+                  className="text-sm px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-red-500"
                 >
                   Annuler
                 </button>
                 <button
                   onClick={handleScheduleExercise}
-                  className="px-6 py-2 bg-indigo-600 text-white rounded-lg shadow hover:bg-indigo-700"
+                  className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg shadow"
                 >
                   Planifier
                 </button>
