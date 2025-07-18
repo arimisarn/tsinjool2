@@ -1,20 +1,19 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import {
   ArrowLeft,
   Play,
-  Pause,
-  RotateCcw,
   CheckCircle,
-  Star,
-  Trophy,
-  Heart,
-  Sparkles,
+  Clock,
+  Target,
+  BookOpen,
+  Lightbulb,
 } from "lucide-react";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import axios from "axios";
 import { toast } from "sonner";
+import { Calendar } from "@/components/ui/calendar";
 
 interface Exercise {
   id: number;
@@ -26,340 +25,503 @@ interface Exercise {
   instructions: string[];
   animation_character: string;
   recommended_videos?: string[];
-  image_url?: string;
 }
 
-export default function ExercisePage() {
+interface Step {
+  id: number;
+  title: string;
+  description: string;
+  duration: number;
+  type: string;
+  completed: boolean;
+  instructions: string[];
+  exercises: Exercise[];
+  progress: number;
+}
+
+export default function StepDetail() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { exerciseId } = useParams();
-  const [exercise, setExercise] = useState<Exercise | null>(null);
-  const [timeLeft, setTimeLeft] = useState(0);
-  const [isRunning, setIsRunning] = useState(false);
-  const [isCompleted, setIsCompleted] = useState(false);
-  const [showCelebration, setShowCelebration] = useState(false);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  console.log(exerciseId);
+  const { stepId } = useParams();
+  const [step, setStep] = useState<Step | null>(null);
+  const [selectedExercise, setSelectedExercise] = useState<Exercise | null>(
+    null
+  );
+  const [loading, setLoading] = useState(true);
+
+  const [showScheduler, setShowScheduler] = useState(false);
+  const [scheduledDate, setScheduledDate] = useState<Date | undefined>(
+    undefined
+  );
+  const [scheduledTime, setScheduledTime] = useState("09:00");
 
   useEffect(() => {
-    document.title = "Tsinjool - Exercice en cours";
+    document.title = "Tsinjool - Détail de l'étape";
+    loadStepData();
+  }, [stepId]);
 
-    if (location.state?.exercise) {
-      const exerciseData = location.state.exercise;
-      setExercise(exerciseData);
-      setTimeLeft(exerciseData.duration * 60);
-    } else {
-      toast.error("Exercice non trouvé.");
+  const loadStepData = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        toast.error("Veuillez vous connecter.");
+        navigate("/login");
+        return;
+      }
+
+      if (location.state?.step) {
+        setStep(location.state.step);
+        setLoading(false);
+        return;
+      }
+
+      const response = await axios.get(
+        `https://tsinjool-backend.onrender.com/api/steps/${stepId}/`,
+        {
+          headers: { Authorization: `Token ${token}` },
+        }
+      );
+      setStep(response.data);
+    } catch (error: any) {
+      console.error(error);
+      toast.error("Erreur lors du chargement de l'étape.");
+      window.dispatchEvent(new Event("refresh-notifications"));
       navigate("/dashboard");
+    } finally {
+      setLoading(false);
     }
-
-    return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
-    };
-  }, [location.state, navigate]);
-
-  useEffect(() => {
-    if (isRunning && timeLeft > 0) {
-      intervalRef.current = setInterval(() => {
-        setTimeLeft((prev) => {
-          if (prev <= 1) {
-            setIsRunning(false);
-            handleExerciseComplete();
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    } else {
-      if (intervalRef.current) clearInterval(intervalRef.current);
-    }
-
-    return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
-    };
-  }, [isRunning, timeLeft]);
-
-  const handleStart = () => setIsRunning(true);
-  const handlePause = () => setIsRunning(false);
-  const handleReset = () => {
-    setIsRunning(false);
-    setTimeLeft(exercise ? exercise.duration * 60 : 0);
-    setIsCompleted(false);
   };
 
-  const handleExerciseComplete = async () => {
-    if (intervalRef.current) clearInterval(intervalRef.current);
+  const handleExerciseSelect = (exercise: Exercise) => {
+    setSelectedExercise(exercise);
+  };
 
-    setIsRunning(false);
-    setTimeLeft(0);
-    setIsCompleted(true);
-    setShowCelebration(true);
+  const handleStartExercise = (exercise: Exercise) => {
+    navigate(`/exercise/${exercise.id}`, {
+      state: {
+        exercise,
+        stepId: step?.id,
+        stepTitle: step?.title,
+      },
+    });
+  };
+
+  const handleScheduleExercise = async () => {
+    if (!scheduledDate) {
+      toast.error("Veuillez choisir une date.");
+      return;
+    }
+
+    if (!selectedExercise) {
+      toast.error("Aucun exercice sélectionné.");
+      return;
+    }
 
     try {
       const token = localStorage.getItem("token");
+      if (!token) {
+        toast.error("Veuillez vous connecter.");
+        navigate("/login");
+        return;
+      }
+
+      const year = scheduledDate.getFullYear();
+      const month = String(scheduledDate.getMonth() + 1).padStart(2, "0");
+      const day = String(scheduledDate.getDate()).padStart(2, "0");
+
+      const plannedDatetime = `${year}-${month}-${day} ${scheduledTime}:00`;
+
       await axios.post(
-        `https://tsinjool-backend.onrender.com/api/exercises/${exercise?.id}/complete/`,
-        {},
-        { headers: { Authorization: `Token ${token}` } }
+        "https://tsinjool-backend.onrender.com/api/plan-exercise/",
+        {
+          exercise_id: selectedExercise.id,
+          planned_datetime: plannedDatetime,
+        },
+        {
+          headers: {
+            Authorization: `Token ${token}`,
+          },
+        }
       );
-      toast.success("Félicitations ! Exercice terminé avec succès !");
+
+      toast.success("Exercice planifié avec succès !");
+      setShowScheduler(false);
+      setScheduledDate(undefined);
+      setScheduledTime("09:00");
+
       window.dispatchEvent(new Event("refresh-notifications"));
     } catch (error) {
-      console.error(error);
-      toast.error("Erreur lors de l'enregistrement.");
+      console.error("Erreur planification exercice", error);
+      toast.error("Erreur lors de la planification.");
     }
-
-    setTimeout(() => {
-      setShowCelebration(false);
-    }, 3000);
   };
 
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins.toString().padStart(2, "0")}:${secs
-      .toString()
-      .padStart(2, "0")}`;
-  };
-
-  const getProgressPercentage = () => {
-    if (!exercise) return 0;
-    const totalSeconds = exercise.duration * 60;
-    return ((totalSeconds - timeLeft) / totalSeconds) * 100;
-  };
-
-  const getCharacterAnimation = () => {
-    if (isCompleted) return "🎉";
-    if (isRunning) return "🧘‍♀️";
-    return exercise?.animation_character || "🤖";
-  };
-
-  const getEncouragementMessage = () => {
-    const progress = getProgressPercentage();
-    if (isCompleted) return "Fantastique ! Vous avez terminé l'exercice !";
-    if (progress > 75) return "Presque fini ! Continuez comme ça !";
-    if (progress > 50) return "Excellent travail ! Vous êtes à mi-chemin !";
-    if (progress > 25) return "Très bien ! Restez concentré(e) !";
-    if (isRunning) return "C'est parti ! Prenez votre temps et respirez.";
-    return "Prêt(e) à commencer ? Cliquez sur play !";
-  };
-
-  if (!exercise) {
+  if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-zinc-950 dark:to-zinc-900 flex items-center justify-center">
-        <p className="text-gray-600 dark:text-gray-300">Chargement...</p>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-blue-600 rounded-full flex items-center justify-center mb-4 mx-auto animate-pulse">
+            <Target className="w-8 h-8 text-white" />
+          </div>
+          <p className="text-gray-600">Chargement de l'étape...</p>
+        </div>
       </div>
     );
   }
 
+  if (!step) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600">Étape non trouvée.</p>
+          <button
+            onClick={() => navigate("/dashboard")}
+            className="mt-4 px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+          >
+            Retour au tableau de bord
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const getExerciseIcon = (type: string) => {
+    switch (type) {
+      case "meditation":
+        return <Target className="w-5 h-5" />;
+      case "reflection":
+        return <BookOpen className="w-5 h-5" />;
+      case "practice":
+        return <Lightbulb className="w-5 h-5" />;
+      default:
+        return <Play className="w-5 h-5" />;
+    }
+  };
+
+  const getExerciseColor = (type: string) => {
+    switch (type) {
+      case "meditation":
+        return "from-green-400 to-teal-500";
+      case "reflection":
+        return "from-blue-400 to-indigo-500";
+      case "practice":
+        return "from-purple-400 to-pink-500";
+      default:
+        return "from-gray-400 to-gray-500";
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-zinc-950 dark:to-zinc-900 text-gray-900 dark:text-gray-100">
-      {showCelebration && (
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center">
-          <div className="bg-white dark:bg-zinc-800 p-8 rounded-3xl text-center shadow-xl">
-            <div className="text-6xl mb-4">🎉</div>
-            <h2 className="text-2xl font-bold mb-2">Bravo !</h2>
-            <p className="text-gray-600 dark:text-gray-300 mb-4">
-              Vous avez terminé l'exercice !
-            </p>
-            <div className="flex justify-center gap-2">
-              <Star className="w-6 h-6 text-yellow-400 fill-yellow-400" />
-              <Star className="w-6 h-6 text-yellow-400 fill-yellow-400" />
-              <Star className="w-6 h-6 text-yellow-400 fill-yellow-400" />
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-zinc-900 dark:to-zinc-950">
+      {/* Header */}
+      <div className="bg-white dark:bg-zinc-800 shadow-sm border-b border-gray-200 dark:border-zinc-700">
+        <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6">
+          <div className="flex items-center justify-between py-4">
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => navigate("/dashboard")}
+                className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-zinc-700 rounded-lg transition-colors"
+              >
+                <ArrowLeft className="w-5 h-5" />
+              </button>
+              <div>
+                <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">
+                  {step.title}
+                </h1>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  {step.exercises.length} exercices disponibles
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-4">
+              <div className="text-right">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Progression
+                </p>
+                <p className="text-lg font-bold text-purple-600 dark:text-purple-400">
+                  {Math.round(step.progress)}%
+                </p>
+              </div>
+
+              <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-600 rounded-lg flex items-center justify-center">
+                {step.completed ? (
+                  <CheckCircle className="w-6 h-6 text-white" />
+                ) : (
+                  <Target className="w-6 h-6 text-white" />
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Contenu principal */}
+      <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-6 py-8">
+        <div className="grid grid-cols-12 gap-6">
+          {/* Liste Exercices */}
+          <div className="col-span-12 md:col-span-4">
+            <div className="bg-white dark:bg-zinc-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-zinc-700 h-full">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">
+                Exercices
+              </h2>
+              <div className="space-y-3 max-h-[75vh] overflow-y-auto">
+                {step.exercises.map((exercise, index) => (
+                  <div
+                    key={exercise.id}
+                    onClick={() => handleExerciseSelect(exercise)}
+                    className={`p-4 rounded-lg border-2 cursor-pointer transition-all duration-200 ${
+                      selectedExercise?.id === exercise.id
+                        ? "border-purple-500 bg-purple-50 dark:bg-purple-900/30"
+                        : exercise.completed
+                        ? "border-green-200 bg-green-50 dark:bg-green-900/30"
+                        : "border-gray-200 dark:border-zinc-700 hover:bg-gray-50 dark:hover:bg-zinc-700"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-3">
+                        <div
+                          className={`w-8 h-8 rounded-lg bg-gradient-to-br ${getExerciseColor(
+                            exercise.type
+                          )} flex items-center justify-center text-white`}
+                        >
+                          {exercise.completed ? (
+                            <CheckCircle className="w-4 h-4" />
+                          ) : (
+                            getExerciseIcon(exercise.type)
+                          )}
+                        </div>
+                        <div>
+                          <h3 className="font-medium text-gray-900 dark:text-gray-100">
+                            Exercice {index + 1}
+                          </h3>
+                          <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
+                            {exercise.title}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400">
+                        <Clock className="w-4 h-4" />
+                        {exercise.duration}min
+                      </div>
+                    </div>
+
+                    <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
+                      {exercise.description}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Détails exercice + vidéos recommandées */}
+          <div className="col-span-12 md:col-span-8 grid grid-cols-12 gap-6">
+            {/* Détail exercice */}
+            <div className="col-span-12 lg:col-span-8 bg-white dark:bg-zinc-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-zinc-700 overflow-auto max-h-[75vh]">
+              {selectedExercise ? (
+                <>
+                  <div className="flex items-center justify-between mb-6">
+                    <div>
+                      <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+                        {selectedExercise.title}
+                      </h2>
+                      <p className="text-gray-600 dark:text-gray-400">
+                        {selectedExercise.description}
+                      </p>
+                    </div>
+
+                    <div className="text-right">
+                      <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 mb-1">
+                        <Clock className="w-4 h-4" />
+                        {selectedExercise.duration} minutes
+                      </div>
+                      {selectedExercise.completed && (
+                        <div className="flex items-center gap-1 text-green-600 dark:text-green-400">
+                          <CheckCircle className="w-4 h-4" />
+                          <span className="text-sm font-medium">Terminé</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Animation personnage */}
+                  <div className="bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/30 rounded-xl p-8 mb-6 text-center">
+                    <div className="w-24 h-24 bg-gradient-to-br from-purple-400 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <span className="text-3xl">
+                        {selectedExercise.animation_character}
+                      </span>
+                    </div>
+                    <p className="text-gray-600 dark:text-gray-400">
+                      Votre coach virtuel vous guidera pendant cet exercice
+                    </p>
+                  </div>
+
+                  {/* Instructions */}
+                  {selectedExercise.instructions &&
+                    selectedExercise.instructions.length > 0 && (
+                      <div className="mb-6">
+                        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">
+                          Instructions
+                        </h3>
+                        <div className="space-y-2">
+                          {selectedExercise.instructions.map(
+                            (instruction, index) => (
+                              <div
+                                key={index}
+                                className="flex items-start gap-3"
+                              >
+                                <div className="w-6 h-6 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                                  <span className="text-xs font-medium text-purple-600 dark:text-purple-400">
+                                    {index + 1}
+                                  </span>
+                                </div>
+                                <p className="text-gray-700 dark:text-gray-300">
+                                  {instruction}
+                                </p>
+                              </div>
+                            )
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                  {/* Bouton démarrer */}
+                  <div className="flex justify-center">
+                    <button
+                      onClick={() => handleStartExercise(selectedExercise)}
+                      disabled={selectedExercise.completed}
+                      className={`flex items-center gap-3 px-8 py-4 rounded-xl font-medium transition-all duration-200 ${
+                        selectedExercise.completed
+                          ? "bg-green-100 text-green-700 cursor-not-allowed dark:bg-green-900/30 dark:text-green-400"
+                          : "bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-600 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                      }`}
+                    >
+                      {selectedExercise.completed ? (
+                        <>
+                          <CheckCircle className="w-5 h-5" />
+                          Exercice terminé
+                        </>
+                      ) : (
+                        <>
+                          <Play className="w-5 h-5" />
+                          Commencer l'exercice
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <div className="p-8 text-center text-gray-600 dark:text-gray-400">
+                  <div className="w-16 h-16 bg-gray-100 dark:bg-zinc-700 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Target className="w-8 h-8" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">
+                    Sélectionnez un exercice
+                  </h3>
+                  <p>
+                    Choisissez un exercice dans la liste pour voir les détails
+                    et commencer
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Vidéos recommandées */}
+            {selectedExercise?.recommended_videos &&
+              selectedExercise.recommended_videos.length > 0 && (
+                <div className="col-span-12 lg:col-span-4">
+                  <div className="bg-white dark:bg-zinc-800 rounded-xl shadow-sm p-6 border border-gray-100 dark:border-zinc-700 flex flex-col gap-4 max-h-[75vh] overflow-y-auto">
+                    <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">
+                      Vidéos recommandées
+                    </h3>
+                    {selectedExercise.recommended_videos.map((url, index) => {
+                      const videoId = new URL(url).searchParams.get("v");
+                      return (
+                        <div
+                          key={index}
+                          className="aspect-video rounded-xl overflow-hidden shadow cursor-pointer hover:scale-[1.02] transition-transform"
+                          onClick={() => window.open(url, "_blank")}
+                        >
+                          <iframe
+                            width="100%"
+                            height="100%"
+                            src={`https://www.youtube.com/embed/${videoId}`}
+                            title={`Vidéo ${index + 1}`}
+                            frameBorder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                          ></iframe>
+                        </div>
+                      );
+                    })}
+
+                    <div className="flex justify-center mt-6">
+                      <button
+                        onClick={() => setShowScheduler(true)}
+                        className="px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-medium shadow-md hover:shadow-lg transition"
+                      >
+                        Planifier cet exercice
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+          </div>
+        </div>
+      </div>
+
+      {/* Modal planification */}
+      {showScheduler && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-white dark:bg-zinc-800 rounded-2xl p-6 w-full max-w-md shadow-2xl border border-gray-200 dark:border-zinc-700 space-y-5">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-white text-center">
+              Planifier l'exercice
+            </h2>
+
+            {/* Calendrier stylé */}
+            <div className="rounded-xl border border-gray-200 dark:border-zinc-600 p-3 bg-slate-50 dark:bg-zinc-900 shadow-sm">
+              <Calendar
+                mode="single"
+                selected={scheduledDate}
+                onSelect={setScheduledDate}
+              />
+            </div>
+
+            {/* Heure avec label et input stylé */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                Heure
+              </label>
+              <div className="relative">
+                <input
+                  type="time"
+                  value={scheduledTime}
+                  onChange={(e) => setScheduledTime(e.target.value)}
+                  className="w-full pl-4 pr-4 py-2 rounded-lg bg-white dark:bg-zinc-900 border border-gray-300 dark:border-zinc-600 text-gray-900 dark:text-white shadow-inner focus:outline-none focus:ring-2 focus:ring-purple-500"
+                />
+              </div>
+            </div>
+
+            {/* Boutons */}
+            <div className="flex justify-end gap-4 pt-2">
+              <button
+                onClick={() => setShowScheduler(false)}
+                className="px-4 py-2 rounded-lg border border-gray-300 dark:border-zinc-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-zinc-700 transition"
+              >
+                Annuler
+              </button>
+              <button
+                onClick={handleScheduleExercise}
+                className="px-4 py-2 rounded-lg bg-purple-600 text-white hover:bg-purple-700 shadow-md transition"
+              >
+                Valider
+              </button>
             </div>
           </div>
         </div>
       )}
-
-      {/* Header */}
-      <div className="bg-white dark:bg-zinc-900 shadow-sm border-b border-gray-200 dark:border-zinc-700">
-        <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => navigate(-1)}
-              className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-zinc-700 rounded-lg"
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </button>
-            <div>
-              <h1 className="text-xl font-bold">{exercise.title}</h1>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                {location.state?.stepTitle && `${location.state.stepTitle} • `}
-                {exercise.duration} minutes
-              </p>
-            </div>
-          </div>
-          {isCompleted && (
-            <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
-              <CheckCircle className="w-5 h-5" />
-              <span className="font-medium">Terminé</span>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Main */}
-      <div className="max-w-5xl mx-auto px-4 py-8">
-        <div className="bg-white dark:bg-zinc-800 rounded-3xl shadow-xl overflow-hidden">
-          {/* Image et Timer */}
-          <div className="bg-gradient-to-br from-purple-600 to-indigo-700 p-6 sm:p-10 text-white text-center relative">
-            {exercise.image_url && (
-              <div className="mb-6">
-                <img
-                  src={exercise.image_url}
-                  alt={exercise.title}
-                  className="w-full h-64 sm:h-80 object-cover rounded-xl border-4 border-white shadow-lg"
-                />
-              </div>
-            )}
-
-            <div className="text-7xl mb-4">{getCharacterAnimation()}</div>
-            <div className="text-5xl font-bold mb-2">
-              {formatTime(timeLeft)}
-            </div>
-            <p className="text-lg opacity-90 mb-4">
-              {getEncouragementMessage()}
-            </p>
-
-            {/* Barre de progression circulaire */}
-            <div className="relative w-32 h-32 mx-auto mb-6">
-              <svg className="w-32 h-32 -rotate-90" viewBox="0 0 120 120">
-                <circle
-                  cx="60"
-                  cy="60"
-                  r="50"
-                  stroke="rgba(255,255,255,0.2)"
-                  strokeWidth="8"
-                  fill="none"
-                />
-                <circle
-                  cx="60"
-                  cy="60"
-                  r="50"
-                  stroke="white"
-                  strokeWidth="8"
-                  fill="none"
-                  strokeLinecap="round"
-                  strokeDasharray={`${2 * Math.PI * 50}`}
-                  strokeDashoffset={`${
-                    2 * Math.PI * 50 * (1 - getProgressPercentage() / 100)
-                  }`}
-                  className="transition-all duration-1000"
-                />
-              </svg>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-2xl font-bold">
-                  {Math.round(getProgressPercentage())}%
-                </span>
-              </div>
-            </div>
-
-            {/* Boutons de contrôle */}
-            <div className="flex flex-wrap justify-center gap-4">
-              {!isCompleted && (
-                <>
-                  {!isRunning ? (
-                    <button
-                      onClick={handleStart}
-                      className="bg-white text-purple-600 px-6 py-3 rounded-xl font-semibold hover:bg-gray-100 transition"
-                    >
-                      <Play className="inline w-5 h-5 mr-2" />
-                      {timeLeft === exercise.duration * 60
-                        ? "Commencer"
-                        : "Reprendre"}
-                    </button>
-                  ) : (
-                    <button
-                      onClick={handlePause}
-                      className="bg-white text-purple-600 px-6 py-3 rounded-xl font-semibold hover:bg-gray-100 transition"
-                    >
-                      <Pause className="inline w-5 h-5 mr-2" />
-                      Pause
-                    </button>
-                  )}
-
-                  <button
-                    onClick={handleReset}
-                    className="bg-white/20 text-white px-6 py-3 rounded-xl hover:bg-white/30 transition"
-                  >
-                    <RotateCcw className="inline w-5 h-5 mr-2" />
-                    Réinitialiser
-                  </button>
-                </>
-              )}
-
-              <button
-                onClick={handleExerciseComplete}
-                className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl font-semibold transition"
-              >
-                <CheckCircle className="inline w-5 h-5 mr-2" />
-                Terminer maintenant
-              </button>
-
-              {isCompleted && (
-                <button
-                  onClick={() => navigate(-1)}
-                  className="bg-white text-purple-600 px-6 py-3 rounded-xl font-semibold hover:bg-gray-100 transition"
-                >
-                  <Trophy className="inline w-5 h-5 mr-2" />
-                  Retour
-                </button>
-              )}
-            </div>
-          </div>
-
-          {/* Instructions & Description */}
-          <div className="p-6 sm:p-10 space-y-8">
-            <div className="grid md:grid-cols-2 gap-8">
-              <div>
-                <h3 className="text-xl font-bold mb-4">Étapes à suivre</h3>
-                <ul className="space-y-3">
-                  {exercise.instructions.map((inst, i) => (
-                    <li key={i} className="flex gap-3">
-                      <div className="w-8 h-8 bg-purple-100 text-purple-600 font-bold rounded-full flex items-center justify-center">
-                        {i + 1}
-                      </div>
-                      <p className="text-gray-700 dark:text-gray-300">{inst}</p>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div>
-                <h3 className="text-xl font-bold mb-4">Conseils</h3>
-                <ul className="space-y-3">
-                  <li className="flex gap-3">
-                    <Heart className="text-red-500 w-5 h-5 mt-1" />
-                    <p className="text-gray-700 dark:text-gray-300">
-                      Respirez profondément et restez détendu(e)
-                    </p>
-                  </li>
-                  <li className="flex gap-3">
-                    <Sparkles className="text-yellow-500 w-5 h-5 mt-1" />
-                    <p className="text-gray-700 dark:text-gray-300">
-                      Concentrez-vous sur le moment présent
-                    </p>
-                  </li>
-                  <li className="flex gap-3">
-                    <Trophy className="text-blue-500 w-5 h-5 mt-1" />
-                    <p className="text-gray-700 dark:text-gray-300">
-                      Chaque petit progrès compte
-                    </p>
-                  </li>
-                </ul>
-              </div>
-            </div>
-
-            <div className="bg-gray-50 dark:bg-zinc-700 rounded-xl p-6">
-              <h4 className="text-lg font-semibold mb-3">
-                À propos de cet exercice
-              </h4>
-              <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                {exercise.description}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }

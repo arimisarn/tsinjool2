@@ -44,20 +44,17 @@ export default function ExercisePage() {
   useEffect(() => {
     document.title = "Tsinjool - Exercice en cours";
 
-    // Récupérer l'exercice depuis location.state
     if (location.state?.exercise) {
       const exerciseData = location.state.exercise;
       setExercise(exerciseData);
-      setTimeLeft(exerciseData.duration * 60); // Convertir en secondes
+      setTimeLeft(exerciseData.duration * 60);
     } else {
       toast.error("Exercice non trouvé.");
       navigate("/dashboard");
     }
 
     return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
+      if (intervalRef.current) clearInterval(intervalRef.current);
     };
   }, [location.state, navigate]);
 
@@ -74,26 +71,16 @@ export default function ExercisePage() {
         });
       }, 1000);
     } else {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
+      if (intervalRef.current) clearInterval(intervalRef.current);
     }
 
     return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
+      if (intervalRef.current) clearInterval(intervalRef.current);
     };
   }, [isRunning, timeLeft]);
 
-  const handleStart = () => {
-    setIsRunning(true);
-  };
-
-  const handlePause = () => {
-    setIsRunning(false);
-  };
-
+  const handleStart = () => setIsRunning(true);
+  const handlePause = () => setIsRunning(false);
   const handleReset = () => {
     setIsRunning(false);
     setTimeLeft(exercise ? exercise.duration * 60 : 0);
@@ -101,12 +88,10 @@ export default function ExercisePage() {
   };
 
   const handleExerciseComplete = async () => {
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current); // ⛔️ Arrête le timer
-    }
+    if (intervalRef.current) clearInterval(intervalRef.current);
 
     setIsRunning(false);
-    setTimeLeft(0); // 🕒 Force 00:00
+    setTimeLeft(0);
     setIsCompleted(true);
     setShowCelebration(true);
 
@@ -115,19 +100,15 @@ export default function ExercisePage() {
       await axios.post(
         `https://tsinjool-backend.onrender.com/api/exercises/${exercise?.id}/complete/`,
         {},
-        {
-          headers: { Authorization: `Token ${token}` },
-        }
+        { headers: { Authorization: `Token ${token}` } }
       );
-
       toast.success("Félicitations ! Exercice terminé avec succès !");
       window.dispatchEvent(new Event("refresh-notifications"));
-    } catch (error: any) {
+    } catch (error) {
       console.error(error);
-      toast.error("Erreur lors de l'enregistrement de la progression.");
+      toast.error("Erreur lors de l'enregistrement.");
     }
 
-    // 🎉 Masquer la célébration après 3 secondes
     setTimeout(() => {
       setShowCelebration(false);
     }, 3000);
@@ -165,256 +146,214 @@ export default function ExercisePage() {
 
   if (!exercise) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-gray-600">Chargement de l'exercice...</p>
-        </div>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-zinc-950 dark:to-zinc-900 flex items-center justify-center">
+        <p className="text-gray-600 dark:text-gray-300">Chargement...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
-      {/* Celebration Overlay */}
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-zinc-950 dark:to-zinc-900 text-gray-900 dark:text-gray-100">
       {showCelebration && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-3xl p-8 text-center max-w-md mx-4 animate-bounce">
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center">
+          <div className="bg-white dark:bg-zinc-800 p-8 rounded-3xl text-center shadow-xl">
             <div className="text-6xl mb-4">🎉</div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">
-              Félicitations !
-            </h2>
-            <p className="text-gray-600 mb-4">
-              Vous avez terminé l'exercice avec succès !
+            <h2 className="text-2xl font-bold mb-2">Bravo !</h2>
+            <p className="text-gray-600 dark:text-gray-300 mb-4">
+              Vous avez terminé l'exercice !
             </p>
             <div className="flex justify-center gap-2">
-              <Star className="w-6 h-6 text-yellow-500 fill-current" />
-              <Star className="w-6 h-6 text-yellow-500 fill-current" />
-              <Star className="w-6 h-6 text-yellow-500 fill-current" />
+              <Star className="w-6 h-6 text-yellow-400 fill-yellow-400" />
+              <Star className="w-6 h-6 text-yellow-400 fill-yellow-400" />
+              <Star className="w-6 h-6 text-yellow-400 fill-yellow-400" />
             </div>
           </div>
         </div>
       )}
 
       {/* Header */}
-      <div className="bg-white shadow-sm border-b">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between py-4">
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => navigate(-1)}
-                className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
-              >
-                <ArrowLeft className="w-5 h-5" />
-              </button>
-              <div>
-                <h1 className="text-xl font-bold text-gray-900">
-                  {exercise.title}
-                </h1>
-                <p className="text-sm text-gray-600">
-                  {location.state?.stepTitle &&
-                    `${location.state.stepTitle} • `}
-                  {exercise.duration} minutes
-                </p>
-              </div>
+      <div className="bg-white dark:bg-zinc-900 shadow-sm border-b border-gray-200 dark:border-zinc-700">
+        <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => navigate(-1)}
+              className="p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-zinc-700 rounded-lg"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </button>
+            <div>
+              <h1 className="text-xl font-bold">{exercise.title}</h1>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                {location.state?.stepTitle && `${location.state.stepTitle} • `}
+                {exercise.duration} minutes
+              </p>
             </div>
-
-            {isCompleted && (
-              <div className="flex items-center gap-2 text-green-600">
-                <CheckCircle className="w-5 h-5" />
-                <span className="font-medium">Terminé</span>
-              </div>
-            )}
           </div>
+          {isCompleted && (
+            <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
+              <CheckCircle className="w-5 h-5" />
+              <span className="font-medium">Terminé</span>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white rounded-3xl shadow-xl overflow-hidden">
-          {/* Character and Timer Section */}
-          <div className="bg-gradient-to-br from-purple-500 via-blue-500 to-indigo-600 p-8 text-white text-center relative overflow-hidden">
-            {/* Image de l'exercice */}
+      {/* Main */}
+      <div className="max-w-5xl mx-auto px-4 py-8">
+        <div className="bg-white dark:bg-zinc-800 rounded-3xl shadow-xl overflow-hidden">
+          {/* Image et Timer */}
+          <div className="bg-gradient-to-br from-purple-600 to-indigo-700 p-6 sm:p-10 text-white text-center relative">
             {exercise.image_url && (
-              <div className="mt-8">
+              <div className="mb-6">
                 <img
                   src={exercise.image_url}
-                  alt={`Illustration pour ${exercise.title}`}
-                  className="rounded-2xl shadow-xl mx-auto max-h-80 object-cover border-4 border-white"
+                  alt={exercise.title}
+                  className="w-full h-64 sm:h-80 object-cover rounded-xl border-4 border-white shadow-lg"
                 />
-                <p className="mt-2 text-sm text-white/80 italic">
-                  Image illustrative générée automatiquement
-                </p>
               </div>
             )}
 
-            {/* Background Animation */}
-            <div className="absolute inset-0 opacity-20">
-              <div className="absolute top-10 left-10 w-20 h-20 bg-white/10 rounded-full animate-pulse" />
-              <div className="absolute top-1/3 right-16 w-16 h-16 bg-white/5 rounded-full animate-pulse delay-300" />
-              <div className="absolute bottom-1/4 left-1/3 w-12 h-12 bg-white/15 rounded-full animate-pulse delay-700" />
+            <div className="text-7xl mb-4">{getCharacterAnimation()}</div>
+            <div className="text-5xl font-bold mb-2">
+              {formatTime(timeLeft)}
+            </div>
+            <p className="text-lg opacity-90 mb-4">
+              {getEncouragementMessage()}
+            </p>
+
+            {/* Barre de progression circulaire */}
+            <div className="relative w-32 h-32 mx-auto mb-6">
+              <svg className="w-32 h-32 -rotate-90" viewBox="0 0 120 120">
+                <circle
+                  cx="60"
+                  cy="60"
+                  r="50"
+                  stroke="rgba(255,255,255,0.2)"
+                  strokeWidth="8"
+                  fill="none"
+                />
+                <circle
+                  cx="60"
+                  cy="60"
+                  r="50"
+                  stroke="white"
+                  strokeWidth="8"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeDasharray={`${2 * Math.PI * 50}`}
+                  strokeDashoffset={`${
+                    2 * Math.PI * 50 * (1 - getProgressPercentage() / 100)
+                  }`}
+                  className="transition-all duration-1000"
+                />
+              </svg>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className="text-2xl font-bold">
+                  {Math.round(getProgressPercentage())}%
+                </span>
+              </div>
             </div>
 
-            <div className="relative z-10">
-              {/* Character */}
-              <div className="text-8xl mb-4 animate-bounce">
-                {getCharacterAnimation()}
-              </div>
-
-              {/* Timer */}
-              <div className="mb-6">
-                <div className="text-6xl font-bold mb-2">
-                  {formatTime(timeLeft)}
-                </div>
-                <p className="text-xl opacity-90">
-                  {getEncouragementMessage()}
-                </p>
-              </div>
-
-              {/* Progress Circle */}
-              <div className="relative w-32 h-32 mx-auto mb-6">
-                <svg
-                  className="w-32 h-32 transform -rotate-90"
-                  viewBox="0 0 120 120"
-                >
-                  <circle
-                    cx="60"
-                    cy="60"
-                    r="50"
-                    stroke="rgba(255,255,255,0.2)"
-                    strokeWidth="8"
-                    fill="none"
-                  />
-                  <circle
-                    cx="60"
-                    cy="60"
-                    r="50"
-                    stroke="white"
-                    strokeWidth="8"
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeDasharray={`${2 * Math.PI * 50}`}
-                    strokeDashoffset={`${
-                      2 * Math.PI * 50 * (1 - getProgressPercentage() / 100)
-                    }`}
-                    className="transition-all duration-1000"
-                  />
-                </svg>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-2xl font-bold">
-                    {Math.round(getProgressPercentage())}%
-                  </span>
-                </div>
-              </div>
-
-              {/* Control Buttons */}
-              <div className="flex justify-center gap-4">
-                {!isCompleted && (
-                  <>
-                    {!isRunning ? (
-                      <button
-                        onClick={handleStart}
-                        className="flex items-center gap-2 px-8 py-4 bg-white text-purple-600 rounded-xl font-medium hover:bg-gray-50 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-                      >
-                        <Play className="w-5 h-5" />
-                        {timeLeft === exercise.duration * 60
-                          ? "Commencer"
-                          : "Reprendre"}
-                      </button>
-                    ) : (
-                      <button
-                        onClick={handlePause}
-                        className="flex items-center gap-2 px-8 py-4 bg-white text-purple-600 rounded-xl font-medium hover:bg-gray-50 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-                      >
-                        <Pause className="w-5 h-5" />
-                        Pause
-                      </button>
-                    )}
-
+            {/* Boutons de contrôle */}
+            <div className="flex flex-wrap justify-center gap-4">
+              {!isCompleted && (
+                <>
+                  {!isRunning ? (
                     <button
-                      onClick={handleReset}
-                      className="flex items-center gap-2 px-6 py-4 bg-white/20 text-white rounded-xl font-medium hover:bg-white/30 transition-all duration-200"
+                      onClick={handleStart}
+                      className="bg-white text-purple-600 px-6 py-3 rounded-xl font-semibold hover:bg-gray-100 transition"
                     >
-                      <RotateCcw className="w-5 h-5" />
-                      Reset
+                      <Play className="inline w-5 h-5 mr-2" />
+                      {timeLeft === exercise.duration * 60
+                        ? "Commencer"
+                        : "Reprendre"}
                     </button>
-                  </>
-                )}
-                <button
-                  onClick={handleExerciseComplete}
-                  className="flex items-center gap-2 px-6 py-4 bg-green-600 text-white rounded-xl font-medium hover:bg-green-700 transition-all duration-200"
-                >
-                  <CheckCircle className="w-5 h-5" />
-                  Terminer maintenant
-                </button>
-                {isCompleted && (
+                  ) : (
+                    <button
+                      onClick={handlePause}
+                      className="bg-white text-purple-600 px-6 py-3 rounded-xl font-semibold hover:bg-gray-100 transition"
+                    >
+                      <Pause className="inline w-5 h-5 mr-2" />
+                      Pause
+                    </button>
+                  )}
+
                   <button
-                    onClick={() => navigate(-1)}
-                    className="flex items-center gap-2 px-8 py-4 bg-white text-purple-600 rounded-xl font-medium hover:bg-gray-50 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                    onClick={handleReset}
+                    className="bg-white/20 text-white px-6 py-3 rounded-xl hover:bg-white/30 transition"
                   >
-                    <Trophy className="w-5 h-5" />
-                    Retour aux exercices
+                    <RotateCcw className="inline w-5 h-5 mr-2" />
+                    Réinitialiser
                   </button>
-                )}
-              </div>
+                </>
+              )}
+
+              <button
+                onClick={handleExerciseComplete}
+                className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl font-semibold transition"
+              >
+                <CheckCircle className="inline w-5 h-5 mr-2" />
+                Terminer maintenant
+              </button>
+
+              {isCompleted && (
+                <button
+                  onClick={() => navigate(-1)}
+                  className="bg-white text-purple-600 px-6 py-3 rounded-xl font-semibold hover:bg-gray-100 transition"
+                >
+                  <Trophy className="inline w-5 h-5 mr-2" />
+                  Retour
+                </button>
+              )}
             </div>
           </div>
 
-          {/* Instructions Section */}
-          <div className="p-8">
-            <h3 className="text-2xl font-bold text-gray-900 mb-6">
-              Instructions
-            </h3>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          {/* Instructions & Description */}
+          <div className="p-6 sm:p-10 space-y-8">
+            <div className="grid md:grid-cols-2 gap-8">
               <div>
-                <h4 className="text-lg font-semibold text-gray-900 mb-4">
-                  Étapes à suivre
-                </h4>
-                <div className="space-y-3">
-                  {exercise.instructions.map((instruction, index) => (
-                    <div key={index} className="flex items-start gap-3">
-                      <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
-                        <span className="text-sm font-medium text-purple-600">
-                          {index + 1}
-                        </span>
+                <h3 className="text-xl font-bold mb-4">Étapes à suivre</h3>
+                <ul className="space-y-3">
+                  {exercise.instructions.map((inst, i) => (
+                    <li key={i} className="flex gap-3">
+                      <div className="w-8 h-8 bg-purple-100 text-purple-600 font-bold rounded-full flex items-center justify-center">
+                        {i + 1}
                       </div>
-                      <p className="text-gray-700">{instruction}</p>
-                    </div>
+                      <p className="text-gray-700 dark:text-gray-300">{inst}</p>
+                    </li>
                   ))}
-                </div>
+                </ul>
               </div>
-
               <div>
-                <h4 className="text-lg font-semibold text-gray-900 mb-4">
-                  Conseils
-                </h4>
-                <div className="space-y-3">
-                  <div className="flex items-start gap-3">
-                    <Heart className="w-5 h-5 text-red-500 mt-0.5" />
-                    <p className="text-gray-700">
+                <h3 className="text-xl font-bold mb-4">Conseils</h3>
+                <ul className="space-y-3">
+                  <li className="flex gap-3">
+                    <Heart className="text-red-500 w-5 h-5 mt-1" />
+                    <p className="text-gray-700 dark:text-gray-300">
                       Respirez profondément et restez détendu(e)
                     </p>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <Sparkles className="w-5 h-5 text-yellow-500 mt-0.5" />
-                    <p className="text-gray-700">
+                  </li>
+                  <li className="flex gap-3">
+                    <Sparkles className="text-yellow-500 w-5 h-5 mt-1" />
+                    <p className="text-gray-700 dark:text-gray-300">
                       Concentrez-vous sur le moment présent
                     </p>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <Trophy className="w-5 h-5 text-blue-500 mt-0.5" />
-                    <p className="text-gray-700">Chaque petit progrès compte</p>
-                  </div>
-                </div>
+                  </li>
+                  <li className="flex gap-3">
+                    <Trophy className="text-blue-500 w-5 h-5 mt-1" />
+                    <p className="text-gray-700 dark:text-gray-300">
+                      Chaque petit progrès compte
+                    </p>
+                  </li>
+                </ul>
               </div>
             </div>
 
-            {/* Description */}
-            <div className="bg-gray-50 rounded-xl p-6">
-              <h4 className="text-lg font-semibold text-gray-900 mb-3">
+            <div className="bg-gray-50 dark:bg-zinc-700 rounded-xl p-6">
+              <h4 className="text-lg font-semibold mb-3">
                 À propos de cet exercice
               </h4>
-              <p className="text-gray-700 leading-relaxed">
+              <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
                 {exercise.description}
               </p>
             </div>
