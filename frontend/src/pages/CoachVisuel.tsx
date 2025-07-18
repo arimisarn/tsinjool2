@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Brain, Eye, Play, Pause } from "lucide-react";
+
 import { WebcamCapture } from "@/components/clients/WebcamCapture";
 import { FaceDetection } from "@/components/clients/FaceDetection";
 import { AICoach } from "@/components/clients/AICoach";
@@ -12,8 +13,6 @@ function CoachVisuel() {
   const [currentVideo, setCurrentVideo] = useState<HTMLVideoElement | null>(
     null
   );
-  console.log(isInitialized);
-
   const [currentEmotions, setCurrentEmotions] = useState<EmotionData | null>(
     null
   );
@@ -21,39 +20,23 @@ function CoachVisuel() {
   const [isCoachActive, setIsCoachActive] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Initialiser les modèles FaceAPI
   useEffect(() => {
     const initApp = async () => {
       setIsLoading(true);
       try {
-        // Pour la démonstration, on simule le chargement des modèles
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-        setIsInitialized(true);
+        const success = await initializeFaceAPI();
+        if (success) {
+          setIsInitialized(true);
+        } else {
+          console.error("Échec du chargement des modèles face-api");
+        }
       } catch (error) {
         console.error("Erreur d'initialisation:", error);
       } finally {
         setIsLoading(false);
       }
     };
-    useEffect(() => {
-      const initApp = async () => {
-        setIsLoading(true);
-        try {
-          const success = await initializeFaceAPI();
-          if (success) {
-            setIsInitialized(true);
-          } else {
-            console.error("Échec du chargement des modèles face-api");
-          }
-        } catch (error) {
-          console.error("Erreur d'initialisation:", error);
-        } finally {
-          setIsLoading(false);
-        }
-      };
-
-      initApp();
-    }, []);
-
     initApp();
   }, []);
 
@@ -77,7 +60,7 @@ function CoachVisuel() {
     setIsCoachActive(!isCoachActive);
   };
 
-  if (isLoading) {
+  if (isLoading || !isInitialized) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 flex items-center justify-center">
         <motion.div

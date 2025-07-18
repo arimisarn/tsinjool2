@@ -1,15 +1,17 @@
 import type { FaceDetection, EmotionData } from "../types/index";
-import * as faceapi from "face-api.js";
 
+// @ts-ignore (face-api.js chargé par CDN)
+const faceapi = window.faceapi;
+
+const MODEL_URL = "https://justadudewhohacks.github.io/face-api.js/models";
 
 export const initializeFaceAPI = async (): Promise<boolean> => {
   try {
-    // Charger les modèles depuis les URLs publiques
     await Promise.all([
-      faceapi.nets.tinyFaceDetector.loadFromUri("/models"),
-      faceapi.nets.faceLandmark68Net.loadFromUri("/models"),
-      faceapi.nets.faceRecognitionNet.loadFromUri("/models"),
-      faceapi.nets.faceExpressionNet.loadFromUri("/models"),
+      faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
+      faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
+      faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL),
+      faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL),
     ]);
     return true;
   } catch (error) {
@@ -32,7 +34,6 @@ export const detectFaceAndEmotion = async (
       const detection = detections[0];
       const { x, y, width, height } = detection.detection.box;
 
-      // Dessiner les détections sur le canvas
       const ctx = canvas.getContext("2d");
       if (ctx) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);

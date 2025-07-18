@@ -12,8 +12,7 @@ interface AICoachProps {
 
 export const AICoach: React.FC<AICoachProps> = ({ emotions, isActive }) => {
   const { getCoachingAdvice, isLoading } = useGroqAI();
-  const { speak, stop, isSpeaking, isSupported, settings, setSettings } =
-    useSpeechSynthesis();
+  const { speak, stop, isSpeaking, isSupported, settings, setSettings } = useSpeechSynthesis();
   const [currentAdvice, setCurrentAdvice] = useState<string | null>(null);
   const [sessions, setSessions] = useState<CoachingSession[]>([]);
   const [showSettings, setShowSettings] = useState(false);

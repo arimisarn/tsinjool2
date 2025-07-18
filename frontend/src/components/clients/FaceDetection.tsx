@@ -80,8 +80,7 @@ export const FaceDetection: React.FC<FaceDetectionProps> = ({
         ref={canvasRef}
         width={640}
         height={480}
-        className="w-full h-32 bg-transparent"
-        style={{ display: "none" }}
+        className="w-full h-auto rounded-lg border border-white/10"
       />
 
       <AnimatePresence mode="wait">
