@@ -313,7 +313,7 @@ export default function ChatBot() {
                   key={i}
                   className={`flex items-end gap-2 mb-2 ${
                     msg.sender === "user"
-                      ? "justify-end flex-row-reverse"
+                      ? "self-end flex-row-reverse"
                       : "justify-start"
                   }`}
                 >
