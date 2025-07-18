@@ -311,47 +311,40 @@ export default function ChatBot() {
               {messages.map((msg, i) => (
                 <div
                   key={i}
-                  className={`flex ${
-                    msg.sender === "user" ? "justify-end" : "justify-start"
+                  className={`flex items-end gap-2 mb-2 ${
+                    msg.sender === "user"
+                      ? "justify-end flex-row-reverse"
+                      : "justify-start"
                   }`}
                 >
-                  <div
-                    key={i}
-                    className={`flex items-start gap-2 ${
+                  {/* Avatar aligné bas */}
+                  <img
+                    src={
                       msg.sender === "user"
-                        ? "justify-end flex-row-reverse"
-                        : "justify-start"
+                        ? userPhoto || "/default-avatar.png"
+                        : IA
+                    }
+                    alt="avatar"
+                    className="w-8 h-8 rounded-full object-cover"
+                  />
+
+                  {/* Bulle de message */}
+                  <div
+                    className={`max-w-xl rounded-lg px-4 py-2 whitespace-pre-wrap ${
+                      msg.sender === "user"
+                        ? "bg-gradient-to-br from-purple-500 to-blue-600 text-white rounded-br-none"
+                        : "bg-gray-200 dark:bg-zinc-700 text-gray-900 dark:text-white rounded-bl-none"
                     }`}
                   >
-                    {/* Avatar */}
-                    <img
-                      src={
-                        msg.sender === "user"
-                          ? userPhoto || "/default-avatar.png"
-                          : IA
-                      }
-                      alt="avatar"
-                      className="w-8 h-8 rounded-full object-cover mt-1"
-                    />
-
-                    {/* Message Bubble */}
-                    <div
-                      className={`max-w-xl rounded-lg px-4 py-2 whitespace-pre-wrap ${
-                        msg.sender === "user"
-                          ? "bg-gradient-to-br from-purple-500 to-blue-600 text-white rounded-br-none"
-                          : "bg-gray-200 dark:bg-zinc-700 text-gray-900 dark:text-white rounded-bl-none"
-                      }`}
-                    >
-                      {msg.content}
-                      {msg.timestamp && (
-                        <div className="text-xs opacity-70 mt-1 text-right">
-                          {new Date(msg.timestamp).toLocaleTimeString([], {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
-                        </div>
-                      )}
-                    </div>
+                    {msg.content}
+                    {msg.timestamp && (
+                      <div className="text-xs opacity-70 mt-1 text-right">
+                        {new Date(msg.timestamp).toLocaleTimeString([], {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}
