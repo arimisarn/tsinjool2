@@ -266,7 +266,7 @@ export default function ChatBot() {
         <div className="flex-1 overflow-y-auto">
           {messages.length === 0 && !isTyping ? (
             <div className="flex flex-col items-center justify-center h-full text-center px-4">
-              <div className="w-32 h-32 mb-4">
+              <div className="w-40 h-40 mb-4">
                 <img
                   src={chatbotGif}
                   alt="Assistant IA"
