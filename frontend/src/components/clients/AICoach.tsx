@@ -234,7 +234,7 @@ export const AICoach: React.FC<AICoachProps> = ({ emotions, isActive }) => {
                     {session.timestamp.toLocaleTimeString()}
                   </span>
                 </div>
-                <p className="text-sm text-white">{session.advice}</p>
+                <p className="text-sm text-gray-900 dark:text-white">{session.advice}</p>
               </div>
             ))}
           </div>
