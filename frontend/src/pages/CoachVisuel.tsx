@@ -68,7 +68,7 @@ function CoachVisuel() {
           animate={{ opacity: 1, scale: 1 }}
           className="text-center dark:text-white text-gray-900"
         >
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-white mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-gray-900 dark:border-white mx-auto mb-4"></div>
           <h2 className="text-2xl font-bold mb-2">
             Initialisation de l'IA Coach
           </h2>
