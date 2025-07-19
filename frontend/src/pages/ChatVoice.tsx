@@ -195,7 +195,7 @@ function ChatVoice() {
             <div className="flex items-center space-x-3">
               <img src={mirana} alt="Mirana" className="w-12 h-12" />
               <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                Mirana AI
+                Mirana
               </h1>
               <div className="flex items-center space-x-2">
                 {isOnline ? (

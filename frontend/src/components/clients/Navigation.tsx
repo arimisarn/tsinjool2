@@ -82,7 +82,7 @@ const Navigation = () => {
                       path: "/coach-tsinjo",
                     },
                     {
-                      title: "Assistant Vocal IA",
+                      title: "Mirana (Assistante Vocal)",
                       icon: (
                         <MessageCircle className="w-4 h-4 text-cyan-600 dark:text-cyan-400 mr-2" />
                       ),
