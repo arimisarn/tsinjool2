@@ -587,26 +587,9 @@ import {
   Clock,
   Brain,
   Focus,
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
   Zap,
   Award,
-  Target
-
+  Target,
 } from "lucide-react";
 import { useNavigate, useLocation, useParams } from "react-router-dom";
 import axios from "axios";
@@ -761,9 +744,17 @@ export default function ExercisePage() {
 
   if (!exercise) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-indigo-900 dark:to-purple-900 flex items-center justify-center">
         <div className="text-center">
-          <p className="text-gray-600">Chargement de l'exercice...</p>
+          <div className="relative">
+            <div className="w-20 h-20 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 rounded-full flex items-center justify-center mb-6 mx-auto animate-pulse shadow-2xl">
+              <Brain className="w-10 h-10 text-white" />
+            </div>
+            <div className="absolute inset-0 w-20 h-20 bg-gradient-to-br from-indigo-400 via-purple-400 to-pink-400 rounded-full animate-ping opacity-75 mx-auto"></div>
+          </div>
+          <p className="text-gray-700 dark:text-gray-300 font-medium text-lg">
+            Chargement de votre session IA...
+          </p>
         </div>
       </div>
     );
