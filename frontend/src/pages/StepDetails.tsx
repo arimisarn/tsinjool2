@@ -232,9 +232,9 @@ export default function StepDetail() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-zinc-950 dark:to-zinc-900 relative overflow-hidden">
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-1/4 left-1/4 w-48 h-48 sm:w-64 sm:h-64 bg-indigo-500/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute top-3/4 right-1/4 w-64 h-64 sm:w-96 sm:h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-        <div className="absolute bottom-1/4 left-1/3 w-32 h-32 sm:w-48 sm:h-48 bg-pink-500/10 rounded-full blur-3xl animate-pulse delay-2000"></div>
+        <div className="absolute top-1/4 left-1/4 w-48 h-48 sm:w-64 sm:h-64 bg-indigo-500/10 rounded-full animate-pulse"></div>
+        <div className="absolute top-3/4 right-1/4 w-64 h-64 sm:w-96 sm:h-96 bg-purple-500/10 rounded-full animate-pulse delay-1000"></div>
+        <div className="absolute bottom-1/4 left-1/3 w-32 h-32 sm:w-48 sm:h-48 bg-pink-500/10 rounded-full animate-pulse delay-2000"></div>
 
         {/* Floating Particles */}
         {[...Array(10)].map((_, i) => (
@@ -311,7 +311,7 @@ export default function StepDetail() {
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-3 sm:gap-6">
             {/* Exercise List */}
             <div className="xl:col-span-1 order-2 xl:order-1">
-              <div className="bg-white/70 dark:bg-gray-900 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 dark:border-gray-700/50 p-3 sm:p-6 sticky top-20 max-h-[calc(100vh-6rem)] overflow-y-auto">
+              <div className="bg-white/70 dark:bg-gray-900  rounded-2xl shadow-xl border border-white/20 dark:border-gray-700/50 p-3 sm:p-6 sticky top-20 max-h-[calc(100vh-6rem)] overflow-y-auto">
                 <div className="flex items-center gap-2 mb-4 sm:mb-6">
                   <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-lg flex items-center justify-center">
                     <Target className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
@@ -378,7 +378,7 @@ export default function StepDetail() {
 
             {/* Exercise Details */}
             <div className="xl:col-span-2 order-1 xl:order-2">
-              <div className="bg-white/70 dark:bg-gray-900 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 dark:border-gray-700/50 p-3 sm:p-6 min-h-[400px] sm:min-h-[600px]">
+              <div className="bg-white/70 dark:bg-gray-900 rounded-2xl shadow-xl border border-white/20 dark:border-gray-700/50 p-3 sm:p-6 min-h-[400px] sm:min-h-[600px]">
                 {selectedExercise ? (
                   <div className="space-y-4 sm:space-y-6">
                     {/* Header */}
@@ -590,8 +590,8 @@ export default function StepDetail() {
 
       {/* Scheduler Modal */}
       {showScheduler && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-2 sm:p-4">
-          <div className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl rounded-2xl p-4 sm:p-6 w-full max-w-md shadow-2xl border border-white/20 dark:border-gray-700/50">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-2 sm:p-4">
+          <div className="bg-white/95 dark:bg-gray-800/95 rounded-2xl p-4 sm:p-6 w-full max-w-md shadow-2xl border border-white/20 dark:border-gray-700/50">
             <div className="text-center mb-4 sm:mb-6">
               <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
                 <CalendarIcon className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
