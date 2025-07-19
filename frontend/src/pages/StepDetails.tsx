@@ -311,7 +311,7 @@ export default function StepDetail() {
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-3 sm:gap-6">
             {/* Exercise List */}
             <div className="xl:col-span-1 order-2 xl:order-1">
-              <div className="bg-white/70 dark:bg-gray-900  rounded-2xl shadow-xl border border-white/20 dark:border-gray-700/50 p-3 sm:p-6 sticky top-20 max-h-[calc(100vh-6rem)] overflow-y-auto">
+              <div className="bg-white/70 dark:bg-zinc-900 rounded-2xl shadow-xl border border-white/20 dark:border-gray-700/50 p-3 sm:p-6 sticky top-20 max-h-[calc(100vh-6rem)] overflow-y-auto">
                 <div className="flex items-center gap-2 mb-4 sm:mb-6">
                   <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-lg flex items-center justify-center">
                     <Target className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
@@ -378,7 +378,7 @@ export default function StepDetail() {
 
             {/* Exercise Details */}
             <div className="xl:col-span-2 order-1 xl:order-2">
-              <div className="bg-white/70 dark:bg-gray-900 rounded-2xl shadow-xl border border-white/20 dark:border-gray-700/50 p-3 sm:p-6 min-h-[400px] sm:min-h-[600px]">
+              <div className="bg-white/70 dark:bg-zinc-900/90 rounded-2xl shadow-xl border border-white/20 dark:border-gray-700/50 p-3 sm:p-6 min-h-[400px] sm:min-h-[600px]">
                 {selectedExercise ? (
                   <div className="space-y-4 sm:space-y-6">
                     {/* Header */}
@@ -401,7 +401,7 @@ export default function StepDetail() {
                         </div>
 
                         {/* AI Character */}
-                        <div className="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/30 dark:to-purple-900/30 rounded-xl p-4 sm:p-6 text-center">
+                        <div className="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-zinc-800 dark:to-zinc-900 rounded-xl p-4 sm:p-6 text-center">
                           <div className="relative inline-block mb-3 sm:mb-4">
                             <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-indigo-400 via-purple-400 to-pink-400 rounded-full flex items-center justify-center shadow-lg">
                               <span className="text-lg sm:text-2xl">
@@ -605,7 +605,7 @@ export default function StepDetail() {
             </div>
 
             <div className="space-y-4 sm:space-y-6">
-              <div className="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/30 dark:to-purple-900/30 rounded-xl p-3 sm:p-4">
+              <div className="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/30 dark:to-zinc-800 rounded-xl p-3 sm:p-4">
                 <Calendar
                   mode="single"
                   selected={scheduledDate}
