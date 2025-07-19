@@ -160,10 +160,10 @@ export default function Dashboard() {
 
   if (generatingPath) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:bg-gray-900 flex items-center justify-center">
+      <div className="min-h-screen from-blue-50 to-purple-50 dark:from-zinc-950 dark:to-zinc-900 flex items-center justify-center">
         <div className="text-center max-w-md">
           <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-blue-600 rounded-full flex items-center justify-center mb-6 mx-auto animate-spin">
-            <Brain className="w-10 h-10 text-white" />
+            <Brain className="w-10 h-10 text-gray-900 dark:text-white" />
           </div>
           <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
             Génération de votre parcours personnalisé
