@@ -151,7 +151,7 @@ export const AICoach: React.FC<AICoachProps> = ({ emotions, isActive }) => {
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm text-gray-300 mb-2">
+                <label className="block text-sm text-gray-900 dark:text-gray-300 mb-2">
                   Lecture automatique
                 </label>
                 <button
@@ -189,7 +189,7 @@ export const AICoach: React.FC<AICoachProps> = ({ emotions, isActive }) => {
               </div>
 
               <div>
-                <label className="block text-sm text-gray-300 mb-2">
+                <label className="block text-sm text-gray-900 dark:text-gray-300 mb-2">
                   Volume: {Math.round(settings.volume * 100)}%
                 </label>
                 <input
