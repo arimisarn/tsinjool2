@@ -81,55 +81,61 @@ function CoachVisuel() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 dark:from-zinc-950 dark:to-zinc-900 text-gray-900 dark:text-white">
       {/* Header */}
-      <header className="bg-white/80 dark:bg-gray-900 border-b border-gray-300 dark:border-white/10 top-0 z-50 backdrop-blur-md shadow">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
+      <header className="bg-white/80 dark:bg-zinc-900/90 border-b border-gray-300 dark:border-white/10 top-0 z-50 backdrop-blur-md shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-6">
+            {/* Logo / Titre */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              className="flex items-center space-x-3"
+              className="flex items-center gap-2 sm:gap-3"
             >
               <Brain
                 className="text-purple-500 dark:text-purple-400"
-                size={32}
+                size={28}
               />
-              <div>
-                <h1 className="text-2xl font-bold">SenseAI</h1>
-              </div>
+              <h1 className="text-xl sm:text-2xl font-bold tracking-tight">
+                SenseAI
+              </h1>
             </motion.div>
 
-            <div className="flex items-center space-x-4">
+            {/* Boutons */}
+            <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 w-full sm:w-auto">
+              {/* Toggle Webcam */}
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={toggleWebcam}
-                className={`px-4 py-2 rounded-full font-medium transition-all ${
+                className={`w-full sm:w-auto px-4 py-2 rounded-full font-medium transition-all text-white flex items-center justify-center gap-2
+                ${
                   isWebcamActive
-                    ? "bg-red-500 hover:bg-red-600 text-white"
-                    : "bg-green-500 hover:bg-green-600 text-white"
+                    ? "bg-red-500 hover:bg-red-600"
+                    : "bg-green-500 hover:bg-green-600"
                 }`}
               >
-                <div className="flex items-center space-x-2">
-                  <Eye size={20} />
-                  <span>{isWebcamActive ? "Arrêter" : "Démarrer"}</span>
-                </div>
+                <Eye size={20} />
+                <span>{isWebcamActive ? "Arrêter" : "Démarrer"}</span>
               </motion.button>
 
+              {/* Toggle Coach */}
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={toggleCoach}
                 disabled={!isWebcamActive}
-                className={`px-4 py-2 rounded-full font-medium transition-all ${
+                className={`w-full sm:w-auto px-4 py-2 rounded-full font-medium transition-all flex items-center justify-center gap-2
+                ${
                   isCoachActive
                     ? "bg-orange-500 hover:bg-orange-600 text-white"
-                    : "bg-blue-500 hover:bg-blue-600 text-white disabled:bg-gray-400 dark:disabled:bg-gray-700 disabled:cursor-not-allowed"
+                    : "bg-blue-500 hover:bg-blue-600 text-white"
+                }
+                ${
+                  !isWebcamActive &&
+                  "opacity-60 cursor-not-allowed dark:bg-zinc-700 bg-gray-400"
                 }`}
               >
-                <div className="flex items-center space-x-2">
-                  {isCoachActive ? <Pause size={20} /> : <Play size={20} />}
-                  <span>Coach {isCoachActive ? "ON" : "OFF"}</span>
-                </div>
+                {isCoachActive ? <Pause size={20} /> : <Play size={20} />}
+                <span>Coach {isCoachActive ? "ON" : "OFF"}</span>
               </motion.button>
             </div>
           </div>
