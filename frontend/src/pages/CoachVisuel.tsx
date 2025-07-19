@@ -72,16 +72,14 @@ function CoachVisuel() {
           <h2 className="text-2xl font-bold mb-2">
             Initialisation de l'IA Coach
           </h2>
-          <p className="dark:text-gray-300 text-gray-700">
-            Chargement ...
-          </p>
+          <p className="dark:text-gray-300 text-gray-700">Chargement ...</p>
         </motion.div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-gray-900 dark:to-gray-950 text-gray-900 dark:text-white">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 dark:from-zinc-950 dark:to-zinc-900 text-gray-900 dark:text-white">
       {/* Header */}
       <header className="bg-white/80 dark:bg-gray-900 border-b border-gray-300 dark:border-white/10 top-0 z-50 backdrop-blur-md shadow">
         <div className="container mx-auto px-4 py-4">
