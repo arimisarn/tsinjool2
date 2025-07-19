@@ -145,7 +145,7 @@ export const AICoach: React.FC<AICoachProps> = ({ emotions, isActive }) => {
             exit={{ opacity: 0, height: 0 }}
             className="bg-white/10 dark:bg-gray-800/50 rounded-2xl p-6 border border-white/20 shadow-inner"
           >
-            <h4 className="text-lg font-medium text-white mb-4">
+            <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
               Paramètres Audio
             </h4>
 
@@ -169,7 +169,7 @@ export const AICoach: React.FC<AICoachProps> = ({ emotions, isActive }) => {
               </div>
 
               <div>
-                <label className="block text-sm text-gray-300 mb-2">
+                <label className="block text-sm text-gray-900 dark:text-gray-300 mb-2">
                   Vitesse: {settings.rate}x
                 </label>
                 <input
@@ -219,7 +219,7 @@ export const AICoach: React.FC<AICoachProps> = ({ emotions, isActive }) => {
           animate={{ opacity: 1, y: 0 }}
           className="bg-white/10 dark:bg-gray-800/40 rounded-2xl p-6 border border-white/20 shadow-md"
         >
-          <h4 className="text-lg font-medium text-white mb-4">Historique</h4>
+          <h4 className="text-lg font-medium text-gray-900 dark:text-white mb-4">Historique</h4>
           <div className="space-y-3 max-h-64 overflow-y-auto">
             {sessions.map((session) => (
               <div
@@ -227,7 +227,7 @@ export const AICoach: React.FC<AICoachProps> = ({ emotions, isActive }) => {
                 className="bg-white/5 dark:bg-gray-700 rounded-lg p-3 border border-white/10"
               >
                 <div className="flex justify-between items-start mb-2">
-                  <span className="text-sm text-gray-300 capitalize">
+                  <span className="text-sm text-gray-700 dark:text-gray-300 capitalize">
                     {session.dominantEmotion}
                   </span>
                   <span className="text-xs text-gray-400">
