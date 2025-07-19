@@ -761,18 +761,18 @@ export default function ExercisePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-zinc-950 dark:to-zinc-900 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-zinc-900 dark:to-zinc-800 relative overflow-hidden">
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute top-3/4 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-        <div className="absolute bottom-1/4 left-1/3 w-48 h-48 bg-pink-500/10 rounded-full blur-3xl animate-pulse delay-2000"></div>
+        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-indigo-400/5 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute top-3/4 right-1/4 w-96 h-96 bg-purple-400/5 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute bottom-1/4 left-1/3 w-48 h-48 bg-pink-400/5 rounded-full blur-3xl animate-pulse delay-2000"></div>
 
         {/* Floating Particles */}
         {[...Array(15)].map((_, i) => (
           <div
             key={i}
-            className="absolute w-2 h-2 bg-gradient-to-br from-indigo-400 to-purple-400 rounded-full animate-bounce opacity-30"
+            className="absolute w-2 h-2 bg-gradient-to-br from-indigo-300 to-purple-300 rounded-full animate-bounce opacity-30"
             style={{
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,
@@ -786,7 +786,7 @@ export default function ExercisePage() {
       {/* Celebration Overlay */}
       {showCelebration && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 px-4">
-          <div className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl border border-white/20 dark:border-gray-700/50 rounded-3xl p-6 sm:p-12 text-center max-w-md w-full animate-scale-in shadow-2xl">
+          <div className="bg-white/95 dark:bg-zinc-900/95 backdrop-blur-xl border border-white/20 dark:border-zinc-700/50 rounded-3xl p-6 sm:p-12 text-center max-w-md w-full animate-scale-in shadow-2xl">
             <div className="text-6xl sm:text-8xl mb-4 sm:mb-6 animate-bounce">
               🎉
             </div>
@@ -859,7 +859,7 @@ export default function ExercisePage() {
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
             {/* Left Column - Timer & Character */}
             <div className="flex flex-col order-2 xl:order-1">
-              <div className="flex-1 bg-white/70 dark:bg-gray-900 border dark:border-gray-800 border-white/20 dark:border-gray-700/50 rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 text-center relative overflow-hidden shadow-xl">
+              <div className="flex-1 bg-white/70 dark:bg-zinc-900/90 border dark:border-zinc-800 border-white/20 dark:border-zinc-700/50 rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 text-center relative overflow-hidden shadow-xl">
                 {/* Background Pattern */}
                 <div className="absolute inset-0 opacity-5">
                   <div
@@ -879,7 +879,7 @@ export default function ExercisePage() {
                         <img
                           src={exercise.image_url}
                           alt={`Illustration pour ${exercise.title}`}
-                          className="rounded-xl sm:rounded-2xl shadow-2xl mx-auto max-h-32 sm:max-h-48 lg:max-h-64 w-full object-cover border-2 border-indigo-200 dark:border-indigo-700"
+                          className="rounded-xl sm:rounded-2xl shadow-2xl mx-auto max-h-32 sm:max-h-48 lg:max-h-64 w-full object-cover border-2 border-indigo-200 dark:border-zinc-700"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-xl sm:rounded-2xl" />
                         <div className="absolute top-2 sm:top-3 right-2 sm:right-3 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-full p-1 sm:p-2">
@@ -999,7 +999,7 @@ export default function ExercisePage() {
 
                         <button
                           onClick={handleReset}
-                          className="group flex items-center justify-center gap-2 sm:gap-3 px-4 sm:px-6 py-3 sm:py-4 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm border-2 border-indigo-200 dark:border-indigo-700 text-gray-700 dark:text-gray-300 rounded-xl font-semibold hover:bg-indigo-50 dark:hover:bg-indigo-900/30 hover:border-indigo-300 dark:hover:border-indigo-500 transition-all duration-200 text-sm sm:text-base"
+                          className="group flex items-center justify-center gap-2 sm:gap-3 px-4 sm:px-6 py-3 sm:py-4 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm border-2 border-indigo-200 dark:border-zinc-700 text-gray-700 dark:text-gray-300 rounded-xl font-semibold hover:bg-indigo-50 dark:hover:bg-indigo-900/30 hover:border-indigo-300 dark:hover:border-indigo-500 transition-all duration-200 text-sm sm:text-base"
                         >
                           <RotateCcw className="w-4 h-4 sm:w-5 sm:h-5 transition-transform group-hover:rotate-180" />
                           Reset
@@ -1038,7 +1038,7 @@ export default function ExercisePage() {
             {/* Right Column - Instructions */}
             <div className="flex flex-col gap-4 sm:gap-6 order-1 xl:order-2">
               {/* Instructions Section */}
-              <div className="bg-white/70 dark:bg-gray-900 dark:border-gray-800 border border-white/20 dark:border-gray-700/50 rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 flex-1 shadow-xl">
+              <div className="bg-white/70 dark:bg-zinc-900/90 dark:border-zinc-800 border border-white/20 dark:border-zinc-700/50 rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 flex-1 shadow-xl">
                 <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-4 sm:mb-6 lg:mb-8 flex items-center gap-2 sm:gap-3">
                   <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center">
                     <Zap className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-white" />
@@ -1061,7 +1061,7 @@ export default function ExercisePage() {
                       {exercise.instructions.map((instruction, index) => (
                         <div
                           key={index}
-                          className="group flex items-start gap-3 sm:gap-4 p-3 sm:p-4 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-xl border border-indigo-200 dark:border-indigo-700 hover:from-indigo-100 hover:to-purple-100 dark:hover:from-indigo-900/30 dark:hover:to-purple-900/30 transition-all duration-200"
+                          className="group flex items-start gap-3 sm:gap-4 p-3 sm:p-4 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-zinc-800/20 dark:to-zinc-700/20 rounded-xl border border-indigo-200 dark:border-zinc-700 hover:from-indigo-100 hover:to-purple-100 dark:hover:from-zinc-800/30 dark:hover:to-zinc-700/30 transition-all duration-200"
                         >
                           <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-full flex items-center justify-center flex-shrink-0 shadow-lg">
                             <span className="text-xs sm:text-sm font-bold text-white">
@@ -1093,7 +1093,7 @@ export default function ExercisePage() {
                           Respirez profondément et restez détendu(e)
                         </p>
                       </div>
-                      <div className="group flex items-start gap-3 sm:gap-4 p-3 sm:p-4 bg-gradient-to-r from-amber-50 to-yellow-50 dark:from-amber-900/20 dark:to-yellow-900/20 rounded-xl border border-amber-200 dark:border-amber-700 hover:from-amber-100 hover:to-yellow-100 dark:hover:from-amber-900/30 dark:hover:to-yellow-900/30 transition-all duration-200">
+                      <div className="group flex items-start gap-3 sm:gap-4 p-3 sm:p-4 bg-gradient-to-r from-amber-50 to-yellow-50 dark:from-amber-800/20 dark:to-yellow-800/20 rounded-xl border border-amber-200 dark:border-amber-700 hover:from-amber-100 hover:to-yellow-100 dark:hover:from-amber-900/30 dark:hover:to-yellow-900/30 transition-all duration-200">
                         <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-br from-amber-500 to-yellow-500 rounded-lg flex items-center justify-center">
                           <Focus className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                         </div>
@@ -1101,7 +1101,7 @@ export default function ExercisePage() {
                           Concentrez-vous sur le moment présent
                         </p>
                       </div>
-                      <div className="group flex items-start gap-3 sm:gap-4 p-3 sm:p-4 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-xl border border-emerald-200 dark:border-emerald-700 hover:from-emerald-100 hover:to-teal-100 dark:hover:from-emerald-900/30 dark:hover:to-teal-900/30 transition-all duration-200">
+                      <div className="group flex items-start gap-3 sm:gap-4 p-3 sm:p-4 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-800/20 dark:to-teal-800/20 rounded-xl border border-emerald-200 dark:border-emerald-700 hover:from-emerald-100 hover:to-teal-100 dark:hover:from-emerald-900/30 dark:hover:to-teal-900/30 transition-all duration-200">
                         <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-lg flex items-center justify-center">
                           <Award className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                         </div>
@@ -1115,7 +1115,7 @@ export default function ExercisePage() {
               </div>
 
               {/* Description */}
-              <div className="bg-white/70 dark:bg-gray-900 dark:border-gray-800 border border-white/20 dark:border-gray-700/50 rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 shadow-xl">
+              <div className="bg-white/70 dark:bg-zinc-900/90 dark:border-zinc-800 border border-white/20 dark:border-zinc-700/50 rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:p-8 shadow-xl">
                 <h4 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-gray-100 mb-3 sm:mb-4 flex items-center gap-2">
                   <div className="w-5 h-5 sm:w-6 sm:h-6 bg-gradient-to-br from-pink-500 to-rose-500 rounded-lg flex items-center justify-center">
                     <Heart className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
