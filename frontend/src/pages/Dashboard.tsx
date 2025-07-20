@@ -168,7 +168,7 @@ export default function Dashboard() {
           <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
             Génération de votre parcours personnalisé
           </h2>
-          <p className="text-gray-600 dark:text-gray-300">
+          <p className="text-gray-600 dark:text-red-800">
             Notre IA analyse vos réponses pour créer un programme adapté à vos
             besoins...
           </p>
