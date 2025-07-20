@@ -151,7 +151,7 @@ export default function NotificationDropdown() {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="absolute right-0 mt-2 w-80 bg-white ml-8 dark:bg-zinc-800 shadow-lg rounded-xl border dark:border-zinc-700 z-50"
+            className="absolute right-0 mt-2 w-80 bg-white dark:bg-zinc-800 shadow-lg rounded-xl border dark:border-zinc-700 z-50"
           >
             <div className="p-4 max-h-96 overflow-auto">
               {notifications.length === 0 ? (
