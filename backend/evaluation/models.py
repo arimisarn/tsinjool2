@@ -92,8 +92,8 @@ class Exercise(models.Model):
     completed = models.BooleanField(default=False)
     completed_at = models.DateTimeField(null=True, blank=True)
     image_url = models.URLField(null=True, blank=True)
-    coach_tips = models.JSONField(default=list) 
-    
+    coach_tips = models.JSONField(default=list)  # ✅ AJOUT ici
+        
     def __str__(self):
         return f"{self.title} - {self.step.title}"
 

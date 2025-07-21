@@ -107,7 +107,7 @@ Chaque exercice contient :
             "Titre vidéo 1",
             "Titre vidéo 2"
           ],
-          coach_tips": [
+          "coach_tips": [
             "Conseil 1",
             "Conseil 2",
             "Conseil 3"
