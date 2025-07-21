@@ -37,6 +37,7 @@ class ExerciseSerializer(serializers.ModelSerializer):
             "completed",
             "completed_at",
             "image_url",
+            "coach_tips",
         )
         read_only_fields = ("completed", "completed_at")
 
