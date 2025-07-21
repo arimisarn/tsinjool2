@@ -32,6 +32,7 @@ interface Exercise {
   instructions: string[];
   animation_character: string;
   recommended_videos?: string[];
+  coach_tips?: string[]; // 🆕 ajouter cette ligne
 }
 
 interface Step {
@@ -452,7 +453,7 @@ export default function StepDetail() {
                       )}
 
                     {/* Tips Section */}
-                    <div className="space-y-3 sm:space-y-4">
+                    {/* <div className="space-y-3 sm:space-y-4">
                       <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
                         <div className="w-4 h-4 sm:w-5 sm:h-5 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-lg flex items-center justify-center">
                           <Sparkles className="w-2 h-2 sm:w-3 sm:h-3 text-white" />
@@ -485,7 +486,44 @@ export default function StepDetail() {
                           </p>
                         </div>
                       </div>
-                    </div>
+                    </div> */}
+                    {selectedExercise?.coach_tips &&
+                      selectedExercise.coach_tips.length === 3 && (
+                        <div className="space-y-3 sm:space-y-4 mt-6">
+                          <h3 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                            <div className="w-4 h-4 sm:w-5 sm:h-5 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-lg flex items-center justify-center">
+                              <Sparkles className="w-2 h-2 sm:w-3 sm:h-3 text-white" />
+                            </div>
+                            Conseils de votre coach IA
+                          </h3>
+                          <div className="space-y-2 sm:space-y-3">
+                            <div className="flex items-start gap-2 sm:gap-3 p-2 sm:p-3 bg-gradient-to-r from-rose-50 to-pink-50 dark:from-rose-900/20 dark:to-pink-900/20 rounded-lg border border-rose-200 dark:border-rose-700">
+                              <div className="w-6 h-6 sm:w-7 sm:h-7 bg-gradient-to-br from-rose-500 to-pink-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <Heart className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
+                              </div>
+                              <p className="text-xs sm:text-sm text-gray-700 dark:text-gray-300 leading-relaxed font-medium pt-1">
+                                {selectedExercise.coach_tips[0]}
+                              </p>
+                            </div>
+                            <div className="flex items-start gap-2 sm:gap-3 p-2 sm:p-3 bg-gradient-to-r from-amber-50 to-yellow-50 dark:from-amber-900/20 dark:to-yellow-900/20 rounded-lg border border-amber-200 dark:border-amber-700">
+                              <div className="w-6 h-6 sm:w-7 sm:h-7 bg-gradient-to-br from-amber-500 to-yellow-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <Focus className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
+                              </div>
+                              <p className="text-xs sm:text-sm text-gray-700 dark:text-gray-300 leading-relaxed font-medium pt-1">
+                                {selectedExercise.coach_tips[1]}
+                              </p>
+                            </div>
+                            <div className="flex items-start gap-2 sm:gap-3 p-2 sm:p-3 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 rounded-lg border border-emerald-200 dark:border-emerald-700">
+                              <div className="w-6 h-6 sm:w-7 sm:h-7 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <Award className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
+                              </div>
+                              <p className="text-xs sm:text-sm text-gray-700 dark:text-gray-300 leading-relaxed font-medium pt-1">
+                                {selectedExercise.coach_tips[2]}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
 
                     {/* Videos */}
                     {selectedExercise.recommended_videos &&

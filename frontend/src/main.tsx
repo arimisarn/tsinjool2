@@ -4,7 +4,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HeroUIProvider } from "@heroui/react";
 import { ToastProvider } from "@heroui/toast";
 import { Toaster } from "sonner";
-import { ThemeProvider } from "next-themes"; // <-- Import ici
+import { ThemeProvider } from "next-themes";
 
 import App from "./App";
 import LoginPage from "./components/auth/LoginPage";

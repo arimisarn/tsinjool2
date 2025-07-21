@@ -81,6 +81,7 @@ Chaque exercice contient :
 - un type parmi : meditation, reflection, practice, breathing, visualization
 - 3 instructions claires
 - un emoji de personnage pour l'animation
+- 3 conseils personnalisés du coach IA (champ : coach_tips une phrase courte)
 - 2 vidéos ou ressources recommandées à rechercher sur youtube
 
 ⚠️ Réponds UNIQUEMENT avec un JSON **strictement valide**, **sans texte explicatif** ni commentaire, en respectant **exactement** cette structure :
@@ -105,7 +106,12 @@ Chaque exercice contient :
           "recommended_videos": [
             "Titre vidéo 1",
             "Titre vidéo 2"
-          ]
+          ],
+          coach_tips": [
+            "Conseil 1",
+            "Conseil 2",
+            "Conseil 3"
+            ]
         }}
       ]
     }}

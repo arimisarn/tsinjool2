@@ -36,7 +36,6 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
 ]
 
-# Application definition
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -54,7 +53,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    "corsheaders.middleware.CorsMiddleware",  # 👈 tout en haut
+    "corsheaders.middleware.CorsMiddleware",  
     "django.middleware.common.CommonMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -69,7 +68,7 @@ ROOT_URLCONF = "coaching_backend.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / "templates"],  # ou le chemin vers ton dossier templates
+        "DIRS": [BASE_DIR / "templates"], 
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
