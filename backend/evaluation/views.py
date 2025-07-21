@@ -122,6 +122,12 @@ def generate_coaching_path(request):
                         recommended_videos = json.loads(recommended_videos)
                     except Exception:
                         recommended_videos = []
+                coach_tips = exercise_data.get("coach_tips", [])
+                if isinstance(coach_tips, str):
+                    try:
+                        coach_tips = json.loads(coach_tips)
+                    except Exception:
+                        coach_tips = []
                 Exercise.objects.create(
                     step=step,
                     title=exercise_data["title"],
@@ -131,7 +137,8 @@ def generate_coaching_path(request):
                     instructions=instructions,
                     animation_character=exercise_data.get("animation_character", "🤖"),
                     recommended_videos=recommended_videos,
-                    image_url=image_url,  # maintenant défini
+                    image_url=image_url, 
+                    coach_tips=coach_tips,
                 )
 
         UserProgress.objects.get_or_create(user=request.user)
@@ -561,56 +568,6 @@ def check_scheduled_exercises(request):
 
     print(f"➡️ {count} notification(s) envoyée(s)")
     return Response({"notifications_sent": count})
-
-
-# class ScheduleExerciseView(APIView):
-#     permission_classes = [IsAuthenticated]
-
-#     def post(self, request, exercise_id):
-#         try:
-#             # 👇 Log debug (Render doit afficher ça !)
-#             print("📨 Requête reçue pour planification")
-
-#             # 🔒 Authentification
-#             user = request.user
-#             print("👤 Utilisateur :", user)
-
-#             # 🔁 Exercice
-#             exercise = Exercise.objects.get(pk=exercise_id)
-#             print("🏋️‍♀️ Exercice récupéré :", exercise)
-
-#             # 📆 Date/heure
-#             scheduled_str = request.data.get("scheduled_datetime")
-#             print("🕓 datetime reçu (string) :", scheduled_str)
-
-#             if not scheduled_str:
-#                 return Response(
-#                     {"error": "Date de planification manquante."}, status=400
-#                 )
-
-#             # 🔁 Conversion ISO → datetime Python
-#             scheduled_datetime = parse_datetime(scheduled_str)
-#             if scheduled_datetime is None:
-#                 return Response({"error": "Format datetime invalide."}, status=400)
-
-#             print("✅ datetime parsé :", scheduled_datetime)
-
-#             # 📦 Création
-#             se = ScheduledExercise.objects.create(
-#                 user=user, exercise=exercise, scheduled_datetime=scheduled_datetime
-#             )
-
-#             return Response(
-#                 {"success": f"Exercice planifié pour {scheduled_datetime}."}
-#             )
-
-#         except Exception as e:
-#             import traceback
-#             print("❌ Erreur lors de la planification :", e)
-#             print(traceback.format_exc())  # 👈 Affiche l'erreur complète dans les logs Render
-#             return Response({
-#                 "error": str(e),
-#             }, status=500)
 
 
 class PlannedExerciseListView(generics.ListAPIView):
