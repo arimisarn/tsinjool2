@@ -6,6 +6,7 @@ from django.conf import settings
 from django.utils import timezone
 import json
 from django.contrib.auth import get_user_model
+from django.db.models import JSONField
 
 
 class Evaluation(models.Model):
@@ -92,8 +93,8 @@ class Exercise(models.Model):
     completed = models.BooleanField(default=False)
     completed_at = models.DateTimeField(null=True, blank=True)
     image_url = models.URLField(null=True, blank=True)
-    coach_tips = models.JSONField(default=list)  # ✅ AJOUT ici
-        
+    coach_tips = models.JSONField(blank=True, default=list)          
+     
     def __str__(self):
         return f"{self.title} - {self.step.title}"
 
