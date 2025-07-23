@@ -81,6 +81,7 @@ def generate_coaching_path(request):
         # Générer le parcours avec IA
         steps_data = AICoachingService.generate_coaching_path(evaluation_data)
         print("DEBUG - Données générées par l'IA :", steps_data)
+        print(json.dumps(steps_data, indent=2))
 
         # Recherche des URLs YouTube pour chaque vidéo recommandée
         youtube_api_key = settings.YOUTUBE_API_KEY
@@ -128,7 +129,8 @@ def generate_coaching_path(request):
                         coach_tips = json.loads(coach_tips)
                     except Exception:
                         coach_tips = []
-                Exercise.objects.create(
+                print("💡 coach_tips récupéré :", coach_tips)                
+                exercise = Exercise.objects.create(
                     step=step,
                     title=exercise_data["title"],
                     description=exercise_data["description"],
@@ -140,6 +142,10 @@ def generate_coaching_path(request):
                     image_url=image_url, 
                     coach_tips=coach_tips,
                 )
+                print("✅ Exercice sauvegardé :", exercise.id)
+                print("📦 Tips enregistrés :", exercise.coach_tips)
+                print("🧠 coach_tips avant insertion :", exercise_data.get("coach_tips"))
+
 
         UserProgress.objects.get_or_create(user=request.user)
 
