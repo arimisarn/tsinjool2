@@ -33,6 +33,7 @@ interface Exercise {
   animation_character: string;
   recommended_videos?: string[];
   image_url?: string;
+  coach_tips?: string[];
 }
 
 export default function ExercisePage() {
@@ -504,13 +505,14 @@ export default function ExercisePage() {
                   </div>
 
                   {/* Tips */}
-                  <div>
+                  {/* <div>
                     <h4 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-gray-100 mb-3 sm:mb-4 lg:mb-6 flex items-center gap-2">
                       <div className="w-5 h-5 sm:w-6 sm:h-6 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-lg flex items-center justify-center">
                         <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
                       </div>
                       Conseils de votre coach IA
                     </h4>
+
                     <div className="space-y-3 sm:space-y-4">
                       <div className="group flex items-start gap-3 sm:gap-4 p-3 sm:p-4 bg-gradient-to-r from-rose-50 to-pink-50 dark:from-rose-900/20 dark:to-pink-900/20 rounded-xl border border-rose-200 dark:border-rose-700 hover:from-rose-100 hover:to-pink-100 dark:hover:from-rose-900/30 dark:hover:to-pink-900/30 transition-all duration-200">
                         <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-br from-rose-500 to-pink-500 rounded-lg flex items-center justify-center">
@@ -536,6 +538,77 @@ export default function ExercisePage() {
                           Chaque petit progrès compte dans votre parcours
                         </p>
                       </div>
+                    </div>
+                  </div> */}
+                  {/* Tips */}
+                  <div>
+                    <h4 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-gray-100 mb-3 sm:mb-4 lg:mb-6 flex items-center gap-2">
+                      <div className="w-5 h-5 sm:w-6 sm:h-6 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-lg flex items-center justify-center">
+                        <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
+                      </div>
+                      Conseils de votre coach IA
+                    </h4>
+
+                    <div className="space-y-3 sm:space-y-4">
+                      {exercise.coach_tips && exercise.coach_tips.length > 0 ? (
+                        exercise.coach_tips.map((tip, index) => {
+                          // Couleurs et icônes cycliques comme dans ton code statique (3 styles)
+                          const bgFromTo =
+                            index % 3 === 0
+                              ? "from-rose-50 to-pink-50 dark:from-rose-900/20 dark:to-pink-900/20"
+                              : index % 3 === 1
+                              ? "from-amber-50 to-yellow-50 dark:from-amber-800/20 dark:to-yellow-800/20"
+                              : "from-emerald-50 to-teal-50 dark:from-emerald-800/20 dark:to-teal-800/20";
+
+                          const borderColor =
+                            index % 3 === 0
+                              ? "border-rose-200 dark:border-rose-700"
+                              : index % 3 === 1
+                              ? "border-amber-200 dark:border-amber-700"
+                              : "border-emerald-200 dark:border-emerald-700";
+
+                          const hoverFromTo =
+                            index % 3 === 0
+                              ? "hover:from-rose-100 hover:to-pink-100 dark:hover:from-rose-900/30 dark:hover:to-pink-900/30"
+                              : index % 3 === 1
+                              ? "hover:from-amber-100 hover:to-yellow-100 dark:hover:from-amber-900/30 dark:hover:to-yellow-900/30"
+                              : "hover:from-emerald-100 hover:to-teal-100 dark:hover:from-emerald-900/30 dark:hover:to-teal-900/30";
+
+                          const iconBg =
+                            index % 3 === 0
+                              ? "from-rose-500 to-pink-500"
+                              : index % 3 === 1
+                              ? "from-amber-500 to-yellow-500"
+                              : "from-emerald-500 to-teal-500";
+
+                          const Icon =
+                            index % 3 === 0
+                              ? Heart
+                              : index % 3 === 1
+                              ? Focus
+                              : Award;
+
+                          return (
+                            <div
+                              key={index}
+                              className={`group flex items-start gap-3 sm:gap-4 p-3 sm:p-4 bg-gradient-to-r ${bgFromTo} rounded-xl border ${borderColor} ${hoverFromTo} transition-all duration-200`}
+                            >
+                              <div
+                                className={`w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-br ${iconBg} rounded-lg flex items-center justify-center`}
+                              >
+                                <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                              </div>
+                              <p className="text-sm sm:text-base text-gray-700 dark:text-gray-300 leading-relaxed font-medium">
+                                {tip}
+                              </p>
+                            </div>
+                          );
+                        })
+                      ) : (
+                        <p className="text-gray-500 dark:text-gray-400 italic">
+                          Pas de conseils disponibles.
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>
