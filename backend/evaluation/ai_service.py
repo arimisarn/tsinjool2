@@ -156,6 +156,7 @@ Génère jusqu'à la fin, ne coupe pas les réponses, Tu DOIS générer exacteme
                         "recommended_videos": exercise_data.get(
                             "recommended_videos", []
                         ),
+                        "coach_tips": exercise_data.get("coach_tips", []),
                     }
                     step["exercises"].append(exercise)
 
