@@ -430,7 +430,7 @@ export default function ExercisePage() {
                           className="group flex items-center justify-center gap-2 sm:gap-3 px-4 sm:px-6 py-3 sm:py-4 bg-white/50 dark:bg-gray-700/50 backdrop-blur-sm border-2 border-indigo-200 dark:border-zinc-700 text-gray-700 dark:text-gray-300 rounded-xl font-semibold hover:bg-indigo-50 dark:hover:bg-indigo-900/30 hover:border-indigo-300 dark:hover:border-indigo-500 transition-all duration-200 text-sm sm:text-base"
                         >
                           <RotateCcw className="w-4 h-4 sm:w-5 sm:h-5 transition-transform group-hover:rotate-180" />
-                          Reset
+                          Réinitialiser
                         </button>
                       </>
                     )}
