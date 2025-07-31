@@ -110,7 +110,7 @@ const Hero = () => {
           className="flex items-center justify-center gap-8 mt-12 flex-wrap"
         >
           {[
-            "14 jours gratuits",
+            "Totalement gratuit",
             "Aucune carte requise",
             "Résultats garantis",
           ].map((text, index) => (

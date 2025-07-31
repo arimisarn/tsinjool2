@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "mobile",
+    "name": "Tsinjool",
     "slug": "mobile",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -13,11 +13,11 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/icon.png",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.arimisarn.mobile"
+      "package": "com.arimisarn.tsinjool"
     },
     "web": {
       "bundler": "metro",
@@ -44,6 +44,7 @@
       "eas": {
         "projectId": "282c3030-71ac-4210-a127-f148b01ee70d"
       }
-    }
+    },
+    "owner": "arimisarn"
   }
 }

@@ -22,7 +22,6 @@ const slides = [
   },
 ];
 
-// ... imports identiques
 export default function LoginPage() {
   useEffect(() => {
     document.title = "Tsinjool - Connexion";

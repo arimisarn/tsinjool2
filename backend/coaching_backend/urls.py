@@ -5,7 +5,6 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 
-# Vue simple pour la racine
 def health_check(request):
     return JsonResponse(
         {"status": "ok", "message": "🎯 Le backend Django sur Render fonctionne !"}
@@ -13,14 +12,12 @@ def health_check(request):
 
 
 urlpatterns = [
-    path("", health_check),  # ← Vue pour la racine
+    path("", health_check),
     path("admin/", admin.site.urls),
-    path("api/", include("accounts.urls")),  # 👈 Ajouté ici
+    path("api/", include("accounts.urls")),
     path("api/", include("chat.urls")),
-    path("api/", include("evaluation.urls")),  # Ajoute ça
+    path("api/", include("evaluation.urls")),
 ]
-# if settings.DEBUG:
-#     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

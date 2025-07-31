@@ -82,11 +82,6 @@ TEMPLATES = [
 ]
 
 
-# REST_FRAMEWORK = {
-#     'DEFAULT_AUTHENTICATION_CLASSES': [
-#         'rest_framework.authentication.TokenAuthentication',
-#     ]
-# }
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         "rest_framework.authentication.TokenAuthentication",
@@ -167,12 +162,10 @@ CSRF_TRUSTED_ORIGINS = [
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-DEFAULT_FROM_EMAIL = "Tsinjool <noreply@tsinjool.com>"  # Nom d’expéditeur visible
+DEFAULT_FROM_EMAIL = "Tsinjool <noreply@tsinjool.com>"
 EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
 TOGETHER_API_KEY = os.getenv("TOGETHER_API_KEY")
-# GROQ_API_KEY = os.getenv("GROQ_API_KEY")
-# HUGGINGFACE_TOKEN = os.getenv("HUGGINGFACE_TOKEN")
 OPENAI_API_KEY = config("OPENAI_API_KEY")
 MISTRAL_API_KEY = os.environ.get("MISTRAL_API_KEY")
 
@@ -185,4 +178,4 @@ GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 PEXELS_API_KEY = os.getenv("PEXELS_API_KEY")
 
 USE_TZ = False
-TIME_ZONE = "Indian/Antananarivo"  # Ou ton fuseau horaire local
+TIME_ZONE = "Indian/Antananarivo"
