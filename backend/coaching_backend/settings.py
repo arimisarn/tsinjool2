@@ -34,6 +34,7 @@ ALLOWED_HOSTS = [
     "tsinjool-backend.onrender.com",
     "localhost",
     "127.0.0.1",
+    "backend-tsinjool.onrender.com",
 ]
 
 
@@ -53,7 +54,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    "corsheaders.middleware.CorsMiddleware",  
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -68,7 +69,7 @@ ROOT_URLCONF = "coaching_backend.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / "templates"], 
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -179,3 +180,4 @@ PEXELS_API_KEY = os.getenv("PEXELS_API_KEY")
 
 USE_TZ = False
 TIME_ZONE = "Indian/Antananarivo"
+BACKEND_LINK = "http://localhost:8000"
