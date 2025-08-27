@@ -24,7 +24,7 @@ export default function NotificationDropdown() {
   const fetchNotifications = async () => {
     try {
       const res = await axios.get(
-        "https://tsinjool-backend.onrender.com/api/notifications/",
+        "https://backend-tsinjool.onrender.com/api/notifications/",
         {
           headers: { Authorization: `Token ${token}` },
         }
@@ -38,7 +38,7 @@ export default function NotificationDropdown() {
   const markAsRead = async (id: number) => {
     try {
       await axios.post(
-        `https://tsinjool-backend.onrender.com/api/notifications/${id}/read/`,
+        `https://backend-tsinjool.onrender.com/api/notifications/${id}/read/`,
         {},
         {
           headers: { Authorization: `Token ${token}` },
@@ -144,7 +144,6 @@ export default function NotificationDropdown() {
         )}
       </button>
 
-      {/* Dropdown avec Framer Motion */}
       <AnimatePresence>
         {open && (
           <motion.div

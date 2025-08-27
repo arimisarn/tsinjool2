@@ -30,7 +30,7 @@ export const AICoach: React.FC<AICoachProps> = ({ emotions, isActive }) => {
     if (advice) {
       setCurrentAdvice(advice.advice);
 
-      // Ajouter à l'historique
+
       const session: CoachingSession = {
         id: Date.now().toString(),
         timestamp: new Date(),
@@ -47,7 +47,7 @@ export const AICoach: React.FC<AICoachProps> = ({ emotions, isActive }) => {
 
       setSessions((prev) => [session, ...prev.slice(0, 9)]);
 
-      // Lecture automatique
+
       if (autoSpeak && isSupported) {
         speak(advice.advice);
       }
@@ -64,7 +64,7 @@ export const AICoach: React.FC<AICoachProps> = ({ emotions, isActive }) => {
 
   return (
     <div className="space-y-6">
-      {/* Conseil principal */}
+
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

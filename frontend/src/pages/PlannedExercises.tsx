@@ -17,7 +17,7 @@ export default function PlannedExercises() {
     const fetchPlannedExercises = async () => {
       try {
         const res = await axios.get(
-          "https://tsinjool-backend.onrender.com/api/exercises/planned/",
+          "https://backend-tsinjool.onrender.com/api/exercises/planned/",
           {
             headers: { Authorization: `Token ${token}` },
           }

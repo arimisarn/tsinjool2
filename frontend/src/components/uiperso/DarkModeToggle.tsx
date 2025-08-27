@@ -2,12 +2,10 @@ import React from "react";
 export const DarkModeToggle = ({ className = ""}) => {
   const [isDarkMode, setIsDarkMode] = React.useState(false);
 
-  // Fonction pour basculer le mode sombre
   const toggleDarkMode = () => {
     setIsDarkMode(!isDarkMode);
   };
 
-  // Applique la classe 'dark' au document
   React.useEffect(() => {
     if (isDarkMode) {
       document.documentElement.classList.add("dark");

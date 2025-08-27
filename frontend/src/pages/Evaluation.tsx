@@ -208,7 +208,7 @@ export default function Evaluation() {
       };
 
       const response = await axios.post(
-        "https://tsinjool-backend.onrender.com/api/evaluations/",
+        "https://backend-tsinjool.onrender.com/api/evaluations/",
         evaluationData,
         {
           headers: {

@@ -66,7 +66,7 @@ export default function UserProfile() {
 
       try {
         const response = await fetch(
-          "https://tsinjool-backend.onrender.com/api/profile/",
+          "https://backend-tsinjool.onrender.com/api/profile/",
           {
             headers: {
               Authorization: `Token ${token}`,
@@ -106,7 +106,7 @@ export default function UserProfile() {
 
     try {
       const response = await fetch(
-        "https://tsinjool-backend.onrender.com/api/profile/",
+        "https://backend-tsinjool.onrender.com/api/profile/",
         {
           method: "PUT",
           headers: {

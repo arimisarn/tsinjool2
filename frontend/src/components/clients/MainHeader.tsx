@@ -33,7 +33,7 @@ const MainHeader: React.FC = () => {
 
       try {
         const res = await axios.get(
-          "https://tsinjool-backend.onrender.com/api/profile/",
+          "https://backend-tsinjool.onrender.com/api/profile/",
           {
             headers: { Authorization: `Token ${token}` },
           }

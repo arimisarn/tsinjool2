@@ -12,7 +12,7 @@ const Layout = () => {
     const checkNotifications = async () => {
       try {
         const res = await axios.get(
-          "https://tsinjool-backend.onrender.com/api/check-scheduled-exercises/",
+          "https://backend-tsinjool.onrender.com/api/check-scheduled-exercises/",
           {
             headers: { Authorization: `Token ${token}` },
           }

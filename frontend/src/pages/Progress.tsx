@@ -86,11 +86,11 @@ export default function Progress() {
       }
 
       const [progressRes, weeklyRes] = await Promise.all([
-        axios.get("https://tsinjool-backend.onrender.com/api/progress/", {
+        axios.get("https://backend-tsinjool.onrender.com/api/progress/", {
           headers: { Authorization: `Token ${token}` },
         }),
         axios.get(
-          "https://tsinjool-backend.onrender.com/api/weekly-activity/",
+          "https://backend-tsinjool.onrender.com/api/weekly-activity/",
           {
             headers: { Authorization: `Token ${token}` },
           }

@@ -79,7 +79,7 @@ export default function RegisterPage() {
     setLoading(true);
     try {
       await axios.post(
-        "https://tsinjool-backend.onrender.com/api/register/",
+        "https://backend-tsinjool.onrender.com/api/register/",
         formData
       );
       sessionStorage.setItem("pendingUsername", formData.nom_utilisateur);

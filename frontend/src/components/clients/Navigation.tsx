@@ -30,7 +30,6 @@ const Navigation = () => {
   return (
     <nav className="bg-slate-50 dark:bg-zinc-800 border-b border-slate-200 dark:border-zinc-700 shadow-sm z-40 px-6 py-3 relative">
       <div className="hidden md:flex">
-        {/* Grand écran : menu centré */}
         <NavigationMenu className="text-gray-900 dark:text-white max-w-[1280px] mx-auto">
           <NavigationMenuList className="flex flex-wrap sm:flex-nowrap gap-2 sm:gap-6">
             <NavigationMenuItem>

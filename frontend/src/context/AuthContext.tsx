@@ -34,10 +34,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
 
     try {
-      setToken(localToken); // <-- MAJ ici
-      const res = await axios.get("https://tsinjool-backend.onrender.com/api/profile/", {
-        headers: { Authorization: `Token ${localToken}` },
-      });
+      setToken(localToken);
+      const res = await axios.get(
+        "https://backend-tsinjool.onrender.com/api/profile/",
+        {
+          headers: { Authorization: `Token ${localToken}` },
+        }
+      );
       setProfile(res.data);
     } catch (e) {
       console.error("Erreur chargement profil :", e);

@@ -41,7 +41,7 @@ export default function LoginPage() {
     setLoading(true);
     try {
       const response = await axios.post(
-        "https://tsinjool-backend.onrender.com/api/login/",
+        "https://backend-tsinjool.onrender.com/api/login/",
         formData
       );
       const token = response.data.token;

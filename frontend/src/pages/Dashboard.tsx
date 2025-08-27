@@ -67,7 +67,7 @@ export default function Dashboard() {
       }
 
       const profileResponse = await axios.get(
-        "https://tsinjool-backend.onrender.com/api/profile/",
+        "https://backend-tsinjool.onrender.com/api/profile/",
         {
           headers: { Authorization: `Token ${token}` },
         }
@@ -76,7 +76,7 @@ export default function Dashboard() {
 
       try {
         const pathResponse = await axios.get(
-          "https://tsinjool-backend.onrender.com/api/coaching-paths/my/",
+          "https://backend-tsinjool.onrender.com/api/coaching-paths/my/",
           {
             headers: { Authorization: `Token ${token}` },
           }
@@ -108,7 +108,7 @@ export default function Dashboard() {
         return;
       }
       const response = await axios.post(
-        "https://tsinjool-backend.onrender.com/api/generate-path/",
+        "https://backend-tsinjool.onrender.com/api/generate-path/",
         { evaluation_id: evaluationId },
         {
           headers: { Authorization: `Token ${token}` },

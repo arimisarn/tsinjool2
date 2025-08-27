@@ -71,7 +71,7 @@ export default function ProfileSetup() {
     }
 
     axios
-      .get("https://tsinjool-backend.onrender.com/api/profile/", {
+      .get("https://backend-tsinjool.onrender.com/api/profile/", {
         headers: { Authorization: `Token ${token}` },
       })
       .then((res) => {
@@ -134,7 +134,7 @@ export default function ProfileSetup() {
       if (!token) throw new Error("Token manquant.");
 
       await axios.put(
-        "https://tsinjool-backend.onrender.com/api/profile/",
+        "https://backend-tsinjool.onrender.com/api/profile/",
         formData,
         {
           headers: {

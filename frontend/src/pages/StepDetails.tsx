@@ -84,7 +84,7 @@ export default function StepDetail() {
       }
 
       const response = await axios.get(
-        `https://tsinjool-backend.onrender.com/api/steps/${stepId}/`,
+        `https://backend-tsinjool.onrender.com/api/steps/${stepId}/`,
         {
           headers: { Authorization: `Token ${token}` },
         }
@@ -140,7 +140,7 @@ export default function StepDetail() {
       const plannedDatetime = `${year}-${month}-${day} ${scheduledTime}:00`;
 
       await axios.post(
-        "https://tsinjool-backend.onrender.com/api/plan-exercise/",
+        "https://backend-tsinjool.onrender.com/api/plan-exercise/",
         {
           exercise_id: selectedExercise.id,
           planned_datetime: plannedDatetime,

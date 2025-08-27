@@ -109,18 +109,18 @@ export default function ExercisePage() {
 
   const handleExerciseComplete = async () => {
     if (intervalRef.current) {
-      clearInterval(intervalRef.current); // ⛔️ Arrête le timer
+      clearInterval(intervalRef.current); 
     }
 
     setIsRunning(false);
-    setTimeLeft(0); // 🕒 Force 00:00
+    setTimeLeft(0);
     setIsCompleted(true);
     setShowCelebration(true);
 
     try {
       const token = localStorage.getItem("token");
       await axios.post(
-        `https://tsinjool-backend.onrender.com/api/exercises/${exercise?.id}/complete/`,
+        `https://backend-tsinjool.onrender.com/api/exercises/${exercise?.id}/complete/`,
         {},
         {
           headers: { Authorization: `Token ${token}` },

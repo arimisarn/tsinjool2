@@ -180,4 +180,5 @@ PEXELS_API_KEY = os.getenv("PEXELS_API_KEY")
 
 USE_TZ = False
 TIME_ZONE = "Indian/Antananarivo"
-BACKEND_LINK = "http://localhost:8000"
+from decouple import config
+BACKEND_URL = config("BACKEND_URL")

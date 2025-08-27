@@ -31,7 +31,7 @@ export default function ChatBot() {
         if (!token) return;
 
         const res = await axios.get(
-          "https://tsinjool-backend.onrender.com/api/profile/",
+          "https://backend-tsinjool.onrender.com/api/profile/",
           {
             headers: { Authorization: `Token ${token}` },
           }
@@ -71,7 +71,7 @@ export default function ChatBot() {
       try {
         const token = localStorage.getItem("token");
         const res = await axios.get(
-          "https://tsinjool-backend.onrender.com/api/conversations/",
+          "https://backend-tsinjool.onrender.com/api/conversations/",
           {
             headers: { Authorization: token ? `Token ${token}` : "" },
           }
@@ -109,7 +109,7 @@ export default function ChatBot() {
     const token = localStorage.getItem("token");
     try {
       const res = await axios.get(
-        `https://tsinjool-backend.onrender.com/api/conversations/${conv.id}/messages/`,
+        `https://backend-tsinjool.onrender.com/api/conversations/${conv.id}/messages/`,
         {
           headers: { Authorization: `Token ${token}` },
         }
@@ -142,7 +142,7 @@ export default function ChatBot() {
 
     try {
       const res = await axios.post(
-        "https://tsinjool-backend.onrender.com/api/chat/",
+        "https://backend-tsinjool.onrender.com/api/chat/",
         {
           prompt: userMessage.content,
           conversation_id: conversationId,
@@ -184,7 +184,7 @@ export default function ChatBot() {
     try {
       const token = localStorage.getItem("token");
       const res = await axios.get(
-        "https://tsinjool-backend.onrender.com/api/conversations/",
+        "https://backend-tsinjool.onrender.com/api/conversations/",
         {
           headers: { Authorization: token ? `Token ${token}` : "" },
         }

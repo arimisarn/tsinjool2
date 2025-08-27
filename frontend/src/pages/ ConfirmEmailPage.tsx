@@ -30,7 +30,7 @@ export default function ConfirmEmailPage() {
     setLoading(true);
     try {
       await axios.post(
-        "https://tsinjool-backend.onrender.com/api/confirm-email/",
+        "https://backend-tsinjool.onrender.com/api/confirm-email/",
         { email, code }
       );
       toast.success("Email confirmé avec succès !");
@@ -47,7 +47,7 @@ export default function ConfirmEmailPage() {
       }
 
       const loginRes = await axios.post(
-        "https://tsinjool-backend.onrender.com/api/login/",
+        "https://backend-tsinjool.onrender.com/api/login/",
         { username: username, password }
       );
       const token = loginRes.data.token;
