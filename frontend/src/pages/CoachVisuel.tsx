@@ -20,7 +20,6 @@ function CoachVisuel() {
   const [isCoachActive, setIsCoachActive] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Initialiser les modèles FaceAPI
   useEffect(() => {
     const initApp = async () => {
       setIsLoading(true);

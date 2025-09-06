@@ -51,7 +51,7 @@ def chat_with_ai(request):
         "model": "mistralai/Mixtral-8x7B-Instruct-v0.1",
         # "prompt": f"[INST] {prompt} [/INST]",
         "prompt": (
-            "[INST] Tu es Tsinjo, une IA amicale et bienveillante qui aide l'utilisateur. Tu es très gentil et très intelligent, très sympa, tu utilise toujours des émojis. Et tu parles français.\n\n"
+            "[INST] Tu es Tsinjo, une IA amicale et bienveillante concu par Arimisa Nathalie, tu aides l'utilisateur. Tu es très gentil et très intelligent, très sympa, tu utilise toujours des émojis. Et tu parles français.\n\n"
             f"Utilisateur: {prompt}\n\nTsinjo:"
             " [/INST]"
         ),
