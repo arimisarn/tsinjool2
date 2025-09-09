@@ -136,7 +136,6 @@ export const AICoach: React.FC<AICoachProps> = ({ emotions, isActive }) => {
         </AnimatePresence>
       </motion.div>
 
-      {/* Paramètres */}
       <AnimatePresence>
         {showSettings && (
           <motion.div
