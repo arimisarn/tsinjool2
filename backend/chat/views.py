@@ -6,12 +6,12 @@ from rest_framework.response import Response
 from rest_framework import status, permissions
 from .models import Conversation, Message
 from rest_framework import status
+ 
 
+TOGETHER_API_KEY = os.getenv("TOGETHER_API_KEY")
 
-# TOGETHER_API_KEY = os.getenv("TOGETHER_API_KEY")
-
-GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
-GROQ_API_KEY = os.getenv("GROQ_API_KEY")  # 🔐 Appelle la clé depuis l'environnement
+# GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
+# GROQ_API_KEY = os.getenv("GROQ_API_KEY")  # 🔐 Appelle la clé depuis l'environnement
 
 @api_view(["POST"])
 @permission_classes([permissions.IsAuthenticated])
@@ -44,11 +44,11 @@ def chat_with_ai(request):
 
     # Prépare l’appel API Together.ai
     headers = {
-        "Authorization": f"Bearer {GROQ_API_KEY}",
+        "Authorization": f"Bearer {TOGETHER_API_KEY}",
         "Content-Type": "application/json",
     }
     payload = {
-        "model": "llama-3.1-8b-instant",
+        "model": "mistralai/Mixtral-8x7B-Instruct-v0.1",
         # "prompt": f"[INST] {prompt} [/INST]",
         "prompt": (
             "[INST] Tu es Tsinjo, une IA amicale et bienveillante concu par Arimisa Nathalie, tu aides l'utilisateur. Tu es très gentil et très intelligent, très sympa, tu utilise toujours des émojis. Et tu parles français.\n\n"
@@ -60,7 +60,7 @@ def chat_with_ai(request):
     }
 
     try:
-        res = requests.post("https://api.groq.com/openai/v1/chat/completions", json=payload, headers=headers)
+        res = requests.post("https://api.together.xyz/v1/completions", json=payload, headers=headers)
         res.raise_for_status()
         response_data = res.json()
         ai_message = response_data["choices"][0]["text"]
